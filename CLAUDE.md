@@ -61,16 +61,23 @@ prazometro/
 
 ## Regras (formato)
 
-Cada ficheiro em `rules/<modulo>/` é validado pelo esquema em `rules/schema/`. Campos obrigatórios:
+Cada ficheiro em `rules/<modulo>/` é validado pelo esquema zod em `packages/engine/src/rules/schema.ts` (fonte única). O JSON Schema em `rules/schema/regra.schema.json` é gerado com `npm run schema:rules` e serve para o editor (`"$schema": "../schema/regra.schema.json"`). Campos obrigatórios:
 
-- `id`, `modulo`, `titulo`, `descricao` (linguagem simples)
-- `condicoes` (expressões avaliadas pelo motor)
-- `prazo`: `{ "quantidade": n, "unidade": "dias|meses|anos", "contagem": "corridos|uteis", "transita_dia_util": true|false }`
-- `fontes`: lista de `{ "titulo", "url", "artigo" }`
-- `verificado_em` (AAAA-MM-DD) e `verificado_por`
-- `modelos_carta` (ids em `templates/`)
+- `id` (`modulo.nome-da-regra`), `modulo`, `titulo`, `descricao` (linguagem simples)
+- `condicoes`: objeto em que cada chave é um campo dos factos e todas têm de se verificar. Valor simples = igualdade; ou operador `{ "em": [...] }`, `{ "nao_em": [...] }`, `{ "diferente": x }`, `{ "min": n }`, `{ "max": n }`, `{ "existe": true|false }`. A chave `qualquer` recebe uma lista de condições das quais basta uma
+- `prazo`: `{ "quantidade": n, "unidade": "dias|meses|anos", "contagem": "corridos|uteis", "transita_dia_util": true|false }`, com `transicao` e `alertas_dias_antes` opcionais (ver abaixo)
+- `fontes`: lista de `{ "titulo", "url" (https), "artigo" }`, com pelo menos uma
+- `verificado_em` (AAAA-MM-DD, nunca no futuro) e `verificado_por`
+- `modelos_carta` (ids que têm de existir em `templates/`)
+- `estado`: `"publicada"` ou `"a_rever"`
 
-Nunca escrever uma regra sem fonte. Se as fontes divergem, registar a divergência em `notas` e marcar `estado: "a_rever"`.
+Opcionais: `marcos` (`{ id, quantidade, unidade, alerta_dias_antes?, texto }`, datas de referência que não transitam para dia útil) e `notas`.
+
+Contagem de prazos (Código Civil, art. 279.º): não se conta o dia do evento; meses e anos terminam no dia correspondente ou no último dia do mês. Com `transita_dia_util`, o fim passa para o dia útil seguinte **só se calhar em domingo ou feriado**: um sábado não transita no regime civil. Para prazos perante serviços ou tribunais fechados ao sábado (por exemplo, CPA art. 87.º ou CPC art. 138.º), indicar `"transicao": "sabado_domingo_feriado"`, depois de confirmar a fonte. "Oito dias" e "quinze dias" valem uma e duas semanas (art. 279.º, d)): escrever 7 e 14. Na dúvida, o motor dá sempre a data mais cedo.
+
+Modelos de carta em `templates/<modulo>/*.md`: cabeçalho YAML entre `---` com `id`, `modulo`, `titulo`, `campos` (`{ id, rotulo, obrigatorio? }`), `fontes`, `verificado_em`, `verificado_por` e `estado`, seguido do corpo em Markdown com `{{campo}}`. Os campos usados e declarados têm de coincidir.
+
+Nunca escrever uma regra sem fonte. Se as fontes divergem, registar a divergência em `notas` e marcar `estado: "a_rever"`. Os testes do motor usam só a regra fictícia de `packages/engine/src/rules/fixtures.ts`, que nunca pode ir para `rules/`.
 
 ## Comandos
 
@@ -79,7 +86,8 @@ npm install                      # instalar dependências (workspaces)
 npm run dev                      # PWA em desenvolvimento
 npm run test                     # todos os testes (Vitest)
 npm run test:engine              # testes do motor
-npm run validate:rules           # valida todas as regras contra o esquema
+npm run validate:rules           # valida regras e modelos de carta (falha sem fontes ou verificado_em)
+npm run schema:rules             # gera rules/schema/regra.schema.json a partir do esquema zod
 npm run lint                     # ESLint
 npm run typecheck                # TypeScript em todos os pacotes
 npm run build                    # build da PWA (gera também os ícones a partir de apps/web/public/logo.svg)

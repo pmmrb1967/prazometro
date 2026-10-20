@@ -159,18 +159,26 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 ### Fase 1 — Motor de regras (1 sem)
 
-- [ ] Esquema zod das regras e exportação para JSON Schema
-- [ ] Script `validate:rules` (falha sem `fontes` ou `verificado_em`)
-- [ ] Calendário de feriados nacionais, incluindo os móveis (Sexta-feira Santa, Páscoa, Corpo de Deus)
-- [ ] Cálculo de prazos: dias corridos e úteis, meses e anos, fim de mês, transição para o dia útil seguinte
-- [ ] Avaliador de condições das regras
-- [ ] Marcos e alertas (por exemplo, 30 dias antes do fim do 2.º ano)
-- [ ] Estado de verificação: marcar como "a verificar" as regras com mais de 6 meses
-- [ ] Gerador de cartas: modelos Markdown com `{{campos}}` para PDF (pdf-lib)
-- [ ] Exportação `.ics` com alarmes
-- [ ] Testes: pelo menos 30 casos de datas (feriados, fins de semana, 29 de fevereiro, fim de mês)
+- [x] Esquema zod das regras e exportação para JSON Schema
+- [x] Script `validate:rules` (falha sem `fontes` ou `verificado_em`)
+- [x] Calendário de feriados nacionais, incluindo os móveis (Sexta-feira Santa, Páscoa, Corpo de Deus)
+- [x] Cálculo de prazos: dias corridos e úteis, meses e anos, fim de mês, transição para o dia útil seguinte
+- [x] Avaliador de condições das regras
+- [x] Marcos e alertas (por exemplo, 30 dias antes do fim do 2.º ano)
+- [x] Estado de verificação: marcar como "a verificar" as regras com mais de 6 meses
+- [x] Gerador de cartas: modelos Markdown com `{{campos}}` para PDF (pdf-lib)
+- [x] Exportação `.ics` com alarmes
+- [x] Testes: pelo menos 30 casos de datas (feriados, fins de semana, 29 de fevereiro, fim de mês)
 
 **Concluída quando**: o motor calcula prazos de regras de exemplo com 100% dos testes a passar.
+
+**Concluída em 2026-10-20**: 95 testes do motor a passar, 59 deles de datas e feriados. Decisões:
+
+- Feriados e art. 279.º do Código Civil confirmados no texto consolidado do Diário da República em 2026-10-20.
+- Por defeito, um prazo que termine num sábado não transita (CC, art. 279.º, e)). Regras de prazos perante serviços fechados ao sábado indicam `"transicao": "sabado_domingo_feriado"`.
+- Ainda não há regras reais em `rules/`: a recolha com fontes verificadas começa na Fase 2. Os testes usam uma regra fictícia.
+- O PDF usa Helvetica por defeito e recusa caracteres que ela não tem (por exemplo, Ł ou cirílico), em vez de os trocar. Na Fase 2, a app passa a fonte Atkinson Hyperlegible para suportar todos os nomes.
+- Os alarmes do `.ics` tocam às 09:00, nunca à meia-noite.
 
 ### Fase 2 — Módulo Garantia (1 sem)
 
