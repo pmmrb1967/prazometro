@@ -146,14 +146,16 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 - [x] Criar repositório `pmmrb1967/prazometro` com npm workspaces (`apps`, `workers`, `packages`)
 - [x] Configurar TypeScript, ESLint, Prettier e Vitest partilhados
-- [x] PWA mínima (Vite + React + vite-plugin-pwa) com ecrã inicial e aviso legal
+- [x] PWA mínima (Vite + React + vite-plugin-pwa) com ecrã inicial, aviso legal e convite para instalar
 - [x] Base de acessibilidade: tamanho de letra ajustável, alto contraste, foco visível
 - [x] Publicação automática no `main` (GitHub Actions + `wrangler deploy`): a PWA é servida pelo Worker `app` como static assets, em vez do Cloudflare Pages
-- [x] Worker `api` com Hono e rota `/health`
+- [x] Worker com Hono e rota `/api/health`
 - [x] Criar base D1 `prazometro` com localização na Europa e primeira migração vazia (jurisdição UE)
 - [x] GitHub Actions: lint, testes e `validate:rules` em cada push
 
 **Concluída quando**: a PWA está publicada em `app.prazometro.workers.dev`, instalável no telemóvel, e o Worker responde.
+
+**Concluída em 2026-10-20**: instalação testada com sucesso num telemóvel.
 
 ### Fase 1 — Motor de regras (1 sem)
 
