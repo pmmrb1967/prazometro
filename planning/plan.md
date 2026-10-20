@@ -144,7 +144,7 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 ### Fase 0 — Fundação (0,5 sem)
 
-- [ ] Criar repositório `pmmrb1967/prazometro` com npm workspaces (`apps`, `workers`, `packages`)
+- [x] Criar repositório `pmmrb1967/prazometro` com npm workspaces (`apps`, `workers`, `packages`)
 - [x] Configurar TypeScript, ESLint, Prettier e Vitest partilhados
 - [x] PWA mínima (Vite + React + vite-plugin-pwa) com ecrã inicial e aviso legal
 - [x] Base de acessibilidade: tamanho de letra ajustável, alto contraste, foco visível
