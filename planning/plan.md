@@ -182,16 +182,25 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 ### Fase 2 — Módulo Garantia (1 sem)
 
-- [ ] Recolher e validar as regras (bens novos, usados, reparação, substituição) com fontes
-- [ ] Formulário de compra: produto, loja, data, novo ou usado, foto da fatura
-- [ ] Lista de compras com estado da garantia (barra de tempo e próximos marcos)
-- [ ] Exportação dos alertas para o calendário
-- [ ] Fluxo de reclamação: carta à loja, Livro de Reclamações eletrónico, centro de arbitragem
-- [ ] Modelos de carta: reclamação ao vendedor e pedido de reparação ou substituição
-- [ ] Exportar e importar cópia de segurança local (ficheiro), antes de existir sincronização
+- [x] Recolher e validar as regras (bens novos, usados, reparação, substituição) com fontes
+- [x] Formulário de compra: produto, loja, data, novo ou usado, foto da fatura
+- [x] Lista de compras com estado da garantia (barra de tempo e próximos marcos)
+- [x] Exportação dos alertas para o calendário
+- [x] Fluxo de reclamação: carta à loja, Livro de Reclamações eletrónico, centro de arbitragem
+- [x] Modelos de carta: reclamação ao vendedor e pedido de reparação ou substituição
+- [x] Exportar e importar cópia de segurança local (ficheiro), antes de existir sincronização
 - [ ] Teste com 5 pessoas reais, incluindo pelo menos 2 com mais de 65 anos
 
 **Concluída quando**: uma pessoa regista uma compra, recebe o lembrete no calendário e gera a carta sem ajuda.
+
+Notas da Fase 2 (2026-10-20):
+
+- Regras em `rules/garantia/` (DL 84/2021): prazo geral de 3 anos, usados com 18 meses combinados, 30 dias para reparar, caducidade 2 anos após a comunicação e garantia do bem substituído. Esta última está "a rever": falta um jurista confirmar a interpretação. Todas foram verificadas no DR por mim (Claude), não por um jurista.
+- Ainda não se somam os 6 meses por cada reparação nem a suspensão do prazo durante a reparação: as datas mostradas são as mais cedo possíveis e a app avisa disso.
+- Num bem usado, "não sei" se houve acordo de 18 meses usa por precaução o prazo mais curto.
+- Compras anteriores a 2022 (DL 67/2003) não são calculadas; a app explica porquê.
+- O PDF usa a Atkinson Hyperlegible (subconjuntos latin + latin-ext). Nomes em cirílico, árabe, etc. ainda não são suportados: a app avisa em vez de desenhar quadrados.
+- Falta o teste com 5 pessoas reais (tarefa do autor).
 
 ### Fase 3 — Módulo Espera no SNS (1 sem)
 

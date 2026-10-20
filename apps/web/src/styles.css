@@ -248,3 +248,358 @@ button.primary {
     animation: none !important;
   }
 }
+
+/* ---------- Navegação e páginas ---------- */
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+.brand {
+  text-decoration: none;
+}
+.crumbs {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.page > h1 {
+  margin-bottom: -1rem;
+}
+h1:focus {
+  outline: none;
+}
+.lead {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.muted {
+  color: var(--muted);
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.module-link {
+  text-decoration: none;
+}
+.module-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+.module {
+  position: relative;
+}
+.module:has(.module-link) {
+  border-color: var(--brand);
+}
+.module:has(.module-link):hover {
+  box-shadow: 0 0 0 2px var(--brand);
+}
+
+/* Botões e ligações com aspeto de botão */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.25rem 1.1rem;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  text-align: center;
+}
+.button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--bg);
+  font-weight: 700;
+  padding-inline: 1.5rem;
+}
+button.danger {
+  background: #a3261b;
+  border-color: #a3261b;
+  color: #fff;
+  font-weight: 700;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Listas de compras */
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.cards > li {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+}
+.card-link {
+  display: grid;
+  text-decoration: none;
+}
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.empty {
+  padding: 1.25rem;
+  border: 2px dashed var(--line);
+  border-radius: 14px;
+}
+
+/* Estado da garantia: texto + barra; a cor só reforça */
+.status {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem;
+  border-left: 6px solid var(--state);
+  background: color-mix(in srgb, var(--state) 10%, var(--surface));
+  border-radius: 0 10px 10px 0;
+  --state: #1f7a3f;
+}
+.status-a_terminar {
+  --state: #b26b00;
+}
+.status-terminada,
+.status-nao_coberta {
+  --state: #6b7686;
+}
+.status-label {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.bar {
+  height: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--state);
+}
+
+.timeline {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.timeline .past {
+  color: var(--muted);
+}
+.notes {
+  white-space: pre-wrap;
+}
+
+/* Formulários */
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+input,
+textarea {
+  font: inherit;
+  font-weight: 400;
+  color: var(--fg);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  min-height: 48px;
+  width: 100%;
+}
+input[type='radio'],
+input[type='checkbox'] {
+  width: 1.4rem;
+  height: 1.4rem;
+  min-height: 0;
+  margin: 0;
+  flex: none;
+  accent-color: var(--brand);
+}
+input[type='file'] {
+  padding: 0.5rem;
+}
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+.row + .hint {
+  margin-top: -0.75rem;
+}
+.choice {
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem 1rem 1rem;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.choice legend {
+  font-weight: 700;
+  padding-inline: 0.25rem;
+}
+.choice label,
+.check {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+.missing input,
+.missing textarea {
+  border-color: #a3261b;
+}
+.field-error {
+  color: #a3261b;
+  font-weight: 400;
+}
+.errors {
+  border-left: 6px solid #a3261b;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-radius: 0 10px 10px 0;
+}
+.errors ul {
+  margin: 0.25rem 0 0;
+}
+.ok {
+  border-left: 6px solid #1f7a3f;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-radius: 0 10px 10px 0;
+}
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+.inline-form .field {
+  flex: 1 1 14rem;
+}
+
+/* Reclamação, passo a passo */
+.steps {
+  margin: 0;
+  padding-left: 1.75rem;
+  display: grid;
+  gap: 1.75rem;
+}
+.steps > li {
+  display: grid;
+  gap: 0.75rem;
+}
+.steps > li::marker {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+.links {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.notice {
+  border-left: 6px solid var(--attention);
+  background: var(--surface);
+  padding: 1rem 1.25rem;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Carta */
+.letter-layout {
+  display: grid;
+  gap: 2rem;
+}
+.letter-preview pre {
+  white-space: pre-wrap;
+  font-family: var(--font);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin: 0;
+}
+
+/* Painéis que abrem */
+details {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 0.5rem 1.25rem;
+}
+details[open] {
+  padding-bottom: 1.25rem;
+}
+details > * + * {
+  margin-top: 0.75rem;
+}
+summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.sources ul {
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.danger-zone {
+  border-top: 1px solid var(--line);
+  padding-top: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+:root[data-contrast='alto'] .status,
+:root[data-contrast='alto'] .status-a_terminar,
+:root[data-contrast='alto'] .status-terminada,
+:root[data-contrast='alto'] .status-nao_coberta {
+  --state: #ffffff;
+  background: #000;
+}
+.danger-zone > button {
+  justify-self: start;
+}

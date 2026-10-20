@@ -10,7 +10,7 @@ export const MODULES: ModuleInfo[] = [
     id: 'garantia',
     title: 'Garantia de uma compra',
     summary: 'Registe a compra e saiba até quando pode reclamar. A garantia legal é de 3 anos.',
-    available: false,
+    available: true,
   },
   {
     id: 'sns',
