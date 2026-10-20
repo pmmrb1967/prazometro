@@ -150,7 +150,7 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 - [x] Base de acessibilidade: tamanho de letra ajustável, alto contraste, foco visível
 - [ ] Projeto Cloudflare Pages ligado ao GitHub (deploy automático no `main`)
 - [x] Worker `api` com Hono e rota `/health`
-- [ ] Criar base D1 `prazometro` com localização na Europa e primeira migração vazia
+- [x] Criar base D1 `prazometro` com localização na Europa e primeira migração vazia (jurisdição UE)
 - [x] GitHub Actions: lint, testes e `validate:rules` em cada push
 
 **Concluída quando**: a PWA está publicada em `*.pages.dev`, instalável no telemóvel, e o Worker responde.
@@ -300,7 +300,7 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 ## 9. Decisões em aberto
 
-- [ ] Confirmar se o D1 permite jurisdição UE ou só indicação de localização
+- [x] Confirmar se o D1 permite jurisdição UE ou só indicação de localização: permite (`--jurisdiction eu`), base criada assim em 2026-10-20
 - [ ] Escolher biblioteca de passkeys (por exemplo, SimpleWebAuthn)
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro

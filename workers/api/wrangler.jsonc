@@ -9,8 +9,7 @@
     {
       "binding": "DB",
       "database_name": "prazometro",
-      // Preencher depois de `npx wrangler d1 create prazometro --location weur`
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "d0ed1838-6aa6-4b6d-92b8-d2247e629aa2",
       "migrations_dir": "../../db/migrations",
     },
   ],
