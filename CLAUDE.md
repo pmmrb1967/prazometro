@@ -88,6 +88,8 @@ npx wrangler d1 migrations apply prazometro --local
 npx wrangler deploy -c workers/api/wrangler.jsonc
 ```
 
+O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. API publicada: https://prazometro-api.prazometro-api.workers.dev/health
+
 (Atualizar esta secção quando forem criados novos scripts.)
 
 ## Limites do plano gratuito (respeitar sempre)

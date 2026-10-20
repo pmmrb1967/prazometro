@@ -65,7 +65,7 @@ Só existem modelos de carta estáticos e artigos. Não foi encontrada em Portug
 | Cifra                      | PBKDF2 + AES-GCM via WebCrypto, chave derivada no cliente                     | O servidor nunca vê dados em claro; não gasta CPU do Worker                                             |
 | Lembretes                  | `.ics` para o calendário do utilizador                                        | Não precisa de servidor de push                                                                         |
 | IA                         | Camada de fornecedores com o mesmo esquema JSON                               | Permite Gemini, Claude ou nenhuma, sem mudar a app                                                      |
-| Localização                | D1 com indicação de localização na Europa (confirmar opção de jurisdição UE)  | RGPD                                                                                                    |
+| Localização                | D1 com jurisdição UE (`--jurisdiction eu`): dados só na UE                    | RGPD                                                                                                    |
 
 ## 4. Modelo de dados
 
