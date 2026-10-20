@@ -54,6 +54,13 @@ function isIphone(): boolean {
   return /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
 }
 
+/** Telemóvel ou tablet; no computador a app instala-se com ícone no ambiente de trabalho. */
+function isMobile(): boolean {
+  const uaData = (navigator as Navigator & { userAgentData?: { mobile: boolean } }).userAgentData;
+  if (uaData) return uaData.mobile;
+  return /android|iphone|ipad|ipod|mobi/i.test(navigator.userAgent) || isIphone();
+}
+
 /** O Edge para Android só cria um atalho (com o símbolo do Edge); o Chrome instala uma app a sério. */
 function isEdgeAndroid(): boolean {
   return /EdgA\//.test(navigator.userAgent);
@@ -97,10 +104,17 @@ function subscribe(f: () => void) {
   };
 }
 
-export function useInstall(): { mode: InstallMode; install: () => Promise<void> } {
+const mobile = isMobile();
+
+export function useInstall(): {
+  mode: InstallMode;
+  mobile: boolean;
+  install: () => Promise<void>;
+} {
   const mode = useSyncExternalStore(subscribe, currentMode);
   return {
     mode,
+    mobile,
     async install() {
       if (!promptEvent) return;
       await promptEvent.prompt();

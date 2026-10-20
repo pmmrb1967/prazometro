@@ -22,15 +22,23 @@ function ShareIcon() {
 
 /** Convite para instalar a app. Não aparece se já estiver instalada ou se o navegador não deixar. */
 export function InstallPrompt() {
-  const { mode, install } = useInstall();
+  const { mode, mobile, install } = useInstall();
   if (!mode) return null;
 
   return (
     <section className="install" aria-labelledby="install-title">
       <img src="/logo.svg" alt="" width="48" height="48" />
       <div className="install-text">
-        <h2 id="install-title">Tenha o Prazómetro no telemóvel</h2>
-        {mode === 'button' && <p>Abre como uma app, com um toque, e funciona mesmo sem rede.</p>}
+        <h2 id="install-title">Tenha o Prazómetro no {mobile ? 'telemóvel' : 'computador'}</h2>
+        {mode === 'button' &&
+          (mobile ? (
+            <p>Abre como uma app, com um toque, e funciona mesmo sem rede.</p>
+          ) : (
+            <p>
+              Fica com um ícone no ambiente de trabalho e abre numa janela própria, sem ter de
+              procurar o endereço.
+            </p>
+          ))}
         {mode === 'edge' && (
           <p>
             Para a app ficar como as outras (sem o símbolo do Edge e na lista de apps), abra este
