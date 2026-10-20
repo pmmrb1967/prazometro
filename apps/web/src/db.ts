@@ -69,11 +69,20 @@ export type Profile = {
   numero_utente?: string;
 };
 
+/** Estado da cópia na nuvem neste dispositivo. A chave das cópias nunca sai daqui em claro. */
+export type CloudState = {
+  id: 'nuvem';
+  chave: CryptoKey;
+  ultima_copia?: string;
+  incluir_fotos?: boolean;
+};
+
 export const db = new Dexie('prazometro') as Dexie & {
   compras: EntityTable<Purchase, 'id'>;
   pedidos_sns: EntityTable<WaitRequest, 'id'>;
   ficheiros: EntityTable<StoredFile, 'id'>;
   perfil: EntityTable<Profile, 'id'>;
+  nuvem: EntityTable<CloudState, 'id'>;
 };
 
 db.version(1).stores({
@@ -84,6 +93,10 @@ db.version(1).stores({
 
 db.version(2).stores({
   pedidos_sns: 'id, criado_em',
+});
+
+db.version(3).stores({
+  nuvem: 'id',
 });
 
 export function newId(): string {

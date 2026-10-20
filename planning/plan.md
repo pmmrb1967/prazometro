@@ -225,14 +225,16 @@ Notas da Fase 3 (2026-10-20):
 
 ### Fase 4 — Contas e cópia de segurança (1 sem)
 
-- [ ] Migrações D1: `users`, `passkeys`, `recovery_codes`, `backups`
-- [ ] Registo e entrada com passkeys (WebAuthn) e códigos de recuperação
-- [ ] Cifra no cliente: chave derivada (PBKDF2) e AES-GCM com WebCrypto
-- [ ] Envio da cópia em blocos de 1,5 MB, com versão e verificação de integridade
-- [ ] Restauro noutro dispositivo
-- [ ] Opção de incluir fotos na cópia (comprimidas em WebP)
-- [ ] Apagar conta e todos os dados (direito ao apagamento, RGPD)
-- [ ] Testes de cópia e restauro com 1 MB, 5 MB e 20 MB
+- [x] Migrações D1: `users`, `passkeys`, `recovery_codes`, `backups` (`db/migrations/0002_accounts.sql`, com `key_wraps`, `sessions`, `auth_challenges` e `backup_versions`)
+- [x] Registo e entrada com passkeys (WebAuthn) e códigos de recuperação (SimpleWebAuthn; sem email nem palavra-passe; sessão em cookie HttpOnly e só o hash no servidor)
+- [x] Cifra no cliente: chave derivada (PBKDF2) e AES-GCM com WebCrypto (chave aleatória das cópias, embrulhada com o código de recuperação via PBKDF2 e, quando o dispositivo suporta, com a extensão PRF da passkey)
+- [x] Envio da cópia em blocos de 1,5 MB, com versão e verificação de integridade (gzip, AES-GCM por bloco ligado à versão e posição; o servidor confirma número de blocos e tamanho)
+- [x] Restauro noutro dispositivo (com a passkey sincronizada ou com o código; testado no navegador com autenticador virtual)
+- [x] Opção de incluir fotos na cópia (comprimidas em WebP, até 1600 px)
+- [x] Apagar conta e todos os dados (direito ao apagamento, RGPD)
+- [x] Testes de cópia e restauro com 1 MB, 5 MB e 20 MB (`apps/web/src/cloud/crypto.test.ts`; envio e receção de 5 MB no Worker em `workers/api/src/backup.test.ts`)
+
+Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se guarda a última cópia de cada pessoa.
 
 **Concluída quando**: um utilizador muda de telemóvel e recupera tudo, e o servidor só tem BLOBs cifrados.
 
@@ -330,7 +332,7 @@ Notas da Fase 3 (2026-10-20):
 ## 9. Decisões em aberto
 
 - [x] Confirmar se o D1 permite jurisdição UE ou só indicação de localização: permite (`--jurisdiction eu`), base criada assim em 2026-10-20
-- [ ] Escolher biblioteca de passkeys (por exemplo, SimpleWebAuthn)
+- [x] Escolher biblioteca de passkeys: SimpleWebAuthn (servidor 14.0.3 e navegador 14.0.0), em 2026-10-20
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
 - [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin

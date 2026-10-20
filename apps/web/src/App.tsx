@@ -16,6 +16,8 @@ import { Link, matchPath, usePageHeading, usePath } from './router';
 // A página das cartas traz o gerador de PDF; só é descarregada quando é aberta.
 const LetterPage = lazy(() => import('./modules/garantia/LetterPage'));
 const SnsLetterPage = lazy(() => import('./modules/sns/SnsLetterPage'));
+// A cópia na nuvem traz as passkeys e a cifra; também só quando é aberta.
+const CloudPage = lazy(() => import('./cloud/CloudPage'));
 
 function Home() {
   const heading = usePageHeading<HTMLHeadingElement>('Início');
@@ -53,6 +55,11 @@ function Home() {
         ))}
       </ul>
 
+      <p className="cloud-link">
+        <Link to="/copia">Cópia na nuvem, cifrada</Link>: para não perder os dados se mudar de
+        telemóvel.
+      </p>
+
       <LegalNotice />
     </>
   );
@@ -88,6 +95,7 @@ function Routes({ path }: { path: string }) {
   if ((m = matchPath('/sns/:id/carta/:template', path)))
     return <SnsLetterPage id={m.id!} template={m.template!} />;
   if ((m = matchPath('/sns/:id', path))) return <RequestDetail id={m.id!} />;
+  if (path === '/copia') return <CloudPage />;
   return <NotFound />;
 }
 
