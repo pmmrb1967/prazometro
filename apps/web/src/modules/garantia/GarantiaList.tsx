@@ -4,7 +4,7 @@ import { LegalNotice } from '../../components/LegalNotice';
 import { db } from '../../db';
 import { downloadBlob } from '../../download';
 import { Link, usePageHeading } from '../../router';
-import { BackupPanel } from './BackupPanel';
+import { BackupPanel } from '../../components/BackupPanel';
 import { GARANTIA_RULES } from './rules';
 import { StatusSummary } from './StatusSummary';
 import { calendarEvents, warrantyStatus } from './warranty';

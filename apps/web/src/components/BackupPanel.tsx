@@ -1,7 +1,7 @@
 import { todayInLisbon } from '@prazometro/engine';
 import { useRef, useState } from 'react';
-import { db, type Profile, type Purchase } from '../../db';
-import { downloadBlob } from '../../download';
+import { db, type Profile, type Purchase, type WaitRequest } from '../db';
+import { downloadBlob } from '../download';
 
 // Cópia de segurança num ficheiro, guardado onde a pessoa quiser. Não passa por nenhum servidor.
 
@@ -12,6 +12,8 @@ type BackupFile = {
   versao: 1;
   criado_em: string;
   compras: Purchase[];
+  /** Opcional: as cópias feitas antes do módulo SNS não o têm. */
+  pedidos_sns?: WaitRequest[];
   perfil: Profile[];
   ficheiros: { id: string; nome: string; tipo: string; base64: string }[];
 };
@@ -33,8 +35,9 @@ function fromBase64(base64: string, type: string): Blob {
 }
 
 export async function exportBackup(): Promise<Blob> {
-  const [compras, perfil, ficheiros] = await Promise.all([
+  const [compras, pedidos_sns, perfil, ficheiros] = await Promise.all([
     db.compras.toArray(),
+    db.pedidos_sns.toArray(),
     db.perfil.toArray(),
     db.ficheiros.toArray(),
   ]);
@@ -43,6 +46,7 @@ export async function exportBackup(): Promise<Blob> {
     versao: 1,
     criado_em: todayInLisbon(),
     compras,
+    pedidos_sns,
     perfil,
     ficheiros: await Promise.all(
       ficheiros.map(async (f) => ({
@@ -57,7 +61,7 @@ export async function exportBackup(): Promise<Blob> {
 }
 
 /** Junta a cópia aos dados existentes; registos com o mesmo id ficam com a versão da cópia. */
-export async function importBackup(text: string): Promise<number> {
+export async function importBackup(text: string): Promise<{ compras: number; pedidos: number }> {
   let data: BackupFile;
   try {
     data = JSON.parse(text) as BackupFile;
@@ -69,8 +73,10 @@ export async function importBackup(text: string): Promise<number> {
   }
   if (data.versao !== 1)
     throw new Error('Esta cópia foi feita por uma versão mais recente da app.');
-  await db.transaction('rw', db.compras, db.perfil, db.ficheiros, async () => {
+  const pedidos = data.pedidos_sns ?? [];
+  await db.transaction('rw', [db.compras, db.pedidos_sns, db.perfil, db.ficheiros], async () => {
     await db.compras.bulkPut(data.compras);
+    await db.pedidos_sns.bulkPut(pedidos);
     await db.perfil.bulkPut(data.perfil ?? []);
     await db.ficheiros.bulkPut(
       (data.ficheiros ?? []).map((f) => ({
@@ -81,7 +87,7 @@ export async function importBackup(text: string): Promise<number> {
       })),
     );
   });
-  return data.compras.length;
+  return { compras: data.compras.length, pedidos: pedidos.length };
 }
 
 export function BackupPanel() {
@@ -93,7 +99,7 @@ export function BackupPanel() {
     downloadBlob(await exportBackup(), `prazometro-copia-${todayInLisbon()}.json`);
     setMessage({
       kind: 'ok',
-      text: 'Cópia guardada. Guarde o ficheiro num local seguro: tem os seus dados e as faturas.',
+      text: 'Cópia guardada. Guarde o ficheiro num local seguro: tem os seus dados, incluindo faturas e pedidos no SNS.',
     });
   }
 
@@ -101,7 +107,10 @@ export function BackupPanel() {
     setMessage(undefined);
     try {
       const n = await importBackup(await file.text());
-      setMessage({ kind: 'ok', text: `Cópia recuperada: ${n} compra(s).` });
+      setMessage({
+        kind: 'ok',
+        text: `Cópia recuperada: ${n.compras} compra(s) e ${n.pedidos} pedido(s) no SNS.`,
+      });
     } catch (e) {
       setMessage({ kind: 'erro', text: (e as Error).message });
     } finally {

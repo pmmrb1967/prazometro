@@ -27,13 +27,51 @@ export type Purchase = {
   criado_em: string;
 };
 
+/** Um pedido no SNS à espera de resposta (consulta, exame ou cirurgia). */
+export type WaitType =
+  | 'csp_consulta'
+  | 'csp_consulta_servicos'
+  | 'renovacao_medicacao'
+  | 'documentos_csp'
+  | 'consulta_hospitalar'
+  | 'exame'
+  | 'cirurgia';
+export type Area = 'geral' | 'oncologica' | 'cardiaca';
+export type Priority = 'muito_prioritaria' | 'prioritaria' | 'normal' | 'nao_sei';
+
+export type WaitRequest = {
+  id: string;
+  tipo: WaitType;
+  /** O que está à espera, nas palavras da pessoa (por exemplo, "consulta de Ortopedia"). */
+  descricao: string;
+  instituicao?: string;
+  area?: Area;
+  prioridade?: Priority;
+  exame?: string;
+  /** Data do pedido (centro de saúde e primeira consulta no hospital). */
+  data_pedido?: string;
+  /** Data da indicação do médico (exames e cirurgias). */
+  data_indicacao?: string;
+  data_marcada?: string;
+  realizado_em?: string;
+  notas?: string;
+  criado_em: string;
+};
+
 export type StoredFile = { id: string; nome: string; tipo: string; blob: Blob };
 
 /** Dados para as cartas, guardados só se a pessoa quiser. */
-export type Profile = { id: 'perfil'; nome: string; morada: string; local: string };
+export type Profile = {
+  id: 'perfil';
+  nome: string;
+  morada: string;
+  local: string;
+  numero_utente?: string;
+};
 
 export const db = new Dexie('prazometro') as Dexie & {
   compras: EntityTable<Purchase, 'id'>;
+  pedidos_sns: EntityTable<WaitRequest, 'id'>;
   ficheiros: EntityTable<StoredFile, 'id'>;
   perfil: EntityTable<Profile, 'id'>;
 };
@@ -42,6 +80,10 @@ db.version(1).stores({
   compras: 'id, data_entrega, criado_em',
   ficheiros: 'id',
   perfil: 'id',
+});
+
+db.version(2).stores({
+  pedidos_sns: 'id, criado_em',
 });
 
 export function newId(): string {

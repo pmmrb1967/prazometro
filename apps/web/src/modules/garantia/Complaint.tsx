@@ -1,6 +1,6 @@
-import { formatDateShort, isValidDate, todayInLisbon } from '@prazometro/engine';
+import { formatDateShort, todayInLisbon } from '@prazometro/engine';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
+import { DateRecorder } from '../../components/DateRecorder';
 import { LegalNotice } from '../../components/LegalNotice';
 import { db } from '../../db';
 import { Link, usePageHeading } from '../../router';
@@ -10,45 +10,6 @@ import { warrantyStatus } from './warranty';
 const LIVRO_RECLAMACOES = 'https://www.livroreclamacoes.pt/Inicio/';
 const CNIACC = 'https://www.cniacc.pt/pt/';
 const DGC = 'https://www.consumidor.gov.pt/';
-
-function DateRecorder({
-  label,
-  value,
-  onSave,
-}: {
-  label: string;
-  value?: string;
-  onSave: (date: string) => void;
-}) {
-  const [date, setDate] = useState(value ?? todayInLisbon());
-  const [error, setError] = useState('');
-  return (
-    <form
-      className="inline-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!isValidDate(date) || date > todayInLisbon()) {
-          setError('Escolha uma data até hoje.');
-          return;
-        }
-        setError('');
-        onSave(date);
-      }}
-    >
-      <label className="field">
-        {label}
-        <input
-          type="date"
-          value={date}
-          max={todayInLisbon()}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </label>
-      <button type="submit">Guardar a data</button>
-      {error && <p role="alert">{error}</p>}
-    </form>
-  );
-}
 
 export function Complaint({ id }: { id: string }) {
   const p = useLiveQuery(() => db.compras.get(id), [id]);

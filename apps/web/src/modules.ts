@@ -16,7 +16,7 @@ export const MODULES: ModuleInfo[] = [
     id: 'sns',
     title: 'Espera no SNS',
     summary: 'Veja se a espera por uma consulta ou cirurgia já passou o tempo máximo garantido.',
-    available: false,
+    available: true,
   },
   {
     id: 'cartas',

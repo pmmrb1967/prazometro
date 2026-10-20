@@ -603,3 +603,16 @@ summary {
 .danger-zone > button {
   justify-self: start;
 }
+
+/* Módulo SNS */
+.status-ultrapassado {
+  --state: #a3261b;
+}
+h3 {
+  font-size: 1.15rem;
+  line-height: 1.25;
+  margin: 0;
+}
+:root[data-contrast='alto'] .status-ultrapassado {
+  --state: #ffffff;
+}

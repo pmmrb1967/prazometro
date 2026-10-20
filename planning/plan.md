@@ -204,14 +204,24 @@ Notas da Fase 2 (2026-10-20):
 
 ### Fase 3 — Módulo Espera no SNS (1 sem)
 
-- [ ] Recolher a tabela de TMRG em vigor (portaria) com fonte e data
-- [ ] Formulário: tipo, especialidade, prioridade e data do pedido
-- [ ] Indicador "dentro do prazo" ou "prazo ultrapassado há X dias"
-- [ ] Explicação dos direitos e dos passos seguintes
-- [ ] Modelos de carta: pedido de informação e reclamação
-- [ ] Testes com casos de cada nível de prioridade
+- [x] Recolher a tabela de TMRG em vigor (portaria) com fonte e data
+- [x] Formulário: tipo, especialidade, prioridade e data do pedido
+- [x] Indicador "dentro do prazo" ou "prazo ultrapassado há X dias"
+- [x] Explicação dos direitos e dos passos seguintes
+- [x] Modelos de carta: pedido de informação e reclamação
+- [x] Testes com casos de cada nível de prioridade
 
 **Concluída quando**: o cálculo coincide com 10 casos verificados manualmente na tabela oficial.
+
+Notas da Fase 3 (2026-10-20):
+
+- A tabela em vigor é a da Portaria n.º 153/2017 **na redação da Portaria n.º 137/2026/1** (em vigor desde 2 de abril de 2026). Mudou bastante: primeira consulta no hospital 30/60/120 dias; cirurgias só com prioridade "prioritária" (30 dias) e "normal" (180, oncológica 60, cardíaca 90). As regras ficam em `rules/sns/` (20 regras), verificadas no DR por mim (Claude), sem revisão de jurista.
+- A gestão das listas de espera passou para o SINACC (Decreto-Lei n.º 12/2026 e Portaria n.º 135/2026/1, que revogou o SIGIC). O "ponto crítico" que dispara o encaminhamento para outra entidade é fixado no sistema, não na lei, por isso a app não o calcula; só explica o direito. Já não existe o vale cirurgia com percentagem fixa.
+- Contagem: a partir do dia seguinte ao pedido ou à indicação, sem passar para o dia útil seguinte (a portaria não o diz). Os cuidados de saúde primários contam em dias úteis (feriados nacionais; os municipais não). As 72 horas são tratadas como 3 dias.
+- Oncologia e Cardiologia com prioridade "normal" na primeira consulta não têm tempo fixado na portaria: a app diz isso e propõe a carta de pedido de informação. Não se aplica por analogia o tempo geral de 120 dias.
+- A pendência clínica (até 3 meses, nas cirurgias) não é descontada; a app avisa.
+- Os testes do motor (`sns.test.ts`) têm 13 casos contados à mão no calendário, com feriados e fins de mês. Falta o autor confirmar 10 casos com a tabela oficial, como pede o critério de conclusão.
+- As cartas e a cópia de segurança passaram a ser comuns aos módulos (`components/LetterForm.tsx`, `components/BackupPanel.tsx`); a cópia inclui os pedidos do SNS.
 
 ### Fase 4 — Contas e cópia de segurança (1 sem)
 

@@ -6,12 +6,16 @@ import { Complaint } from './modules/garantia/Complaint';
 import { GarantiaList } from './modules/garantia/GarantiaList';
 import { PurchaseDetail } from './modules/garantia/PurchaseDetail';
 import { PurchaseForm } from './modules/garantia/PurchaseForm';
+import { RequestDetail } from './modules/sns/RequestDetail';
+import { RequestForm } from './modules/sns/RequestForm';
+import { SnsList } from './modules/sns/SnsList';
 import { MODULES } from './modules';
 import { usePreferences } from './preferences';
 import { Link, matchPath, usePageHeading, usePath } from './router';
 
 // A página das cartas traz o gerador de PDF; só é descarregada quando é aberta.
 const LetterPage = lazy(() => import('./modules/garantia/LetterPage'));
+const SnsLetterPage = lazy(() => import('./modules/sns/SnsLetterPage'));
 
 function Home() {
   const heading = usePageHeading<HTMLHeadingElement>('Início');
@@ -78,6 +82,12 @@ function Routes({ path }: { path: string }) {
   if ((m = matchPath('/garantia/:id/carta/:template', path)))
     return <LetterPage id={m.id!} template={m.template!} />;
   if ((m = matchPath('/garantia/:id', path))) return <PurchaseDetail id={m.id!} />;
+  if (path === '/sns') return <SnsList />;
+  if (path === '/sns/novo') return <RequestForm />;
+  if ((m = matchPath('/sns/:id/editar', path))) return <RequestForm id={m.id} />;
+  if ((m = matchPath('/sns/:id/carta/:template', path)))
+    return <SnsLetterPage id={m.id!} template={m.template!} />;
+  if ((m = matchPath('/sns/:id', path))) return <RequestDetail id={m.id!} />;
   return <NotFound />;
 }
 

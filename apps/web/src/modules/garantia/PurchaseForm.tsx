@@ -1,6 +1,7 @@
 import { isValidDate, todayInLisbon } from '@prazometro/engine';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useState, type FormEvent } from 'react';
+import { Choice } from '../../components/Choice';
 import { LegalNotice } from '../../components/LegalNotice';
 import { db, newId, type Purchase } from '../../db';
 import { Link, navigate, usePageHeading } from '../../router';
@@ -37,43 +38,6 @@ function validate(d: Draft): string[] {
   if (d.preco && !/^\d+([.,]\d{1,2})?$/.test(d.preco.trim()))
     errors.push('Escreva o preço só com números, por exemplo 349,90.');
   return errors;
-}
-
-type ChoiceProps<T extends string> = {
-  legend: string;
-  hint?: ReactNode;
-  name: string;
-  value: T;
-  options: [T, string][];
-  onChange: (v: T) => void;
-};
-
-function Choice<T extends string>({
-  legend,
-  hint,
-  name,
-  value,
-  options,
-  onChange,
-}: ChoiceProps<T>) {
-  return (
-    <fieldset className="choice">
-      <legend>{legend}</legend>
-      {hint && <p className="hint">{hint}</p>}
-      {options.map(([v, label]) => (
-        <label key={v}>
-          <input
-            type="radio"
-            name={name}
-            value={v}
-            checked={value === v}
-            onChange={() => onChange(v)}
-          />
-          {label}
-        </label>
-      ))}
-    </fieldset>
-  );
 }
 
 export function PurchaseForm({ id }: { id?: string }) {
