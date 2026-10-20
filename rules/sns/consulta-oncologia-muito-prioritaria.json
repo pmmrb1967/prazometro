@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "sns.consulta-oncologia-muito-prioritaria",
+  "modulo": "sns",
+  "titulo": "Primeira consulta por doença oncológica, prioridade muito prioritária",
+  "descricao": "Com doença oncológica suspeita ou confirmada, a primeira consulta de especialidade no hospital, com prioridade muito prioritária, deve realizar-se em 7 dias seguidos a contar da receção do pedido.",
+  "inicio": "data_pedido",
+  "condicoes": {
+    "tipo": "consulta_hospitalar",
+    "area": "oncologica",
+    "prioridade": "muito_prioritaria"
+  },
+  "prazo": {
+    "quantidade": 7,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [0]
+  },
+  "fontes": [
+    {
+      "titulo": "Portaria n.º 153/2017, de 4 de maio (versão consolidada, com a Portaria n.º 137/2026/1)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/portaria/2017-953449980",
+      "artigo": "Anexo I, ponto 2.2.1.1"
+    },
+    {
+      "titulo": "Portaria n.º 137/2026/1, de 1 de abril",
+      "url": "https://diariodarepublica.pt/dr/detalhe/portaria/137-2026-1080481237",
+      "artigo": "Anexo (nova redação do anexo I da Portaria n.º 153/2017)"
+    }
+  ],
+  "modelos_carta": ["sns.pedido-informacao", "sns.reclamacao"],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "Conta-se a partir do dia seguinte ao do pedido ou da indicação. A portaria não diz que o fim passa para o dia útil seguinte, por isso a app mostra a data mais cedo. A Portaria n.º 137/2026/1 aplica-se desde 2 de abril de 2026; os pedidos anteriores com nível de prioridade alterado deviam ser ajustados em 60 dias (art. 4.º)."
+}

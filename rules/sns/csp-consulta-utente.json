@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "sns.csp-consulta-utente",
+  "modulo": "sns",
+  "titulo": "Consulta no centro de saúde pedida por si",
+  "descricao": "Quando pede uma consulta no centro de saúde por um motivo que não é doença aguda, a consulta deve realizar-se em 15 dias úteis a contar do pedido.",
+  "inicio": "data_pedido",
+  "condicoes": {
+    "tipo": "csp_consulta"
+  },
+  "prazo": {
+    "quantidade": 15,
+    "unidade": "dias",
+    "contagem": "uteis",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [0]
+  },
+  "fontes": [
+    {
+      "titulo": "Portaria n.º 153/2017, de 4 de maio (versão consolidada, com a Portaria n.º 137/2026/1)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/portaria/2017-953449980",
+      "artigo": "Anexo I, ponto 1.1.2"
+    },
+    {
+      "titulo": "Portaria n.º 137/2026/1, de 1 de abril",
+      "url": "https://diariodarepublica.pt/dr/detalhe/portaria/137-2026-1080481237",
+      "artigo": "Anexo (nova redação do anexo I da Portaria n.º 153/2017)"
+    }
+  ],
+  "modelos_carta": ["sns.pedido-informacao", "sns.reclamacao"],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "Os dias úteis não contam sábados, domingos e feriados nacionais; os feriados municipais não estão incluídos. Conta-se a partir do dia seguinte ao do pedido ou da indicação. A portaria não diz que o fim passa para o dia útil seguinte, por isso a app mostra a data mais cedo. A Portaria n.º 137/2026/1 aplica-se desde 2 de abril de 2026; os pedidos anteriores com nível de prioridade alterado deviam ser ajustados em 60 dias (art. 4.º)."
+}
