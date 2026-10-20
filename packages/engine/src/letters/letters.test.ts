@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { PDFDocument } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import { formatDateLong, formatDateShort } from './format';
@@ -102,5 +104,38 @@ describe('renderLetterPdf', () => {
     await expect(renderLetterPdf('Nome: Łukasz Ștefan')).rejects.toBeInstanceOf(
       UnsupportedCharactersError,
     );
+  });
+
+  describe('com uma cadeia de letras (subconjuntos latin + latin-ext)', () => {
+    const file = (subset: string) =>
+      new Uint8Array(
+        readFileSync(
+          fileURLToPath(
+            import.meta.resolve(
+              `@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-${subset}-400-normal.woff`,
+            ),
+          ),
+        ),
+      );
+    const fonts = { regular: [file('latin'), file('latin-ext')] };
+
+    it('junta os dois subconjuntos na mesma linha', async () => {
+      const bytes = await renderLetterPdf('Eu, Łukasz Ștefan, venho reclamar da ação: €120.', {
+        fonts,
+      });
+      expect((await PDFDocument.load(bytes)).getPageCount()).toBe(1);
+    });
+
+    it('recusa caracteres que nenhuma letra da cadeia tem (cirílico)', async () => {
+      const erro = await renderLetterPdf('Олена', { fonts }).catch((e: unknown) => e);
+      expect(erro).toBeInstanceOf(UnsupportedCharactersError);
+      expect((erro as UnsupportedCharactersError).chars).toEqual(['О', 'л', 'е', 'н', 'а']);
+    });
+
+    it('sem a cadeia completa, o ç falta no subconjunto latin-ext', async () => {
+      await expect(
+        renderLetterPdf('Ação', { fonts: { regular: [file('latin-ext')] } }),
+      ).rejects.toBeInstanceOf(UnsupportedCharactersError);
+    });
   });
 });

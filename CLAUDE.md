@@ -65,6 +65,7 @@ Cada ficheiro em `rules/<modulo>/` é validado pelo esquema zod em `packages/eng
 
 - `id` (`modulo.nome-da-regra`), `modulo`, `titulo`, `descricao` (linguagem simples)
 - `condicoes`: objeto em que cada chave é um campo dos factos e todas têm de se verificar. Valor simples = igualdade; ou operador `{ "em": [...] }`, `{ "nao_em": [...] }`, `{ "diferente": x }`, `{ "min": n }`, `{ "max": n }`, `{ "existe": true|false }`. A chave `qualquer` recebe uma lista de condições das quais basta uma
+- `inicio`: nome do facto que dá a data de início do prazo (por exemplo `data_entrega` ou `data_comunicacao`). Se o facto faltar ou não for uma data válida, a regra não se aplica e `inicio` aparece nas falhas
 - `prazo`: `{ "quantidade": n, "unidade": "dias|meses|anos", "contagem": "corridos|uteis", "transita_dia_util": true|false }`, com `transicao` e `alertas_dias_antes` opcionais (ver abaixo)
 - `fontes`: lista de `{ "titulo", "url" (https), "artigo" }`, com pelo menos uma
 - `verificado_em` (AAAA-MM-DD, nunca no futuro) e `verificado_por`

@@ -104,8 +104,7 @@ describe('evaluateRule', () => {
   it('calcula prazo, marcos e alertas por ordem de data', () => {
     const r = evaluateRule(
       exampleRule,
-      { estado: 'novo', vendedor: 'profissional' },
-      '2026-10-20',
+      { estado: 'novo', vendedor: 'profissional', data_entrega: '2026-10-20' },
       '2026-10-20',
     );
     expect(r.aplica).toBe(true);
@@ -124,7 +123,11 @@ describe('evaluateRule', () => {
   });
 
   it('não calcula nada quando as condições não se cumprem', () => {
-    const r = evaluateRule(exampleRule, { estado: 'usado' }, '2026-10-20', '2026-10-20');
+    const r = evaluateRule(
+      exampleRule,
+      { estado: 'usado', data_entrega: '2026-10-20' },
+      '2026-10-20',
+    );
     expect(r).toMatchObject({
       aplica: false,
       falhas: ['estado', 'vendedor'],
@@ -134,8 +137,19 @@ describe('evaluateRule', () => {
     expect(r.prazo).toBeUndefined();
   });
 
+  it('não se aplica sem a data de início, ou com uma data inválida', () => {
+    const facts = { estado: 'novo', vendedor: 'profissional' };
+    expect(evaluateRule(exampleRule, facts, '2026-10-20')).toMatchObject({
+      aplica: false,
+      falhas: ['data_entrega'],
+    });
+    expect(
+      evaluateRule(exampleRule, { ...facts, data_entrega: '2026-02-30' }, '2026-10-20').aplica,
+    ).toBe(false);
+  });
+
   it('indica o estado de verificação da regra', () => {
-    const r = evaluateRule(exampleRule, {}, '2026-10-20', '2027-06-01');
+    const r = evaluateRule(exampleRule, {}, '2027-06-01');
     expect(r.verificacao).toBe('a_verificar');
   });
 });

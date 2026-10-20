@@ -1,61 +1,110 @@
 import fontkit from '@pdf-lib/fontkit';
-import { PDFDocument, StandardFonts, rgb, type PDFFont } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
 
 // Gera o PDF de uma carta no dispositivo (nunca no Worker: gasta CPU).
 // Markdown simples, linha a linha, porque nas cartas as quebras de linha contam (moradas):
 //   "# Título" e "## Subtítulo" a negrito; linha vazia = espaço entre parágrafos;
 //   as restantes linhas são texto, com quebra automática quando não cabem na largura.
-// Sem `font`, usa Helvetica, que só tem caracteres da Europa Ocidental (WinAnsi). Para nomes
-// com outras letras (Ł, Ș, cirílico...) a app deve passar uma fonte TTF/OTF.
+// Sem `fonts`, usa Helvetica, que só tem caracteres da Europa Ocidental (WinAnsi).
+// Com `fonts`, recebe uma cadeia de ficheiros de letra (TTF, OTF, WOFF ou WOFF2): cada carácter
+// usa o primeiro ficheiro que o tiver. Assim podem juntar-se os subconjuntos "latin" e
+// "latin-ext" de uma letra. Um carácter que nenhum tenha dá erro, em vez de sair um quadrado.
+
+export type FontChain = { regular: Uint8Array[]; bold?: Uint8Array[] };
 
 export type LetterPdfOptions = {
   titulo?: string;
-  font?: Uint8Array;
-  boldFont?: Uint8Array;
+  fonts?: FontChain;
 };
 
 const A4 = { width: 595.28, height: 841.89 };
 const MARGIN = 72;
 const SIZE = { body: 11, h1: 15, h2: 12.5 };
 const LEADING = 1.45;
+const COLOR = rgb(0.08, 0.1, 0.14);
 
 export class UnsupportedCharactersError extends Error {
   constructor(public readonly chars: string[]) {
-    super(
-      `A letra por defeito não tem estes caracteres: ${chars.join(' ')}. Passe uma fonte com suporte (opção "font").`,
-    );
+    super(`A letra da carta não tem estes caracteres: ${chars.join(' ')}`);
   }
 }
 
-function unsupportedChars(font: PDFFont, text: string): string[] {
-  const bad = new Set<string>();
+type ChainFont = { pdf: PDFFont; has: (ch: string) => boolean };
+type Run = { text: string; font: PDFFont };
+
+async function embedChain(doc: PDFDocument, files: Uint8Array[]): Promise<ChainFont[]> {
+  return Promise.all(
+    files.map(async (bytes) => {
+      const parsed = fontkit.create(bytes);
+      const pdf = await doc.embedFont(bytes, { subset: true });
+      return { pdf, has: (ch: string) => parsed.glyphForCodePoint(ch.codePointAt(0)!).id !== 0 };
+    }),
+  );
+}
+
+async function embedStandard(doc: PDFDocument, name: StandardFonts): Promise<ChainFont[]> {
+  const pdf = await doc.embedFont(name);
+  return [
+    {
+      pdf,
+      has: (ch: string) => {
+        try {
+          pdf.encodeText(ch);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+    },
+  ];
+}
+
+/** Divide o texto em troços, cada um com a primeira letra da cadeia que tem os caracteres. */
+function toRuns(text: string, chain: ChainFont[], missing: Set<string>): Run[] {
+  const runs: Run[] = [];
   for (const ch of text) {
-    if (ch === '\n' || ch === '\r') continue;
-    try {
-      font.encodeText(ch);
-    } catch {
-      bad.add(ch);
+    const font = /\s/.test(ch)
+      ? (runs.at(-1)?.font ?? chain[0]!.pdf)
+      : chain.find((f) => f.has(ch))?.pdf;
+    if (!font) {
+      missing.add(ch);
+      continue;
     }
+    const last = runs.at(-1);
+    if (last && last.font === font) last.text += ch;
+    else runs.push({ text: ch, font });
   }
-  return [...bad];
+  return runs;
 }
 
-function wrap(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
+function width(runs: Run[], size: number): number {
+  return runs.reduce((sum, r) => sum + r.font.widthOfTextAtSize(r.text, size), 0);
+}
+
+function wrap(text: string, chain: ChainFont[], size: number, maxWidth: number): Run[][] {
   const words = text.split(/\s+/).filter(Boolean);
-  if (words.length === 0) return [''];
-  const lines: string[] = [];
+  const lines: Run[][] = [];
   let line = '';
+  const ignore = new Set<string>();
   for (const word of words) {
     const candidate = line ? `${line} ${word}` : word;
-    if (font.widthOfTextAtSize(candidate, size) <= maxWidth || !line) {
+    if (!line || width(toRuns(candidate, chain, ignore), size) <= maxWidth) {
       line = candidate;
     } else {
-      lines.push(line);
+      lines.push(toRuns(line, chain, ignore));
       line = word;
     }
   }
-  lines.push(line);
+  if (line) lines.push(toRuns(line, chain, ignore));
   return lines;
+}
+
+function drawRuns(page: PDFPage, runs: Run[], x: number, y: number, size: number) {
+  let cursor = x;
+  for (const r of runs) {
+    page.drawText(r.text, { x: cursor, y, size, font: r.font, color: COLOR });
+    cursor += r.font.widthOfTextAtSize(r.text, size);
+  }
 }
 
 export async function renderLetterPdf(
@@ -64,19 +113,23 @@ export async function renderLetterPdf(
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
-  const regular = options.font
-    ? await doc.embedFont(options.font, { subset: true })
-    : await doc.embedFont(StandardFonts.Helvetica);
-  const bold = options.boldFont
-    ? await doc.embedFont(options.boldFont, { subset: true })
-    : options.font
-      ? regular
-      : await doc.embedFont(StandardFonts.HelveticaBold);
+  const { fonts } = options;
+  const regular = fonts
+    ? await embedChain(doc, fonts.regular)
+    : await embedStandard(doc, StandardFonts.Helvetica);
+  const bold = fonts
+    ? fonts.bold
+      ? await embedChain(doc, fonts.bold)
+      : regular
+    : await embedStandard(doc, StandardFonts.HelveticaBold);
 
-  const bad = [
-    ...new Set([...unsupportedChars(regular, markdown), ...unsupportedChars(bold, markdown)]),
-  ];
-  if (bad.length) throw new UnsupportedCharactersError(bad);
+  const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+  const missing = new Set<string>();
+  for (const raw of lines) {
+    const heading = /^(#{1,2})\s+(.*)$/.exec(raw);
+    toRuns(heading ? heading[2]! : raw, heading ? bold : regular, missing);
+  }
+  if (missing.size) throw new UnsupportedCharactersError([...missing]);
 
   if (options.titulo) doc.setTitle(options.titulo);
   doc.setLanguage('pt-PT');
@@ -87,17 +140,9 @@ export async function renderLetterPdf(
   let page = doc.addPage([A4.width, A4.height]);
   let y = A4.height - MARGIN;
 
-  const ensureSpace = (height: number) => {
-    if (y - height < MARGIN) {
-      page = doc.addPage([A4.width, A4.height]);
-      y = A4.height - MARGIN;
-    }
-  };
-
-  for (const raw of markdown.replace(/\r\n/g, '\n').split('\n')) {
+  for (const raw of lines) {
     const heading = /^(#{1,2})\s+(.*)$/.exec(raw);
     const size = heading ? (heading[1] === '#' ? SIZE.h1 : SIZE.h2) : SIZE.body;
-    const font = heading ? bold : regular;
     const text = heading ? heading[2]! : raw;
     const lineHeight = size * LEADING;
 
@@ -106,10 +151,13 @@ export async function renderLetterPdf(
       continue;
     }
     if (heading) y -= size * 0.4;
-    for (const line of wrap(text, font, size, maxWidth)) {
-      ensureSpace(lineHeight);
+    for (const runs of wrap(text, heading ? bold : regular, size, maxWidth)) {
+      if (y - lineHeight < MARGIN) {
+        page = doc.addPage([A4.width, A4.height]);
+        y = A4.height - MARGIN;
+      }
       y -= lineHeight;
-      page.drawText(line, { x: MARGIN, y, size, font, color: rgb(0.08, 0.1, 0.14) });
+      drawRuns(page, runs, MARGIN, y, size);
     }
   }
 

@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "garantia.prazo-reparacao",
+  "modulo": "garantia",
+  "titulo": "Prazo da loja para reparar ou trocar",
+  "descricao": "Depois de informar a loja do defeito, a reparação ou a troca deve ficar feita em 30 dias, sem custos para si. Só pode demorar mais se o bem ou a reparação forem complexos.",
+  "inicio": "data_comunicacao",
+  "condicoes": {
+    "tipo_vendedor": "profissional",
+    "uso": "pessoal",
+    "data_compra": { "min": "2022-01-01" }
+  },
+  "prazo": {
+    "quantidade": 30,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [0]
+  },
+  "fontes": [
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "18.º, n.º 2 e n.º 3 (gratuito, prazo razoável, máximo de 30 dias)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "15.º, n.º 4 (redução do preço ou resolução se não houver reparação ou substituição)"
+    }
+  ],
+  "modelos_carta": ["garantia.reducao-resolucao"],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "O n.º 3 admite mais de 30 dias em casos complexos; a app indica os 30 dias como referência e explica a exceção."
+}

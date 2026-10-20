@@ -82,6 +82,8 @@ export const RuleSchema = z
     modulo: z.enum(MODULES),
     titulo: z.string().min(1),
     descricao: z.string().min(1),
+    // Facto com a data a partir da qual o prazo corre (por exemplo, "data_entrega").
+    inicio: z.string().regex(/^[a-z0-9_]+$/),
     condicoes: ConditionsSchema,
     prazo: DeadlineSchema,
     marcos: z.array(MilestoneSchema).optional(),

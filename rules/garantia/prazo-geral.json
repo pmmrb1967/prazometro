@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "garantia.prazo-geral",
+  "modulo": "garantia",
+  "titulo": "Garantia legal de 3 anos",
+  "descricao": "Se comprou a uma loja ou empresa, para uso pessoal, a loja responde por qualquer defeito que apareça nos 3 anos a seguir à entrega. Vale para bens novos, recondicionados e usados, salvo se num bem usado tiver ficado combinado um prazo mais curto.",
+  "inicio": "data_entrega",
+  "condicoes": {
+    "tipo_vendedor": "profissional",
+    "uso": "pessoal",
+    "data_compra": { "min": "2022-01-01" },
+    "qualquer": [
+      { "estado": { "em": ["novo", "recondicionado"] } },
+      { "estado": "usado", "acordo_18_meses": "nao" }
+    ]
+  },
+  "prazo": {
+    "quantidade": 3,
+    "unidade": "anos",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [60, 30]
+  },
+  "marcos": [
+    {
+      "id": "rejeicao",
+      "quantidade": 30,
+      "unidade": "dias",
+      "texto": "Até esta data, se o defeito aparecer, pode pedir logo a troca do bem ou a devolução do dinheiro, sem ter de aceitar uma reparação."
+    },
+    {
+      "id": "fim-presuncao",
+      "quantidade": 2,
+      "unidade": "anos",
+      "alerta_dias_antes": 30,
+      "texto": "A partir desta data, se aparecer um defeito, pode ter de provar que ele já existia quando recebeu o bem."
+    }
+  ],
+  "fontes": [
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "12.º, n.º 1 e n.º 3 (prazo de 3 anos; bens recondicionados)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "13.º, n.º 1 e n.º 4 (presunção nos primeiros 2 anos)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "16.º (direito de rejeição nos primeiros 30 dias)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "2.º, alíneas g) e o), e 53.º (consumidor, profissional e contratos a partir de 1 de janeiro de 2022)"
+    }
+  ],
+  "modelos_carta": [
+    "garantia.reparacao-substituicao",
+    "garantia.rejeicao",
+    "garantia.reducao-resolucao"
+  ],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "O prazo conta a partir da entrega do bem, não da compra (art. 12.º, n.º 1). O prazo suspende-se entre a comunicação do defeito e a reparação (art. 12.º, n.º 4) e cada reparação acrescenta 6 meses, até 4 reparações (art. 18.º, n.º 4): a app ainda não soma estes acréscimos, por isso a data mostrada é a mais cedo possível. Bens com elementos digitais de fornecimento contínuo por mais de 3 anos (art. 12.º, n.º 2, b)) não estão cobertos por esta regra. O Diário da República não indicava alterações ao diploma em 2026-10-20."
+}

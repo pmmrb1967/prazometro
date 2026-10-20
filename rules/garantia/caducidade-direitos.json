@@ -1,0 +1,32 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "garantia.caducidade-direitos",
+  "modulo": "garantia",
+  "titulo": "Prazo para fazer valer os seus direitos",
+  "descricao": "Depois de comunicar o defeito à loja, tem 2 anos para fazer valer os seus direitos, por exemplo num centro de arbitragem ou em tribunal. Este prazo para enquanto o bem está a ser reparado e durante uma tentativa de acordo num centro de arbitragem.",
+  "inicio": "data_comunicacao",
+  "condicoes": {
+    "tipo_vendedor": "profissional",
+    "uso": "pessoal",
+    "data_compra": { "min": "2022-01-01" }
+  },
+  "prazo": {
+    "quantidade": 2,
+    "unidade": "anos",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [90, 30]
+  },
+  "fontes": [
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "17.º (caducidade 2 anos após a comunicação; suspensões)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "A app não soma as suspensões do n.º 2, por isso mostra a data mais cedo possível."
+}

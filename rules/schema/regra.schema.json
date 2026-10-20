@@ -29,6 +29,10 @@
       "type": "string",
       "minLength": 1
     },
+    "inicio": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
     "condicoes": {
       "$ref": "#/$defs/__schema0"
     },
@@ -181,6 +185,7 @@
     "modulo",
     "titulo",
     "descricao",
+    "inicio",
     "condicoes",
     "prazo",
     "fontes",

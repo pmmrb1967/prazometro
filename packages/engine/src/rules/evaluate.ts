@@ -1,4 +1,4 @@
-import { addDays, addMonths, addYears, type IsoDate } from '../date';
+import { addDays, addMonths, addYears, isValidDate, type IsoDate } from '../date';
 import { evaluateConditions, type Facts } from '../conditions';
 import { computeDeadline } from '../deadlines';
 import type { Rule } from './schema';
@@ -25,25 +25,29 @@ export type RuleResult = {
 };
 
 /**
- * Aplica uma regra aos factos do utilizador. `start` é o dia do evento que faz correr o prazo
- * (por exemplo, a entrega do bem); `today` serve só para o estado de verificação da regra.
+ * Aplica uma regra aos factos do utilizador. O prazo corre a partir da data guardada no facto
+ * indicado em `rule.inicio` (por exemplo, `data_entrega`); se faltar ou for inválida, a regra
+ * não se aplica. `today` serve só para o estado de verificação da regra.
  * Os marcos são datas de referência (fim de uma presunção, por exemplo) e não transitam para
  * dia útil.
  */
-export function evaluateRule(rule: Rule, facts: Facts, start: IsoDate, today: IsoDate): RuleResult {
-  const { ok, falhas } = evaluateConditions(rule.condicoes, facts);
+export function evaluateRule(rule: Rule, facts: Facts, today: IsoDate): RuleResult {
+  const { falhas } = evaluateConditions(rule.condicoes, facts);
+  const start = facts[rule.inicio];
+  if (typeof start !== 'string' || !isValidDate(start)) falhas.push(rule.inicio);
   const base = { regra: rule.id, falhas, verificacao: verificationStatus(rule, today) };
-  if (!ok) return { ...base, aplica: false, marcos: [], alertas: [] };
+  if (falhas.length > 0) return { ...base, aplica: false, marcos: [], alertas: [] };
 
-  const prazo = computeDeadline(start, rule.prazo);
+  const from = start as IsoDate;
+  const prazo = computeDeadline(from, rule.prazo);
   const marcos: Milestone[] = (rule.marcos ?? []).map((m) => ({
     id: m.id,
     data:
       m.unidade === 'dias'
-        ? addDays(start, m.quantidade)
+        ? addDays(from, m.quantidade)
         : m.unidade === 'meses'
-          ? addMonths(start, m.quantidade)
-          : addYears(start, m.quantidade),
+          ? addMonths(from, m.quantidade)
+          : addYears(from, m.quantidade),
     texto: m.texto,
   }));
 

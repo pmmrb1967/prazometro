@@ -1,0 +1,32 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "garantia.substituicao",
+  "modulo": "garantia",
+  "titulo": "Garantia do bem que veio em troca",
+  "descricao": "Se a loja trocou o bem por outro, responde também pelos defeitos do bem que recebeu em troca, com a mesma garantia legal.",
+  "inicio": "data_entrega_substituto",
+  "condicoes": {
+    "tipo_vendedor": "profissional",
+    "uso": "pessoal",
+    "data_compra": { "min": "2022-01-01" }
+  },
+  "prazo": {
+    "quantidade": 3,
+    "unidade": "anos",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [60, 30]
+  },
+  "fontes": [
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "18.º, n.º 6 (responsabilidade pelo bem sucedâneo nos termos do art. 12.º)"
+    }
+  ],
+  "modelos_carta": ["garantia.reparacao-substituicao"],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Interpretação a confirmar por jurista: o art. 18.º, n.º 6 remete para o art. 12.º sem dizer expressamente que o prazo de 3 anos recomeça com a entrega do bem substituto. Também falta decidir o prazo quando o bem original era usado com garantia de 18 meses."
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "garantia.usados-prazo-reduzido",
+  "modulo": "garantia",
+  "titulo": "Garantia de bens usados com prazo reduzido (18 meses)",
+  "descricao": "Num bem usado, a loja e o comprador podem combinar uma garantia de 18 meses em vez de 3 anos. Não vale para bens vendidos como recondicionados, que têm sempre 3 anos.",
+  "inicio": "data_entrega",
+  "condicoes": {
+    "tipo_vendedor": "profissional",
+    "uso": "pessoal",
+    "data_compra": { "min": "2022-01-01" },
+    "estado": "usado",
+    "acordo_18_meses": { "em": ["sim", "nao_sei"] }
+  },
+  "prazo": {
+    "quantidade": 18,
+    "unidade": "meses",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [60, 30]
+  },
+  "marcos": [
+    {
+      "id": "rejeicao",
+      "quantidade": 30,
+      "unidade": "dias",
+      "texto": "Até esta data, se o defeito aparecer, pode pedir logo a troca do bem ou a devolução do dinheiro, sem ter de aceitar uma reparação."
+    },
+    {
+      "id": "fim-presuncao",
+      "quantidade": 1,
+      "unidade": "anos",
+      "alerta_dias_antes": 30,
+      "texto": "A partir desta data, se aparecer um defeito, pode ter de provar que ele já existia quando recebeu o bem."
+    }
+  ],
+  "fontes": [
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "12.º, n.º 3 (redução a 18 meses por acordo)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "13.º, n.º 3 (presunção de 1 ano com prazo reduzido)"
+    },
+    {
+      "titulo": "Decreto-Lei n.º 84/2021, de 18 de outubro",
+      "url": "https://diariodarepublica.pt/dr/detalhe/decreto-lei/84-2021-172938301",
+      "artigo": "16.º (direito de rejeição nos primeiros 30 dias)"
+    }
+  ],
+  "modelos_carta": [
+    "garantia.reparacao-substituicao",
+    "garantia.rejeicao",
+    "garantia.reducao-resolucao"
+  ],
+  "verificado_em": "2026-10-20",
+  "verificado_por": "Claude (assistente de IA), a partir do texto no Diário da República; falta revisão por jurista",
+  "estado": "publicada",
+  "notas": "Quando a pessoa responde 'não sei' sobre o acordo, a app usa por precaução o prazo mais curto e explica que, sem acordo, a garantia é de 3 anos. A qualidade de recondicionado tem de constar da fatura (art. 12.º, n.º 3)."
+}

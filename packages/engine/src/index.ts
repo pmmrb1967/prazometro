@@ -12,4 +12,4 @@ export * from './rules/evaluate';
 export * from './rules/validation';
 export * from './letters/template';
 export * from './letters/format';
-export * from './letters/pdf';
+// O gerador de PDF tem o seu próprio ponto de entrada (@prazometro/engine/pdf) para a app o carregar só quando é preciso.

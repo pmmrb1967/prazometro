@@ -7,6 +7,7 @@ export const exampleRule: Rule = {
   modulo: 'garantia',
   titulo: 'Regra de exemplo para testes',
   descricao: 'Regra fictícia usada apenas nos testes do motor.',
+  inicio: 'data_entrega',
   condicoes: { estado: 'novo', vendedor: 'profissional' },
   prazo: {
     quantidade: 3,
