@@ -5,6 +5,13 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-10-01",
   "observability": { "enabled": true },
+  // A PWA é servida como ficheiros estáticos (não conta para o limite de pedidos do Worker).
+  // Só /api/* corre o código do Worker.
+  "assets": {
+    "directory": "../../apps/web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
   "d1_databases": [
     {
       "binding": "DB",

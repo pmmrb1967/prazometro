@@ -18,7 +18,7 @@ Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial,
 
 1. **O motor de regras calcula, a IA só lê.** Prazos, elegibilidade e custos saem sempre do motor determinístico (`packages/engine`). A IA só extrai campos e resume texto. Nunca usar um LLM para calcular um prazo ou decidir um direito.
 2. **Local-first.** Os dados do utilizador vivem no dispositivo (IndexedDB). O servidor guarda apenas contas, cópias de segurança **cifradas no cliente**, partilhas e estatísticas agregadas. O servidor nunca vê faturas, cartas ou dados de saúde em claro.
-3. **Custo zero.** Só Cloudflare no plano gratuito: Pages, Workers, D1, Cron Triggers e envio de email para endereços verificados. **Sem R2** (exige cartão). Sem serviços pagos.
+3. **Custo zero.** Só Cloudflare no plano gratuito: Workers (com static assets), D1, Cron Triggers e envio de email para endereços verificados. **Sem R2** (exige cartão). Sem serviços pagos.
 4. **Cada regra tem fonte e data.** Todas as regras e modelos de carta indicam a fonte legal (com ligação) e a data da última verificação. Regras com mais de 6 meses sem verificação aparecem marcadas como "a verificar".
 5. **Informação, não aconselhamento jurídico.** A consulta jurídica é ato próprio de advogados e solicitadores (Lei 49/2004). Os textos dão informação geral e modelos, e nunca opinião sobre um caso concreto. O aviso legal tem de estar visível em todos os módulos.
 6. **Acessível a 65+.** Letra grande, alto contraste, poucos passos, linguagem simples, sem conta obrigatória.
@@ -26,19 +26,19 @@ Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial,
 
 ## Stack
 
-| Camada        | Tecnologia                                                                    |
-| ------------- | ----------------------------------------------------------------------------- |
-| Frontend      | React + TypeScript + Vite, PWA (vite-plugin-pwa), alojado no Cloudflare Pages |
-| Dados locais  | IndexedDB via Dexie                                                           |
-| Validação     | zod (regras, respostas da IA, payloads da API)                                |
-| PDF           | pdf-lib, gerado no dispositivo                                                |
-| OCR           | Tesseract.js (`por`), no dispositivo                                          |
-| Lembretes     | Exportação `.ics`                                                             |
-| API           | Cloudflare Worker em TypeScript com Hono                                      |
-| Base de dados | Cloudflare D1 (SQLite)                                                        |
-| Monitorização | Worker com Cron Trigger, GraphQL Analytics API, `send_email` binding          |
-| Autenticação  | Passkeys (WebAuthn) com código de recuperação                                 |
-| Testes        | Vitest (motor e Worker), Playwright (fluxos principais)                       |
+| Camada        | Tecnologia                                                                                                                |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Frontend      | React + TypeScript + Vite, PWA (vite-plugin-pwa), servida pelo Worker `app` (static assets) em app.prazometro.workers.dev |
+| Dados locais  | IndexedDB via Dexie                                                                                                       |
+| Validação     | zod (regras, respostas da IA, payloads da API)                                                                            |
+| PDF           | pdf-lib, gerado no dispositivo                                                                                            |
+| OCR           | Tesseract.js (`por`), no dispositivo                                                                                      |
+| Lembretes     | Exportação `.ics`                                                                                                         |
+| API           | Cloudflare Worker em TypeScript com Hono                                                                                  |
+| Base de dados | Cloudflare D1 (SQLite)                                                                                                    |
+| Monitorização | Worker com Cron Trigger, GraphQL Analytics API, `send_email` binding                                                      |
+| Autenticação  | Passkeys (WebAuthn) com código de recuperação                                                                             |
+| Testes        | Vitest (motor e Worker), Playwright (fluxos principais)                                                                   |
 
 ## Estrutura
 
@@ -48,7 +48,7 @@ prazometro/
 ├── planning/plan.md          # plano, fases e tarefas
 ├── apps/web/                 # PWA React
 │   └── src/modules/          # garantia, sns, cartas, pos-obito, admin
-├── workers/api/              # Hono: auth, backup, ai-proxy, admin, partilha
+├── workers/api/              # Worker `app`: serve a PWA e a API Hono em /api (auth, backup, ai-proxy, admin, partilha)
 ├── workers/monitor/          # Cron: lê métricas, grava uso diário, envia alertas
 ├── packages/engine/          # motor de regras, prazos, feriados (sem dependências de UI)
 ├── packages/ai/              # camada de fornecedores de IA (none, gemini, claude)
@@ -85,10 +85,10 @@ npm run typecheck                # TypeScript em todos os pacotes
 npm run build                    # build da PWA (gera também os ícones a partir de apps/web/public/logo.svg)
 npx wrangler dev -c workers/api/wrangler.jsonc
 npx wrangler d1 migrations apply prazometro --local
-npx wrangler deploy -c workers/api/wrangler.jsonc
+npm run deploy                   # build da PWA + publicação do Worker app (PWA em /, API em /api)
 ```
 
-O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. API publicada: https://app.prazometro.workers.dev/health (Worker `app`, subdomínio da conta `prazometro`)
+O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub.
 
 (Atualizar esta secção quando forem criados novos scripts.)
 

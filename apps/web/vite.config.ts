@@ -18,7 +18,13 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
       },
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'] },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // A API está no mesmo domínio: o service worker nunca a deve servir da cache.
+        navigateFallbackDenylist: [/^\/api\//],
+      },
     }),
   ],
+  // Em desenvolvimento, /api vai para o `wrangler dev` (porta 8787).
+  server: { proxy: { '/api': 'http://localhost:8787' } },
 });

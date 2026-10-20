@@ -45,7 +45,7 @@ Só existem modelos de carta estáticos e artigos. Não foi encontrada em Portug
 └──────────────┬───────────────────────────────────────────────┘
                │ HTTPS (só dados cifrados ou anonimizados)
 ┌──────────────▼──────────── Cloudflare (gratuito) ───────────┐
-│ Pages: PWA + regras estáticas                                │
+│ Worker app: PWA e regras como static assets (gratuitos)      │
 │ Worker api (Hono): passkeys, cópias, proxy IA admin,         │
 │                    partilha familiar, painel admin           │
 │ Worker monitor (Cron, de hora a hora): GraphQL Analytics,    │
@@ -148,12 +148,12 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 - [x] Configurar TypeScript, ESLint, Prettier e Vitest partilhados
 - [x] PWA mínima (Vite + React + vite-plugin-pwa) com ecrã inicial e aviso legal
 - [x] Base de acessibilidade: tamanho de letra ajustável, alto contraste, foco visível
-- [ ] Projeto Cloudflare Pages ligado ao GitHub (deploy automático no `main`)
+- [x] Publicação automática no `main` (GitHub Actions + `wrangler deploy`): a PWA é servida pelo Worker `app` como static assets, em vez do Cloudflare Pages
 - [x] Worker `api` com Hono e rota `/health`
 - [x] Criar base D1 `prazometro` com localização na Europa e primeira migração vazia (jurisdição UE)
 - [x] GitHub Actions: lint, testes e `validate:rules` em cada push
 
-**Concluída quando**: a PWA está publicada em `*.pages.dev`, instalável no telemóvel, e o Worker responde.
+**Concluída quando**: a PWA está publicada em `app.prazometro.workers.dev`, instalável no telemóvel, e o Worker responde.
 
 ### Fase 1 — Motor de regras (1 sem)
 
@@ -267,7 +267,7 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 - [ ] Política de privacidade e termos em português claro
 - [ ] Aviso legal revisto (Lei 49/2004)
 - [ ] Verificar o nome "Prazómetro" no INPI e no EUIPO
-- [ ] Decidir domínio (`prazometro.pt` ou manter `pages.dev`)
+- [ ] Decidir domínio (`prazometro.pt` ou manter `app.prazometro.workers.dev`)
 - [ ] Página de apresentação com exemplos
 - [ ] Publicação no LinkedIn e em grupos de consumidores e seniores
 - [ ] Recolha de feedback na própria app (sem dados pessoais)

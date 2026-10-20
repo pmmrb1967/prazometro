@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc -p packages/engine && tsc -p packages/ai && tsc -p workers/api && tsc -p apps/web",
-    "validate:rules": "node scripts/validate-rules.mjs"
+    "validate:rules": "node scripts/validate-rules.mjs",
+    "deploy": "npm run build && wrangler deploy -c workers/api/wrangler.jsonc"
   },
   "engines": {
     "node": ">=22"

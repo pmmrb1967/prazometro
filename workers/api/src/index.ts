@@ -4,7 +4,8 @@ export type Env = {
   DB: D1Database;
 };
 
-const app = new Hono<{ Bindings: Env }>();
+// O resto do domínio (a PWA) é servido pelos static assets, sem passar por aqui.
+const app = new Hono<{ Bindings: Env }>().basePath('/api');
 
 app.get('/health', (c) => c.json({ ok: true, service: 'prazometro-api' }));
 
