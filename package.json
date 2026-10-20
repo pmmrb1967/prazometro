@@ -1,0 +1,35 @@
+{
+  "name": "prazometro",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "workers/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @prazometro/web",
+    "build": "npm run build -w @prazometro/web",
+    "test": "vitest run",
+    "test:engine": "vitest run --project engine",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc -p packages/engine && tsc -p packages/ai && tsc -p workers/api && tsc -p apps/web",
+    "validate:rules": "node scripts/validate-rules.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261019.1",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5",
+    "wrangler": "^4.151.3"
+  }
+}
