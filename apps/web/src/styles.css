@@ -191,6 +191,45 @@ p {
   border: 2px solid var(--line);
 }
 
+button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--bg);
+  font-weight: 700;
+  padding-inline: 1.5rem;
+}
+
+.install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+}
+.install img {
+  flex: none;
+  border-radius: 11px;
+}
+.install-text {
+  flex: 1 1 14rem;
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.install-text h2 {
+  font-size: 1.15rem;
+}
+.install-text p {
+  color: var(--muted);
+}
+.share-icon {
+  display: inline;
+  vertical-align: text-bottom;
+}
+
 .legal {
   border-left: 6px solid var(--attention);
   background: var(--surface);

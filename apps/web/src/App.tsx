@@ -1,4 +1,5 @@
 import { AccessibilityBar } from './components/AccessibilityBar';
+import { InstallPrompt } from './components/InstallPrompt';
 import { LegalNotice } from './components/LegalNotice';
 import { MODULES } from './modules';
 import { usePreferences } from './preferences';
@@ -27,6 +28,8 @@ export function App() {
             precisa de criar conta.
           </p>
         </section>
+
+        <InstallPrompt />
 
         <ul className="modules">
           {MODULES.map((m) => (

@@ -16,7 +16,12 @@ export default defineConfig({
         theme_color: '#16355A',
         background_color: '#F4F6F9',
         display: 'standalone',
+        id: '/',
         start_url: '/',
+        // Permite ao Chrome dizer ao site se a app já está instalada (getInstalledRelatedApps).
+        related_applications: [
+          { platform: 'webapp', url: 'https://app.prazometro.workers.dev/manifest.webmanifest' },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
