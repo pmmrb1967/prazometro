@@ -134,6 +134,7 @@ account.delete('/', async (c) => {
   ];
   await c.env.DB.batch([
     ...tables.map((t) => c.env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(userId)),
+    c.env.DB.prepare('DELETE FROM family_shares WHERE owner_id = ?').bind(userId),
     c.env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId),
   ]);
   return c.json({ ok: true });

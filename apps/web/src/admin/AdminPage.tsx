@@ -184,7 +184,7 @@ function ReportsList() {
 
   return (
     <section aria-labelledby="relatos">
-      <h2 id="relatos">Relatos de regras desatualizadas</h2>
+      <h2 id="relatos">Relatos de regras e opiniões</h2>
       <label className="field">
         Mostrar
         <select value={filter} onChange={(e) => setFilter(e.target.value as Status | '')}>
@@ -202,7 +202,10 @@ function ReportsList() {
         {reports?.map((r) => (
           <li key={r.id}>
             <p>
-              <strong>{r.rule_id}</strong> <span className="muted">· {when(r.created_at)}</span>
+              <strong>
+                {r.rule_id.startsWith('opiniao.') ? `Opinião: ${r.rule_id.slice(8)}` : r.rule_id}
+              </strong>{' '}
+              <span className="muted">· {when(r.created_at)}</span>
             </p>
             <p className="report-message">{r.message}</p>
             <label className="field">

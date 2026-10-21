@@ -49,6 +49,14 @@ describe('partilha familiar', () => {
     expect((await anon.call(`/shares/${id}`)).status).toBe(404);
   });
 
+  it('apagar a conta apaga as partilhas', async () => {
+    const { client } = await registerAccount(DB);
+    const id = newId();
+    await client.call(`/shares/${id}?ambito=sns`, { method: 'PUT', body: bytes(10) });
+    expect((await client.call('/account', { method: 'DELETE' })).status).toBe(200);
+    expect((await new Client(DB).call(`/shares/${id}`)).status).toBe(404);
+  });
+
   it('só o dono altera ou retira; e não muda de âmbito', async () => {
     const a = await registerAccount(DB);
     const b = await registerAccount(DB);

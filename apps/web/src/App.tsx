@@ -17,6 +17,9 @@ import { ProcessDetail } from './modules/pos-obito/ProcessDetail';
 import { ProcessForm } from './modules/pos-obito/ProcessForm';
 import { ProcessList } from './modules/pos-obito/ProcessList';
 import { usePreferences } from './preferences';
+import { About } from './pages/About';
+import { DocPage } from './pages/DocPage';
+import { Feedback } from './pages/Feedback';
 import { ReceivedList, ReceivedView } from './share/Received';
 import { syncShares } from './share/shares';
 import { Link, matchPath, usePageHeading, usePath } from './router';
@@ -45,7 +48,7 @@ function Home() {
         </h1>
         <p>
           Escolha um tema. A app diz-lhe até quando pode agir e o que deve fazer. É gratuita e não
-          precisa de criar conta.
+          precisa de criar conta. <Link to="/sobre">Como funciona, com exemplos</Link>.
         </p>
       </section>
 
@@ -148,6 +151,11 @@ function Routes({ path }: { path: string }) {
       return <PosObitoLetterPage id={m.id!} template={m.template!} />;
     if ((m = matchPath('/pos-obito/:id', path))) return <ProcessDetail id={m.id!} />;
   }
+  if (path === '/sobre') return <About />;
+  if (path === '/opiniao') return <Feedback />;
+  if (path === '/privacidade') return <DocPage doc="privacidade" />;
+  if (path === '/termos') return <DocPage doc="termos" />;
+  if (path === '/aviso-legal') return <DocPage doc="aviso-legal" />;
   if (path === '/partilhar') return <SharePage />;
   if (path === '/partilha') return <AcceptShare />;
   if (path === '/partilhas') return <ReceivedList />;
@@ -184,6 +192,17 @@ export function App() {
           <Routes path={path} />
         </Suspense>
       </main>
+
+      <footer className="site-footer">
+        <nav aria-label="Informação">
+          <Link to="/sobre">Como funciona</Link>
+          <Link to="/opiniao">Dar a sua opinião</Link>
+          <Link to="/privacidade">Privacidade</Link>
+          <Link to="/termos">Termos</Link>
+          <Link to="/aviso-legal">Aviso legal</Link>
+        </nav>
+        <p>Prazómetro: gratuito, sem publicidade e sem fins comerciais.</p>
+      </footer>
     </>
   );
 }

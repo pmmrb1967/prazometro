@@ -5,7 +5,7 @@ import { ai } from './ai';
 import { auth } from './auth';
 import { backups } from './backup';
 import { HttpError, requireAppHeader, type AppEnv } from './lib';
-import { reports } from './reports';
+import { feedback, reports } from './reports';
 import { shares } from './shares';
 
 export type { Env } from './lib';
@@ -24,6 +24,7 @@ app.route('/auth', auth);
 app.route('/account', account);
 app.route('/backups', backups);
 app.route('/reports', reports);
+app.route('/feedback', feedback);
 app.route('/admin', admin);
 app.route('/ai', ai);
 app.route('/shares', shares);

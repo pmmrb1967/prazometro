@@ -155,7 +155,7 @@ Estado em 2026-10-21 (o que falta validar está na secção 10):
 | 6 — Cartas com IA         | Feita, exceto `gemini-admin` (desligado) e o teste com cartas reais    |
 | 7 — Pós-óbito             | Feita em pré-visualização; falta revisão jurídica e teste com famílias |
 | 8 — Partilha familiar     | Feita (por validar)                                                    |
-| 9 — Lançamento            | Por fazer: é a próxima                                                 |
+| 9 — Lançamento            | Feita, exceto a consulta da marca e as publicações (do autor)          |
 
 ### Fase 0 — Fundação (0,5 sem)
 
@@ -310,13 +310,13 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 9 — Lançamento (0,5 sem, em paralelo a partir da fase 5)
 
-- [ ] Política de privacidade e termos em português claro
-- [ ] Aviso legal revisto (Lei 49/2004)
-- [ ] Verificar o nome "Prazómetro" no INPI e no EUIPO
-- [ ] Decidir domínio (`prazometro.pt` ou manter `app.prazometro.workers.dev`)
-- [ ] Página de apresentação com exemplos
-- [ ] Publicação no LinkedIn e em grupos de consumidores e seniores
-- [ ] Recolha de feedback na própria app (sem dados pessoais)
+- [x] Política de privacidade e termos em português claro (`docs/privacidade.md`, `docs/termos.md`, na app em `/privacidade` e `/termos`)
+- [x] Aviso legal revisto (Lei 49/2004): `docs/aviso-legal.md`, em `/aviso-legal` e com ligação no aviso de cada página
+- [ ] Verificar o nome "Prazómetro" no INPI e no EUIPO (uma pesquisa na web a 2026-10-21 não encontrou marca nem produto com este nome; falta a consulta oficial nas bases, que tem de ser feita pelo autor)
+- [x] Decidir domínio: fica `app.prazometro.workers.dev` (gratuito). Um domínio pago fica para decisão futura (secção 9)
+- [x] Página de apresentação com exemplos (`/sobre`; as datas são calculadas pelo motor, com as regras reais)
+- [ ] Publicação no LinkedIn e em grupos de consumidores e seniores (rascunhos em `docs/lancamento.md`; publica o autor)
+- [x] Recolha de feedback na própria app (sem dados pessoais): `/opiniao`, guardada como relato `opiniao.<tema>` e lida no painel de admin
 
 ## 7. Calendário indicativo
 
@@ -351,6 +351,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
 - [ ] Decidir se as fotografias das faturas entram nas partilhas familiares (adiado para outra fase; hoje ficam de fora, para cada partilha caber em 1,5 MB no D1)
+- [ ] Domínio pago (por exemplo, `prazometro.pt`): adiado; por agora fica `app.prazometro.workers.dev`, que é gratuito
 - [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin (valor inicial no código: 10 por conta e 200 no total; só conta se o `gemini-admin` for ligado)
 
 ## 10. Por validar (pelo autor, antes de dar as fases por concluídas)
@@ -377,6 +378,12 @@ Fase 7 (pós-óbito, só em pré-visualização: `/pos-obito?pre-visualizar`)
 - [ ] Confirmar os textos sem fonte oficial direta (Banco de Portugal, ASF, art. 2071.º) e decidir sobre o IRS do ano do óbito, o testamento e os veículos
 - [ ] Testar o tom e a linguagem com 3 famílias que passaram pelo processo
 - [ ] Depois da revisão: passar as regras e as cartas a `"publicada"` e pôr `available: true` em `apps/web/src/modules.ts`
+
+Fase 9 (lançamento)
+
+- [ ] Ler a política de privacidade, os termos e o aviso legal (de preferência com o jurista)
+- [ ] Consultar o nome "Prazómetro" nas bases do INPI (https://servicosonline.inpi.justica.gov.pt) e do EUIPO (https://www.tmdn.org/tmview)
+- [ ] Rever os rascunhos de `docs/lancamento.md` e publicar
 
 Fase 8 (partilha familiar)
 

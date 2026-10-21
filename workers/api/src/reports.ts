@@ -17,6 +17,21 @@ export const ReportSchema = z.object({
   message: z.string().trim().min(10).max(1000),
 });
 
+/** Temas das opiniões sobre a app (guardadas como relatos "opiniao.<tema>"). */
+export const FEEDBACK_TOPICS = [
+  'geral',
+  'garantia',
+  'sns',
+  'cartas',
+  'pos-obito',
+  'partilha',
+] as const;
+
+export const FeedbackSchema = z.object({
+  modulo: z.enum(FEEDBACK_TOPICS),
+  message: z.string().trim().min(10).max(1000),
+});
+
 export const reports = new Hono<AppEnv>();
 
 reports.post('/', async (c) => {
@@ -24,20 +39,34 @@ reports.post('/', async (c) => {
   if (!parsed.success) {
     throw new HttpError(400, 'Escreva pelo menos 10 caracteres (no máximo 1000).');
   }
+  await save(c.env.DB, parsed.data.rule_id, parsed.data.message);
+  return c.json({ ok: true });
+});
+
+/** "Dar a sua opinião": como os relatos, sem conta e só com o texto e a data. */
+export const feedback = new Hono<AppEnv>();
+
+feedback.post('/', async (c) => {
+  const parsed = FeedbackSchema.safeParse(await c.req.json().catch(() => null));
+  if (!parsed.success) {
+    throw new HttpError(400, 'Escreva pelo menos 10 caracteres (no máximo 1000).');
+  }
+  await save(c.env.DB, `opiniao.${parsed.data.modulo}`, parsed.data.message);
+  return c.json({ ok: true });
+});
+
+async function save(db: D1Database, ruleId: string, message: string) {
   const t = now();
   const dayStart = Date.parse(utcDate(t)) / 1000;
-  const today = await c.env.DB.prepare(
-    'SELECT COUNT(*) AS n FROM rule_reports WHERE created_at >= ?',
-  )
+  const today = await db
+    .prepare('SELECT COUNT(*) AS n FROM rule_reports WHERE created_at >= ?')
     .bind(dayStart)
     .first<{ n: number }>();
   if ((today?.n ?? 0) >= REPORTS_PER_DAY) {
-    throw new HttpError(503, 'Hoje já recebemos muitos avisos. Tente outra vez amanhã.');
+    throw new HttpError(503, 'Hoje já recebemos muitas mensagens. Tente outra vez amanhã.');
   }
-  await c.env.DB.prepare(
-    'INSERT INTO rule_reports (id, rule_id, message, created_at) VALUES (?, ?, ?, ?)',
-  )
-    .bind(randomId(), parsed.data.rule_id, parsed.data.message, t)
+  await db
+    .prepare('INSERT INTO rule_reports (id, rule_id, message, created_at) VALUES (?, ?, ?, ?)')
+    .bind(randomId(), ruleId, message, t)
     .run();
-  return c.json({ ok: true });
-});
+}

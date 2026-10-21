@@ -883,3 +883,35 @@ p.card-title {
   margin: 0;
   text-decoration: none;
 }
+
+/* Rodapé e páginas de texto */
+.site-footer {
+  max-width: 46rem;
+  margin: 2rem auto 0;
+  padding: 1.5rem 1rem 2.5rem;
+  border-top: 2px solid var(--line);
+  color: var(--muted);
+}
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.doc h2 {
+  margin-top: 2rem;
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.doc table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.doc th,
+.doc td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+}
