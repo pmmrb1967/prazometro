@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 import app from './index';
-import { toB64url } from './lib';
+import { toB64url, type Env } from './lib';
 
 // Apoio aos testes: base D1 local com as migrações reais e um autenticador WebAuthn de software.
 
@@ -47,6 +47,7 @@ export class Client {
   constructor(
     private DB: D1Database,
     private origin = ORIGIN,
+    private env: Partial<Env> = {},
   ) {}
 
   async call(
@@ -68,7 +69,7 @@ export class Client {
     const res = await app.request(
       `${this.origin}/api${path}`,
       { method: init.method ?? (body ? 'POST' : 'GET'), headers, body },
-      { DB: this.DB },
+      { ...this.env, DB: this.DB },
     );
     const set = res.headers.get('set-cookie');
     if (set) {

@@ -782,3 +782,58 @@ h3 {
 select {
   max-width: 24rem;
 }
+
+/* Cartas explicadas */
+.crop {
+  position: relative;
+  max-width: 40rem;
+  touch-action: none;
+  user-select: none;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+.crop img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.crop-box {
+  position: absolute;
+  border: 3px solid var(--focus);
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+}
+.ocr-progress {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 30rem;
+}
+.ocr-progress progress {
+  width: 100%;
+  height: 1.25rem;
+}
+pre.anonymized {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--font);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.75rem 0 0;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+.letter-facts {
+  display: grid;
+  gap: 0.25rem 0;
+}
+.letter-facts dt {
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+.letter-facts dd {
+  margin: 0;
+}

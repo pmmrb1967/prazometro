@@ -25,6 +25,16 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // O OCR (cerca de 13 MB) só é descarregado por quem fotografa uma carta, e depois fica
+        // guardado em cache para funcionar sem rede.
+        globIgnores: ['ocr/**'],
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/ocr/'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'ocr', expiration: { maxEntries: 10 } },
+          },
+        ],
         // A API está no mesmo domínio: o service worker nunca a deve servir da cache.
         navigateFallbackDenylist: [/^\/api\//],
       },

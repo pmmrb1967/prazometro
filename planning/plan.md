@@ -256,19 +256,19 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 6 — Cartas explicadas com IA (2 sem)
 
-- [ ] OCR no dispositivo com Tesseract.js (`por`), com pré-processamento (recorte, contraste, rotação)
-- [ ] Anonimização: NIF, NISS, IBAN, nomes, moradas, números de processo e matrículas
-- [ ] Pacote `packages/ai` com interface comum `extrair(texto) → JSON`
-- [ ] Fornecedor `none`: identificação do emissor por palavras-chave (AT, Segurança Social, tribunais, bancos, operadoras, SNS)
-- [ ] Fornecedor `gemini-admin` via Worker, com limite diário por utilizador
-- [ ] Fornecedor `gemini-own`, com chamada direta do navegador
-- [ ] Fornecedor `claude-own`, com chamada direta e cabeçalho `anthropic-dangerous-direct-browser-access`, modelo por defeito `claude-haiku-5-5`
-- [ ] Ecrã de configuração: escolher fornecedor, colar a chave, "Testar chave" e contador local de uso
-- [ ] Chaves guardadas cifradas no dispositivo
-- [ ] Esquema JSON da resposta (emissor, assunto, datas, pedido, consequências) validado com zod
-- [ ] Ligação ao motor: se a carta corresponder a uma regra, o prazo é calculado pelo motor e não pela IA
-- [ ] Ecrã de resultado: quem enviou, o que pede, até quando, o que fazer, com aviso legal
-- [ ] Conjunto de teste com 30 cartas reais anonimizadas e taxa de acerto do emissor e das datas
+- [x] OCR no dispositivo com Tesseract.js (`por`), com pré-processamento (recorte, contraste, rotação). Ficheiros do OCR servidos pelo próprio site (`/ocr/`), sem CDN
+- [x] Anonimização: NIF, NISS, IBAN, nomes, moradas, números de processo e matrículas (também telefones, emails, referências e códigos postais), no dispositivo e outra vez no Worker
+- [x] Pacote `packages/ai` com interface comum `extrair(texto) → JSON`
+- [x] Fornecedor `none`: identificação do emissor por palavras-chave (AT, Segurança Social, tribunais, bancos, operadoras, SNS)
+- [ ] Fornecedor `gemini-admin` via Worker, com limite diário por utilizador. Código feito e testado (10 leituras por conta e 200 no total por dia, pausa no modo poupança), mas **desligado**: os termos da API Gemini só permitem serviços pagos em aplicações disponibilizadas a utilizadores no Espaço Económico Europeu (2026-10-21). Liga-se com `AI_ADMIN = "ligado"` e o segredo `GEMINI_API_KEY` se houver uma chave paga ou os termos mudarem
+- [x] Fornecedor `gemini-own`, com chamada direta do navegador (modelo por defeito `gemini-3.5-flash-lite`)
+- [x] Fornecedor `claude-own`, com chamada direta e cabeçalho `anthropic-dangerous-direct-browser-access`, modelo por defeito `claude-haiku-5-5`
+- [x] Ecrã de configuração: escolher fornecedor, colar a chave, "Testar chave" e contador local de uso
+- [x] Chaves guardadas cifradas no dispositivo (AES-GCM com chave local não exportável; fora das cópias de segurança)
+- [x] Esquema JSON da resposta (emissor, assunto, datas, pedido, consequências) validado com zod. Datas que não estão escritas na carta são descartadas
+- [x] Ligação ao motor: se a carta corresponder a uma regra, o prazo é calculado pelo motor e não pela IA (`rules/cartas/`: multa de trânsito, audição prévia nas Finanças e citação para contestar, todas "a rever" até revisão por jurista)
+- [x] Ecrã de resultado: quem enviou, o que pede, até quando, o que fazer, com aviso legal
+- [ ] Conjunto de teste com 30 cartas reais anonimizadas e taxa de acerto do emissor e das datas. Feito com 30 cartas **fictícias** (`packages/ai/src/fixtures/letters.ts`): o modo sem IA acerta mais de 90% no emissor e nas datas. Faltam cartas reais anonimizadas
 
 **Concluída quando**: acerto de pelo menos 90% no emissor e nas datas no conjunto de teste, e nenhum dado pessoal sai do dispositivo sem anonimização.
 
@@ -335,4 +335,4 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Escolher biblioteca de passkeys: SimpleWebAuthn (servidor 14.0.3 e navegador 14.0.0), em 2026-10-20
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
-- [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin
+- [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin (valor inicial no código: 10 por conta e 200 no total; só conta se o `gemini-admin` for ligado)

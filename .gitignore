@@ -9,3 +9,6 @@ playwright-report/
 test-results/
 .playwright-mcp/
 .vitest/
+
+# Ficheiros do OCR copiados de node_modules (scripts/copy-ocr-assets.mjs)
+apps/web/public/ocr/

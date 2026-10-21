@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { AccessibilityBar } from './components/AccessibilityBar';
 import { InstallPrompt } from './components/InstallPrompt';
+import { CartasList } from './modules/cartas/CartasList';
+import { LetterDetail } from './modules/cartas/LetterDetail';
 import { LegalNotice } from './components/LegalNotice';
 import { Complaint } from './modules/garantia/Complaint';
 import { GarantiaList } from './modules/garantia/GarantiaList';
@@ -19,6 +21,9 @@ const SnsLetterPage = lazy(() => import('./modules/sns/SnsLetterPage'));
 // A cópia na nuvem traz as passkeys e a cifra; também só quando é aberta.
 const CloudPage = lazy(() => import('./cloud/CloudPage'));
 const AdminPage = lazy(() => import('./admin/AdminPage'));
+// A leitura de cartas traz a anonimização e a IA; o OCR só é carregado ao ler uma fotografia.
+const NewLetter = lazy(() => import('./modules/cartas/NewLetter'));
+const AiSettings = lazy(() => import('./modules/cartas/AiSettings'));
 
 function Home() {
   const heading = usePageHeading<HTMLHeadingElement>('Início');
@@ -96,6 +101,10 @@ function Routes({ path }: { path: string }) {
   if ((m = matchPath('/sns/:id/carta/:template', path)))
     return <SnsLetterPage id={m.id!} template={m.template!} />;
   if ((m = matchPath('/sns/:id', path))) return <RequestDetail id={m.id!} />;
+  if (path === '/cartas') return <CartasList />;
+  if (path === '/cartas/nova') return <NewLetter />;
+  if (path === '/cartas/ia') return <AiSettings />;
+  if ((m = matchPath('/cartas/:id', path))) return <LetterDetail id={m.id!} />;
   if (path === '/copia') return <CloudPage />;
   if (path === '/admin') return <AdminPage />;
   return <NotFound />;

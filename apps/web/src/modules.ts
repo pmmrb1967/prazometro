@@ -22,7 +22,7 @@ export const MODULES: ModuleInfo[] = [
     id: 'cartas',
     title: 'Perceber uma carta',
     summary: 'Fotografe uma carta oficial e veja, em palavras simples, o que pede e até quando.',
-    available: false,
+    available: true,
   },
   {
     id: 'pos-obito',

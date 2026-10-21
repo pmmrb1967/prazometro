@@ -1,5 +1,12 @@
 import { todayInLisbon } from '@prazometro/engine';
-import { db, type Profile, type Purchase, type StoredFile, type WaitRequest } from './db';
+import {
+  db,
+  type Profile,
+  type Purchase,
+  type ReceivedLetter,
+  type StoredFile,
+  type WaitRequest,
+} from './db';
 
 // Conteúdo das cópias de segurança: o mesmo JSON serve para o ficheiro local e para a nuvem
 // (onde é cifrado no dispositivo antes de sair).
@@ -13,6 +20,8 @@ type BackupFile = {
   compras: Purchase[];
   /** Opcional: as cópias feitas antes do módulo SNS não o têm. */
   pedidos_sns?: WaitRequest[];
+  /** Opcional: as cópias feitas antes do módulo Cartas não o têm. */
+  cartas?: ReceivedLetter[];
   perfil: Profile[];
   ficheiros: { id: string; nome: string; tipo: string; base64: string }[];
 };
@@ -44,9 +53,11 @@ export async function exportBackup({
   ficheiros: withFiles = true,
   converter,
 }: ExportOptions = {}): Promise<string> {
-  const [compras, pedidos_sns, perfil, ficheiros] = await Promise.all([
+  // A configuração da IA (com as chaves) fica fora das cópias, de propósito.
+  const [compras, pedidos_sns, cartas, perfil, ficheiros] = await Promise.all([
     db.compras.toArray(),
     db.pedidos_sns.toArray(),
+    db.cartas.toArray(),
     db.perfil.toArray(),
     withFiles ? db.ficheiros.toArray() : Promise.resolve([]),
   ]);
@@ -56,6 +67,7 @@ export async function exportBackup({
     criado_em: todayInLisbon(),
     compras,
     pedidos_sns,
+    cartas,
     perfil,
     ficheiros: await Promise.all(
       ficheiros.map(async (original) => {
@@ -81,9 +93,11 @@ export async function importBackup(text: string): Promise<{ compras: number; ped
   if (data.versao !== 1)
     throw new Error('Esta cópia foi feita por uma versão mais recente da app.');
   const pedidos = data.pedidos_sns ?? [];
-  await db.transaction('rw', [db.compras, db.pedidos_sns, db.perfil, db.ficheiros], async () => {
+  const tables = [db.compras, db.pedidos_sns, db.cartas, db.perfil, db.ficheiros];
+  await db.transaction('rw', tables, async () => {
     await db.compras.bulkPut(data.compras);
     await db.pedidos_sns.bulkPut(pedidos);
+    await db.cartas.bulkPut(data.cartas ?? []);
     await db.perfil.bulkPut(data.perfil ?? []);
     await db.ficheiros.bulkPut(
       (data.ficheiros ?? []).map((f) => ({

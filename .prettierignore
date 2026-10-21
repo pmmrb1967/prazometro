@@ -3,3 +3,4 @@ dist
 .wrangler
 package-lock.json
 rules/schema/regra.schema.json
+apps/web/public/ocr

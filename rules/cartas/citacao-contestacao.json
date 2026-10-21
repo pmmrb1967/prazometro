@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "cartas.citacao-contestacao",
+  "modulo": "cartas",
+  "titulo": "Citação do tribunal: contestar a ação",
+  "descricao": "Quem é citado para uma ação cível tem 30 dias para contestar. A falta de contestação pode levar a que os factos alegados sejam dados como provados. Na maior parte das ações é preciso advogado.",
+  "inicio": "data_inicio",
+  "condicoes": {
+    "tipo_carta": "citacao_tribunal"
+  },
+  "prazo": {
+    "quantidade": 30,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": true,
+    "transicao": "sabado_domingo_feriado",
+    "alertas_dias_antes": [10, 3, 0]
+  },
+  "fontes": [
+    {
+      "titulo": "Código de Processo Civil (versão consolidada)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/2013-34580575-53421775",
+      "artigo": "569.º, n.º 1"
+    },
+    {
+      "titulo": "Código de Processo Civil (versão consolidada)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/2013-34580575",
+      "artigo": "138.º (prazo contínuo, férias judiciais e tribunais encerrados)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do Diário da República; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "A app mostra a data mais cedo possível: não acrescenta a dilação (art. 245.º), que pode somar 5 ou mais dias, nem suspende o prazo nas férias judiciais (22 de dezembro a 3 de janeiro, Domingo de Ramos a Segunda-feira de Páscoa e 16 de julho a 31 de agosto), que o prolongam nos processos não urgentes. Nos processos urgentes o prazo pode ser outro. Confirme sempre com um advogado."
+}

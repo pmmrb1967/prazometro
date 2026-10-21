@@ -1,0 +1,35 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "cartas.contraordenacao-transito",
+  "modulo": "cartas",
+  "titulo": "Multa de trânsito: pagar pelo mínimo ou apresentar defesa",
+  "descricao": "Depois de ser notificado de uma infração ao Código da Estrada, tem 15 dias úteis para pagar a coima pelo valor mínimo, apresentar defesa por escrito ou pedir a atenuação ou suspensão da sanção acessória.",
+  "inicio": "data_inicio",
+  "condicoes": {
+    "tipo_carta": "contraordenacao_transito"
+  },
+  "prazo": {
+    "quantidade": 15,
+    "unidade": "dias",
+    "contagem": "uteis",
+    "transita_dia_util": true,
+    "alertas_dias_antes": [5, 1, 0]
+  },
+  "fontes": [
+    {
+      "titulo": "Código da Estrada (versão consolidada)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/2013-116041830-922206592",
+      "artigo": "175.º, n.º 2"
+    },
+    {
+      "titulo": "ANSR: contraordenações (pagamento, defesa e custas)",
+      "url": "https://ansr.pt/contraordenacoes",
+      "artigo": "Pagamento voluntário e defesa"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do Diário da República e da ANSR; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Conta-se a partir da notificação. Se a carta foi enviada por carta registada ou simples, a lei pode considerar a notificação feita numa data diferente da receção (presunções do art. 176.º); por isso a app conta a partir da data mais cedo entre a data da carta e a data em que a recebeu. Depois do prazo ainda é possível pagar até à decisão, mas já com custas (ANSR)."
+}

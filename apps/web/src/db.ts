@@ -1,3 +1,4 @@
+import type { AiProvider, Extraction } from '@prazometro/ai';
 import Dexie, { type EntityTable } from 'dexie';
 
 // Dados do utilizador: ficam só neste dispositivo (IndexedDB). Nunca vão para o servidor em claro.
@@ -77,12 +78,46 @@ export type CloudState = {
   incluir_fotos?: boolean;
 };
 
+/** Uma carta recebida, lida no dispositivo (o texto nunca vai para a nuvem em claro). */
+export type ReceivedLetter = Extraction & {
+  id: string;
+  /** Texto lido por OCR ou colado, corrigido pela pessoa. */
+  texto: string;
+  /** Data escrita na carta. */
+  data_carta?: string;
+  /** Dia em que a pessoa recebeu a carta. */
+  data_rececao?: string;
+  /** Feita: a pessoa marcou que já tratou do assunto. */
+  tratada_em?: string;
+  fornecedor: AiProvider;
+  criado_em: string;
+};
+
+/** Chave de IA cifrada com a chave local (AES-GCM). */
+export type EncryptedSecret = { iv: Uint8Array; dados: ArrayBuffer };
+
+/** Configuração da IA. Fica só neste dispositivo e nunca entra nas cópias de segurança. */
+export type AiSettings = {
+  id: 'ia';
+  fornecedor: AiProvider;
+  modelo_gemini?: string;
+  modelo_claude?: string;
+  /** Chave AES-GCM não exportável que cifra as chaves dos fornecedores. */
+  chave_local: CryptoKey;
+  chave_gemini?: EncryptedSecret;
+  chave_claude?: EncryptedSecret;
+  /** Contador local de uso: chamadas hoje e no total, por fornecedor. */
+  uso: Partial<Record<AiProvider, { dia: string; hoje: number; total: number }>>;
+};
+
 export const db = new Dexie('prazometro') as Dexie & {
   compras: EntityTable<Purchase, 'id'>;
   pedidos_sns: EntityTable<WaitRequest, 'id'>;
   ficheiros: EntityTable<StoredFile, 'id'>;
   perfil: EntityTable<Profile, 'id'>;
   nuvem: EntityTable<CloudState, 'id'>;
+  cartas: EntityTable<ReceivedLetter, 'id'>;
+  ia: EntityTable<AiSettings, 'id'>;
 };
 
 db.version(1).stores({
@@ -97,6 +132,11 @@ db.version(2).stores({
 
 db.version(3).stores({
   nuvem: 'id',
+});
+
+db.version(4).stores({
+  cartas: 'id, criado_em',
+  ia: 'id',
 });
 
 export function newId(): string {

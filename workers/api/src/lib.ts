@@ -3,6 +3,11 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 
 export type Env = {
   DB: D1Database;
+  /** "ligado" para ativar o fornecedor gemini-admin (desligado por defeito). */
+  AI_ADMIN?: string;
+  /** Segredo: chave do Gemini do admin. Nunca vai para o frontend. */
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
 };
 
 /** Como foi aberta a sessão: o painel de admin só aceita 'passkey'. */
@@ -65,7 +70,7 @@ export function relyingParty(c: Context) {
 
 export class HttpError extends Error {
   constructor(
-    public status: 400 | 401 | 403 | 404 | 409 | 413 | 503,
+    public status: 400 | 401 | 403 | 404 | 409 | 413 | 429 | 502 | 503,
     message: string,
   ) {
     super(message);

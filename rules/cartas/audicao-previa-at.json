@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "cartas.audicao-previa-at",
+  "modulo": "cartas",
+  "titulo": "Finanças: pronunciar-se sobre o projeto de decisão (direito de audição)",
+  "descricao": "Antes de decidir contra si, as Finanças enviam o projeto de decisão. Tem 15 dias para se pronunciar, por escrito ou oralmente. As Finanças podem alargar este prazo até 25 dias: se a carta indicar outro prazo, vale o da carta.",
+  "inicio": "data_inicio",
+  "condicoes": {
+    "tipo_carta": "audicao_previa_at"
+  },
+  "prazo": {
+    "quantidade": 15,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": true,
+    "alertas_dias_antes": [5, 1, 0]
+  },
+  "fontes": [
+    {
+      "titulo": "Lei Geral Tributária (Portal das Finanças)",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/lgt/Pages/lgt60.aspx",
+      "artigo": "60.º, n.º 6 (redação da Lei n.º 66-B/2012)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do Portal das Finanças; falta confirmar a redação em vigor no Diário da República e revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Os prazos do procedimento tributário contam-se de forma contínua, como no Código Civil (CPPT, art. 20.º). A notificação por carta registada presume-se feita no 3.º dia posterior ao registo (CPPT, art. 39.º): a app conta a partir da data mais cedo entre a data da carta e a data em que a recebeu."
+}
