@@ -142,6 +142,21 @@ Exemplo (`rules/garantia/garantia-bens-novos.json`):
 
 Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
+Estado em 2026-10-21 (o que falta validar está na secção 10):
+
+| Fase                      | Estado                                                                 |
+| ------------------------- | ---------------------------------------------------------------------- |
+| 0 — Fundação              | Feita                                                                  |
+| 1 — Motor de regras       | Feita                                                                  |
+| 2 — Garantia              | Feita (falta revisão jurídica)                                         |
+| 3 — Espera no SNS         | Feita (falta revisão jurídica)                                         |
+| 4 — Contas e cópia        | Feita                                                                  |
+| 5 — Admin e monitorização | Feita (por validar; canal de alertas por decidir)                      |
+| 6 — Cartas com IA         | Feita, exceto `gemini-admin` (desligado) e o teste com cartas reais    |
+| 7 — Pós-óbito             | Feita em pré-visualização; falta revisão jurídica e teste com famílias |
+| 8 — Partilha familiar     | Feita (por validar)                                                    |
+| 9 — Lançamento            | Por fazer: é a próxima                                                 |
+
 ### Fase 0 — Fundação (0,5 sem)
 
 - [x] Criar repositório `pmmrb1967/prazometro` com npm workspaces (`apps`, `workers`, `packages`)
@@ -335,6 +350,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Escolher biblioteca de passkeys: SimpleWebAuthn (servidor 14.0.3 e navegador 14.0.0), em 2026-10-20
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
+- [ ] Decidir se as fotografias das faturas entram nas partilhas familiares (adiado para outra fase; hoje ficam de fora, para cada partilha caber em 1,5 MB no D1)
 - [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin (valor inicial no código: 10 por conta e 200 no total; só conta se o `gemini-admin` for ligado)
 
 ## 10. Por validar (pelo autor, antes de dar as fases por concluídas)
@@ -366,4 +382,3 @@ Fase 8 (partilha familiar)
 
 - [ ] Partilhar a partir de um telemóvel com conta e abrir a ligação noutro telemóvel (por exemplo, por WhatsApp)
 - [ ] Confirmar que uma alteração aparece no outro telemóvel depois de abrir as duas apps, e que "Retirar o acesso" apaga os dados do outro lado
-- [ ] Decidir se as fotografias das faturas devem entrar nas partilhas (hoje ficam de fora, para caber em 1,5 MB)
