@@ -29,6 +29,9 @@ import { compressPhoto } from './photos';
 // Cópia na nuvem: passkeys para entrar, código de recuperação e cifra no dispositivo.
 
 export type Account = {
+  id: string;
+  papel: 'user' | 'admin';
+  sessao: string;
   criada_em: number;
   passkeys: number;
   chaves: (Wrap & { id: string })[];

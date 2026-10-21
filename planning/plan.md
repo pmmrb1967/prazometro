@@ -240,17 +240,17 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 5 — Painel de admin e monitorização (1 sem)
 
-- [ ] Migrações: `usage_daily`, `alerts_sent`, `ai_usage_daily`, `rule_reports`
-- [ ] Worker `monitor` com Cron Trigger de hora a hora
-- [ ] Leitura da GraphQL Analytics API (`d1AnalyticsAdaptiveGroups`, pedidos ao Worker) com token só de leitura
-- [ ] Tamanho de cada base e da conta, comparado com 500 MB e 5 GB
-- [ ] Email Routing ativo e endereço do admin verificado; binding `send_email`
-- [ ] Alertas aos 70% e 90%, no máximo um por métrica, patamar e dia
-- [ ] Modo poupança aos 90%: desliga o proxy de IA do admin e suspende cópias até às 00:00 UTC
-- [ ] Rota `/admin` protegida (papel `admin` e passkey)
-- [ ] Painel com gráficos dos últimos 30 dias: armazenamento, linhas lidas e escritas, pedidos, chamadas de IA, utilizadores ativos
-- [ ] Lista de relatos "regra desatualizada" com estado
-- [ ] Opcional: alerta também por bot de Telegram
+- [x] Migrações: `usage_daily`, `alerts_sent`, `ai_usage_daily`, `rule_reports` (`db/migrations/0003_admin.sql`, com `settings` e o método de entrada em `sessions`)
+- [x] Worker `monitor` com Cron Trigger de hora a hora (ao minuto 5, sem endereço público)
+- [ ] Leitura da GraphQL Analytics API (`d1AnalyticsAdaptiveGroups`, pedidos ao Worker) com token só de leitura (código feito e testado com a API real; falta criar o token só com "Account Analytics: Read" e guardá-lo como segredo `CF_ANALYTICS_TOKEN` do Worker monitor)
+- [x] Tamanho de cada base e da conta, comparado com 500 MB e 5 GB (sem token, o tamanho da base sai da própria consulta ao D1)
+- [ ] Email Routing ativo e endereço do admin verificado; binding `send_email` (adiado: o Email Routing exige um domínio próprio, que é pago; o canal de envio dos alertas fica por decidir, por exemplo WhatsApp)
+- [x] Alertas aos 70% e 90%, no máximo um por métrica, patamar e dia (registados em `alerts_sent` e mostrados no painel; o envio ao admin liga-se num só ponto de `workers/monitor/src/monitor.ts`)
+- [x] Modo poupança aos 90%: desliga o proxy de IA do admin e suspende cópias até às 00:00 UTC (as cópias já param; o proxy de IA usa `savingsMode` na fase 6)
+- [x] Rota `/admin` protegida (papel `admin` e passkey)
+- [x] Painel com gráficos dos últimos 30 dias: armazenamento, linhas lidas e escritas, pedidos, chamadas de IA, utilizadores ativos
+- [x] Lista de relatos "regra desatualizada" com estado (botão em "De onde vêm estas datas", sem conta, no máximo 100 por dia)
+- [ ] ~~Opcional: alerta também por bot de Telegram~~ (posto de lado em 2026-10-21: ver o canal de envio acima)
 
 **Concluída quando**: simulando 90% de uso, o admin recebe o email e o modo poupança liga-se e desliga-se sozinho.
 

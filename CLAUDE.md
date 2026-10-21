@@ -95,9 +95,12 @@ npm run build                    # build da PWA (gera também os ícones a parti
 npx wrangler dev -c workers/api/wrangler.jsonc
 npx wrangler d1 migrations apply prazometro --local
 npm run deploy                   # build da PWA + publicação do Worker app (PWA em /, API em /api)
+npx wrangler dev -c workers/monitor/wrangler.jsonc --test-scheduled   # monitor local (/__scheduled corre o cron)
+npx wrangler secret put CF_ANALYTICS_TOKEN -c workers/monitor/wrangler.jsonc   # token só com "Account Analytics: Read"
+npx wrangler d1 execute prazometro --remote -c workers/api/wrangler.jsonc --command "UPDATE users SET role='admin' WHERE id='<id>'"   # dar o papel de admin (id em Cópia na nuvem > Detalhes técnicos)
 ```
 
-O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub.
+O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI (migrações D1, Worker `app` e Worker `monitor`) se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub. O painel de admin está em `/admin` e só abre para contas com papel `admin` e sessão aberta com passkey.
 
 (Atualizar esta secção quando forem criados novos scripts.)
 

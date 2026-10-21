@@ -49,3 +49,4 @@ jobs:
           fi
           npx wrangler d1 migrations apply prazometro --remote -c workers/api/wrangler.jsonc
           npx wrangler deploy -c workers/api/wrangler.jsonc
+          npx wrangler deploy -c workers/monitor/wrangler.jsonc

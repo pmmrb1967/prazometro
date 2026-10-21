@@ -5,7 +5,13 @@ export type Env = {
   DB: D1Database;
 };
 
-export type AppEnv = { Bindings: Env; Variables: { userId: string } };
+/** Como foi aberta a sessão: o painel de admin só aceita 'passkey'. */
+export type SessionMethod = 'passkey' | 'recovery';
+
+export type AppEnv = {
+  Bindings: Env;
+  Variables: { userId: string; sessionMethod: string; role: 'user' | 'admin' };
+};
 
 // Domínios onde as passkeys podem ser usadas (o rpID é o nome do anfitrião).
 export const RP_NAME = 'Prazómetro';
@@ -77,14 +83,14 @@ export const requireAppHeader: MiddlewareHandler<AppEnv> = async (c, next) => {
   await next();
 };
 
-export async function startSession(c: Context<AppEnv>, userId: string) {
+export async function startSession(c: Context<AppEnv>, userId: string, method: SessionMethod) {
   const token = toB64url(randomBytes(32));
   const t = now();
   await c.env.DB.batch([
     c.env.DB.prepare('DELETE FROM sessions WHERE user_id = ? AND expires_at < ?').bind(userId, t),
     c.env.DB.prepare(
-      'INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)',
-    ).bind(await sha256Hex(token), userId, t, t + SESSION_DAYS * 86400),
+      'INSERT INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, ?)',
+    ).bind(await sha256Hex(token), userId, t, t + SESSION_DAYS * 86400, method),
   ]);
   setCookie(c, COOKIE, token, {
     httpOnly: true,
@@ -111,11 +117,11 @@ export const requireUser: MiddlewareHandler<AppEnv> = async (c, next) => {
   if (!token) return c.json({ erro: 'Sessão terminada. Entre outra vez.' }, 401);
   const t = now();
   const row = await c.env.DB.prepare(
-    `SELECT s.user_id, u.last_seen_at FROM sessions s JOIN users u ON u.id = s.user_id
+    `SELECT s.user_id, s.method, u.role, u.last_seen_at FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.token_hash = ? AND s.expires_at > ?`,
   )
     .bind(await sha256Hex(token), t)
-    .first<{ user_id: string; last_seen_at: number }>();
+    .first<{ user_id: string; method: string; role: 'user' | 'admin'; last_seen_at: number }>();
   if (!row) return c.json({ erro: 'Sessão terminada. Entre outra vez.' }, 401);
   // Atualiza o "visto pela última vez" no máximo uma vez por dia (poupa escritas no D1).
   if (row.last_seen_at < t - 86400) {
@@ -124,5 +130,16 @@ export const requireUser: MiddlewareHandler<AppEnv> = async (c, next) => {
       .run();
   }
   c.set('userId', row.user_id);
+  c.set('sessionMethod', row.method);
+  c.set('role', row.role);
+  await next();
+};
+
+/** Exige um admin com sessão aberta por passkey (o código de recuperação não chega). */
+export const requireAdmin: MiddlewareHandler<AppEnv> = async (c, next) => {
+  if (c.get('role') !== 'admin') return c.json({ erro: 'Sem acesso.' }, 403);
+  if (c.get('sessionMethod') !== 'passkey') {
+    return c.json({ erro: 'Para o painel de admin, entre com a passkey.' }, 403);
+  }
   await next();
 };

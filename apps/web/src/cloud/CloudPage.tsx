@@ -427,6 +427,12 @@ function SignedIn({
         </p>
       </section>
 
+      {account.papel === 'admin' && (
+        <p>
+          <Link to="/admin">Abrir o painel de admin</Link>
+        </p>
+      )}
+
       <section aria-labelledby="acesso">
         <h2 id="acesso">Acesso à conta</h2>
         <p>
@@ -492,6 +498,14 @@ function SignedIn({
           </button>
         </div>
       </section>
+
+      <details className="sources">
+        <summary>Detalhes técnicos</summary>
+        <p>
+          Identificador da conta: <code>{account.id}</code>. Não identifica a pessoa: serve só para
+          o suporte.
+        </p>
+      </details>
 
       <div className="danger-zone">
         {confirmDelete ? (

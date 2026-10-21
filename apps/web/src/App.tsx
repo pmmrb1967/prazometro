@@ -18,6 +18,7 @@ const LetterPage = lazy(() => import('./modules/garantia/LetterPage'));
 const SnsLetterPage = lazy(() => import('./modules/sns/SnsLetterPage'));
 // A cópia na nuvem traz as passkeys e a cifra; também só quando é aberta.
 const CloudPage = lazy(() => import('./cloud/CloudPage'));
+const AdminPage = lazy(() => import('./admin/AdminPage'));
 
 function Home() {
   const heading = usePageHeading<HTMLHeadingElement>('Início');
@@ -96,6 +97,7 @@ function Routes({ path }: { path: string }) {
     return <SnsLetterPage id={m.id!} template={m.template!} />;
   if ((m = matchPath('/sns/:id', path))) return <RequestDetail id={m.id!} />;
   if (path === '/copia') return <CloudPage />;
+  if (path === '/admin') return <AdminPage />;
   return <NotFound />;
 }
 

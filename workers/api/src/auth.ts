@@ -166,7 +166,7 @@ auth.post('/register/verify', async (c) => {
     ).bind(randomId(), userId, await sha256Hex(b.recoveryVerifier), t),
     ...wrapInserts(c, userId, b.wraps),
   ]);
-  await startSession(c, userId);
+  await startSession(c, userId, 'passkey');
   return c.json({ ok: true, credentialId: cred.id });
 });
 
@@ -212,7 +212,7 @@ auth.post('/login/verify', async (c) => {
   await c.env.DB.prepare('UPDATE passkeys SET counter = ?, last_used_at = ? WHERE id = ?')
     .bind(v.authenticationInfo.newCounter, now(), pk.id)
     .run();
-  await startSession(c, pk.user_id);
+  await startSession(c, pk.user_id, 'passkey');
   return c.json({ ok: true, credentialId: pk.id });
 });
 
@@ -226,7 +226,7 @@ auth.post('/recover', async (c) => {
   await c.env.DB.prepare('UPDATE recovery_codes SET used_at = ? WHERE id = ?')
     .bind(now(), row.id)
     .run();
-  await startSession(c, row.user_id);
+  await startSession(c, row.user_id, 'recovery');
   return c.json({ ok: true });
 });
 

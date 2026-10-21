@@ -14,7 +14,7 @@
     "test:engine": "vitest run --project engine",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc -p packages/engine && tsc -p packages/engine/tsconfig.test.json && tsc -p packages/ai && tsc -p workers/api && tsc -p workers/api/tsconfig.test.json && tsc -p apps/web",
+    "typecheck": "tsc -p packages/engine && tsc -p packages/engine/tsconfig.test.json && tsc -p packages/ai && tsc -p workers/api && tsc -p workers/api/tsconfig.test.json && tsc -p workers/monitor && tsc -p workers/monitor/tsconfig.test.json && tsc -p apps/web",
     "validate:rules": "tsx scripts/validate-rules.ts",
     "schema:rules": "tsx scripts/export-rule-schema.ts",
     "deploy": "npm run build && wrangler deploy -c workers/api/wrangler.jsonc"

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { savingsMode } from '../../monitor/src/limits';
 import { HttpError, now, requireUser, type AppEnv } from './lib';
 
 // Cópias de segurança: o dispositivo envia blocos já cifrados (AES-GCM). O servidor só confere
@@ -36,6 +37,14 @@ backups.post('/', async (c) => {
   const { chunk_count, size } = parsed.data;
   if (size > BACKUP_MAX || size > chunk_count * CHUNK_MAX)
     throw new HttpError(413, 'A cópia é demasiado grande. Experimente sem as fotografias.');
+
+  // Modo poupança (90% de um limite diário): não começam cópias novas até às 00:00 UTC.
+  if (await savingsMode(c.env.DB, now())) {
+    throw new HttpError(
+      503,
+      'As cópias na nuvem estão em pausa até à meia-noite (hora UTC), para poupar recursos. Os seus dados continuam guardados neste dispositivo. Tente amanhã.',
+    );
+  }
 
   const userId = c.get('userId');
   const db = c.env.DB;

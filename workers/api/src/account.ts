@@ -40,6 +40,9 @@ account.get('/', async (c) => {
     ).bind(userId),
   ]);
   return c.json({
+    id: userId,
+    papel: c.get('role'),
+    sessao: c.get('sessionMethod'),
     criada_em: (user!.results[0] as { created_at: number }).created_at,
     passkeys: (passkeys!.results[0] as { n: number }).n,
     chaves: (wraps!.results as WrapRow[]).map((w) => ({
@@ -127,6 +130,7 @@ account.delete('/', async (c) => {
     'passkeys',
     'sessions',
     'auth_challenges',
+    'ai_usage_daily',
   ];
   await c.env.DB.batch([
     ...tables.map((t) => c.env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(userId)),
