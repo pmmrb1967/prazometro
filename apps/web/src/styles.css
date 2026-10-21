@@ -868,3 +868,18 @@ pre.anonymized {
 .deadline-past {
   border-left-color: var(--muted);
 }
+
+/* Partilha familiar */
+.share-link {
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, monospace;
+  padding: 0.75rem;
+  background: var(--bg);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+}
+/* Títulos de cartões que não são ligações (por exemplo, nas partilhas recebidas) */
+p.card-title {
+  margin: 0;
+  text-decoration: none;
+}

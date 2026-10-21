@@ -286,12 +286,12 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 8 — Partilha familiar (1–2 sem, opcional)
 
-- [ ] Só avançar se houver pedidos de utilizadores
-- [ ] Migração `family_shares`
-- [ ] Convite por ligação ou código, com âmbito (por exemplo, só garantias ou só o processo pós-óbito)
-- [ ] Partilha cifrada ponta a ponta (chave de partilha trocada entre dispositivos)
-- [ ] Revogação de acesso
-- [ ] Atualização ao abrir a app (sem tempo real)
+- [x] Só avançar se houver pedidos de utilizadores (o autor pediu para avançar a 2026-10-21)
+- [x] Migração `family_shares` (`db/migrations/0004_family_shares.sql`; no máximo 10 partilhas por conta, até 1,5 MB cada)
+- [x] Convite por ligação, com âmbito: garantias, SNS, cartas ou pós-óbito (este só em pré-visualização). Quem recebe não precisa de conta; quem partilha precisa de conta
+- [x] Partilha cifrada ponta a ponta: chave AES-GCM aleatória que só existe na ligação, depois do `#` (nunca chega ao servidor); id e tema ligados ao texto cifrado
+- [x] Revogação de acesso: apaga no servidor; os dados desaparecem do dispositivo de quem recebeu quando abre a app. As partilhas criadas noutro telemóvel também se podem retirar
+- [x] Atualização ao abrir a app (sem tempo real): quem partilha envia só se os dados mudaram; quem recebe usa um pedido condicional (`If-None-Match`)
 
 ### Fase 9 — Lançamento (0,5 sem, em paralelo a partir da fase 5)
 
@@ -336,3 +336,34 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
 - [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin (valor inicial no código: 10 por conta e 200 no total; só conta se o `gemini-admin` for ligado)
+
+## 10. Por validar (pelo autor, antes de dar as fases por concluídas)
+
+Feito e testado com dados fictícios, mas à espera de confirmação com uso real ou de decisão.
+
+Fase 5 (admin e monitorização)
+
+- [ ] Abrir `/admin` com a passkey e confirmar os números e os alertas
+- [ ] Escolher o canal dos alertas (por exemplo, WhatsApp)
+
+Fase 6 (cartas explicadas)
+
+- [ ] Ler uma carta com uma chave verdadeira da Gemini e da Claude (só foi testado o modo sem IA e uma chave falsa)
+- [ ] Ler cartas e PDF verdadeiros (fotografia, PDF digital e PDF digitalizado) e ver se o texto e as datas saem certos
+- [ ] Juntar cartas reais anonimizadas ao conjunto de teste (hoje são 30 fictícias)
+- [ ] Rever as 3 regras de `rules/cartas/` e os textos "O que pode fazer" (`apps/web/src/modules/cartas/guidance.ts`) com um jurista
+- [ ] Decidir sobre o `gemini-admin` (exige chave paga na UE) e confirmar se os termos da Google permitem o `gemini-own`
+
+Fase 7 (pós-óbito, só em pré-visualização: `/pos-obito?pre-visualizar`)
+
+- [ ] Percorrer o fluxo: criar processo, marcar passos, inventário e as 3 cartas
+- [ ] Rever as 6 regras e as divergências de `docs/pos-obito-revisao.md` com um jurista
+- [ ] Confirmar os textos sem fonte oficial direta (Banco de Portugal, ASF, art. 2071.º) e decidir sobre o IRS do ano do óbito, o testamento e os veículos
+- [ ] Testar o tom e a linguagem com 3 famílias que passaram pelo processo
+- [ ] Depois da revisão: passar as regras e as cartas a `"publicada"` e pôr `available: true` em `apps/web/src/modules.ts`
+
+Fase 8 (partilha familiar)
+
+- [ ] Partilhar a partir de um telemóvel com conta e abrir a ligação noutro telemóvel (por exemplo, por WhatsApp)
+- [ ] Confirmar que uma alteração aparece no outro telemóvel depois de abrir as duas apps, e que "Retirar o acesso" apaga os dados do outro lado
+- [ ] Decidir se as fotografias das faturas devem entrar nas partilhas (hoje ficam de fora, para caber em 1,5 MB)

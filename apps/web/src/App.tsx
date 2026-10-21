@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { AccessibilityBar } from './components/AccessibilityBar';
 import { InstallPrompt } from './components/InstallPrompt';
 import { CartasList } from './modules/cartas/CartasList';
@@ -17,6 +17,8 @@ import { ProcessDetail } from './modules/pos-obito/ProcessDetail';
 import { ProcessForm } from './modules/pos-obito/ProcessForm';
 import { ProcessList } from './modules/pos-obito/ProcessList';
 import { usePreferences } from './preferences';
+import { ReceivedList, ReceivedView } from './share/Received';
+import { syncShares } from './share/shares';
 import { Link, matchPath, usePageHeading, usePath } from './router';
 
 // A página das cartas traz o gerador de PDF; só é descarregada quando é aberta.
@@ -28,6 +30,9 @@ const AdminPage = lazy(() => import('./admin/AdminPage'));
 // A leitura de cartas traz a anonimização e a IA; o OCR só é carregado ao ler uma fotografia.
 const NewLetter = lazy(() => import('./modules/cartas/NewLetter'));
 const AiSettings = lazy(() => import('./modules/cartas/AiSettings'));
+// A partilha traz a cifra e a conta; só quando é aberta.
+const SharePage = lazy(() => import('./share/SharePage'));
+const AcceptShare = lazy(() => import('./share/AcceptShare'));
 const PosObitoLetterPage = lazy(() => import('./modules/pos-obito/PosObitoLetterPage'));
 
 function Home() {
@@ -73,6 +78,10 @@ function Home() {
       <p className="cloud-link">
         <Link to="/copia">Cópia na nuvem, cifrada</Link>: para não perder os dados se mudar de
         telemóvel.
+      </p>
+      <p className="cloud-link">
+        <Link to="/partilhar">Partilhar com a família</Link>: um familiar acompanha os seus prazos
+        no telemóvel dele. <Link to="/partilhas">Partilhas que recebeu</Link>.
       </p>
 
       <LegalNotice />
@@ -139,6 +148,10 @@ function Routes({ path }: { path: string }) {
       return <PosObitoLetterPage id={m.id!} template={m.template!} />;
     if ((m = matchPath('/pos-obito/:id', path))) return <ProcessDetail id={m.id!} />;
   }
+  if (path === '/partilhar') return <SharePage />;
+  if (path === '/partilha') return <AcceptShare />;
+  if (path === '/partilhas') return <ReceivedList />;
+  if ((m = matchPath('/partilhas/:id', path))) return <ReceivedView id={m.id!} />;
   if (path === '/copia') return <CloudPage />;
   if (path === '/admin') return <AdminPage />;
   return <NotFound />;
@@ -147,6 +160,11 @@ function Routes({ path }: { path: string }) {
 export function App() {
   const [prefs, setPrefs] = usePreferences();
   const path = usePath();
+
+  // Partilhas familiares: envia as alterações e vai buscar as recebidas ao abrir a app.
+  useEffect(() => {
+    syncShares();
+  }, []);
 
   return (
     <>

@@ -137,6 +137,45 @@ export type DeathProcess = {
   criado_em: string;
 };
 
+export type ShareScope = 'garantia' | 'sns' | 'cartas' | 'pos-obito';
+
+/** Partilha feita por esta pessoa. A chave só existe aqui e na ligação de convite. */
+export type SentShare = {
+  id: string;
+  ambito: ShareScope;
+  chave: string;
+  /** Nome de quem partilha, mostrado a quem recebe (opcional). */
+  de?: string;
+  /** Para quem é (opcional, só neste dispositivo). */
+  para?: string;
+  /** SHA-256 dos dados enviados da última vez, para só reenviar quando mudam. */
+  hash?: string;
+  versao?: number;
+  enviada_em?: string;
+  criado_em: string;
+};
+
+/** Partilha recebida de outra pessoa, só de leitura. */
+export type ReceivedShare = {
+  id: string;
+  ambito: ShareScope;
+  chave: string;
+  estado: 'ativa' | 'retirada';
+  de?: string;
+  versao?: number;
+  /** Dados decifrados (o mesmo formato das tabelas locais). */
+  dados?: ShareData;
+  atualizada_em?: string;
+  recebida_em: string;
+};
+
+export type ShareData = {
+  compras?: Purchase[];
+  pedidos_sns?: WaitRequest[];
+  cartas?: ReceivedLetter[];
+  processos_obito?: DeathProcess[];
+};
+
 export const db = new Dexie('prazometro') as Dexie & {
   compras: EntityTable<Purchase, 'id'>;
   pedidos_sns: EntityTable<WaitRequest, 'id'>;
@@ -146,6 +185,8 @@ export const db = new Dexie('prazometro') as Dexie & {
   cartas: EntityTable<ReceivedLetter, 'id'>;
   ia: EntityTable<AiSettings, 'id'>;
   processos_obito: EntityTable<DeathProcess, 'id'>;
+  partilhas_enviadas: EntityTable<SentShare, 'id'>;
+  partilhas_recebidas: EntityTable<ReceivedShare, 'id'>;
 };
 
 db.version(1).stores({
@@ -169,6 +210,11 @@ db.version(4).stores({
 
 db.version(5).stores({
   processos_obito: 'id, criado_em',
+});
+
+db.version(6).stores({
+  partilhas_enviadas: 'id, criado_em',
+  partilhas_recebidas: 'id, recebida_em',
 });
 
 export function newId(): string {
