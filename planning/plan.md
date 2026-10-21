@@ -242,7 +242,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 - [x] Migrações: `usage_daily`, `alerts_sent`, `ai_usage_daily`, `rule_reports` (`db/migrations/0003_admin.sql`, com `settings` e o método de entrada em `sessions`)
 - [x] Worker `monitor` com Cron Trigger de hora a hora (ao minuto 5, sem endereço público)
-- [ ] Leitura da GraphQL Analytics API (`d1AnalyticsAdaptiveGroups`, pedidos ao Worker) com token só de leitura (código feito e testado com a API real; falta criar o token só com "Account Analytics: Read" e guardá-lo como segredo `CF_ANALYTICS_TOKEN` do Worker monitor)
+- [x] Leitura da GraphQL Analytics API (`d1AnalyticsAdaptiveGroups`, pedidos ao Worker) com token só de leitura (segredo `CF_ANALYTICS_TOKEN`, "Account Analytics: Read"; a gravar desde 2026-10-21)
 - [x] Tamanho de cada base e da conta, comparado com 500 MB e 5 GB (sem token, o tamanho da base sai da própria consulta ao D1)
 - [ ] Email Routing ativo e endereço do admin verificado; binding `send_email` (adiado: o Email Routing exige um domínio próprio, que é pago; o canal de envio dos alertas fica por decidir, por exemplo WhatsApp)
 - [x] Alertas aos 70% e 90%, no máximo um por métrica, patamar e dia (registados em `alerts_sent` e mostrados no painel; o envio ao admin liga-se num só ponto de `workers/monitor/src/monitor.ts`)
