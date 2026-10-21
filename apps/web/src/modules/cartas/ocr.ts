@@ -88,21 +88,37 @@ const PHASES: Record<string, string> = {
   'recognizing text': 'A ler o texto',
 };
 
+/** Lê uma ou mais imagens (por exemplo, as páginas de um PDF digitalizado) pela ordem dada. */
 export async function recognize(
-  canvas: HTMLCanvasElement,
+  canvases: HTMLCanvasElement | HTMLCanvasElement[],
   onProgress: (p: OcrProgress) => void,
 ): Promise<string> {
+  const pages = Array.isArray(canvases) ? canvases : [canvases];
+  let page = 0;
   const { createWorker, OEM } = await import('tesseract.js');
   const worker = await createWorker('por', OEM.LSTM_ONLY, {
     workerPath: '/ocr/worker.min.js',
     corePath: '/ocr/core',
     langPath: '/ocr/lang',
-    logger: (m: { status: string; progress: number }) =>
-      onProgress({ fase: PHASES[m.status] ?? 'A ler o texto', progresso: m.progress }),
+    logger: (m: { status: string; progress: number }) => {
+      const fase = PHASES[m.status] ?? 'A ler o texto';
+      onProgress(
+        m.status === 'recognizing text' && pages.length > 1
+          ? {
+              fase: `${fase} (página ${page + 1} de ${pages.length})`,
+              progresso: (page + m.progress) / pages.length,
+            }
+          : { fase, progresso: m.progress },
+      );
+    },
   });
   try {
-    const { data } = await worker.recognize(canvas, { rotateAuto: true });
-    return tidy(data.text);
+    const texts: string[] = [];
+    for (; page < pages.length; page++) {
+      const { data } = await worker.recognize(pages[page]!, { rotateAuto: true });
+      texts.push(tidy(data.text));
+    }
+    return texts.join('\n\n');
   } finally {
     await worker.terminate();
   }

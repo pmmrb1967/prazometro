@@ -6,6 +6,7 @@ import { db, newId, type ReceivedLetter } from '../../db';
 import { Link, navigate, usePageHeading } from '../../router';
 import { loadSettings, PROVIDER_LABELS, providerCall, recordUse } from './aiConfig';
 import { loadImage, prepare, recognize, type Crop, type OcrProgress, type Rotation } from './ocr';
+import { MAX_PAGES, PdfError, readPdf } from './pdf';
 
 type Step = 'fonte' | 'imagem' | 'texto' | 'confirmar';
 
@@ -26,6 +27,8 @@ export default function NewLetter() {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [note, setNote] = useState<string>();
+  const cameraInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const provider = settings?.fornecedor ?? 'none';
@@ -34,6 +37,8 @@ export default function NewLetter() {
   async function pickFile(file: File | undefined) {
     if (!file) return;
     setError(undefined);
+    setNote(undefined);
+    if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) return pickPdf(file);
     try {
       setImage(await loadImage(file));
       setRotation(0);
@@ -41,6 +46,32 @@ export default function NewLetter() {
       setStep('imagem');
     } catch {
       setError('Não foi possível abrir esta imagem. Experimente outra fotografia.');
+    }
+  }
+
+  async function pickPdf(file: File) {
+    setBusy(true);
+    setProgress({ fase: 'A abrir o PDF', progresso: 0 });
+    try {
+      const pdf = await readPdf(file);
+      const more =
+        pdf.total > MAX_PAGES
+          ? ` O PDF tem ${pdf.total} páginas: foram lidas só as primeiras ${MAX_PAGES}.`
+          : '';
+      if (pdf.tipo === 'texto') {
+        setText(pdf.texto);
+        setNote(`Texto tirado diretamente do PDF.${more}`);
+      } else {
+        setText(await recognize(pdf.paginas, setProgress));
+        setNote(`O PDF é uma digitalização: o texto foi lido página a página.${more}`);
+      }
+      setImage(undefined);
+      setStep('texto');
+    } catch (err) {
+      setError(err instanceof PdfError ? err.message : 'A leitura do PDF falhou. Tente outra vez.');
+    } finally {
+      setBusy(false);
+      setProgress(undefined);
     }
   }
 
@@ -105,30 +136,29 @@ export default function NewLetter() {
       {step === 'fonte' && (
         <>
           <p className="lead">
-            Fotografe a carta de frente, com boa luz e com a folha inteira. Se a carta tiver várias
-            páginas, comece pela que tem o prazo ou o pedido.
+            Fotografe a carta de frente, com boa luz e com a folha inteira, ou escolha a carta em
+            PDF, se a recebeu por email ou num portal. Se tiver várias páginas, comece pela que tem
+            o prazo ou o pedido.
           </p>
           <div className="actions">
-            <button type="button" className="primary" onClick={() => fileInput.current?.click()}>
-              Fotografar ou escolher a carta
+            <button
+              type="button"
+              className="primary"
+              onClick={() => cameraInput.current?.click()}
+              disabled={busy}
+            >
+              Fotografar a carta
             </button>
-            <button type="button" onClick={() => setStep('texto')}>
+            <button type="button" onClick={() => fileInput.current?.click()} disabled={busy}>
+              Escolher uma fotografia ou um PDF
+            </button>
+            <button type="button" onClick={() => setStep('texto')} disabled={busy}>
               Escrever ou colar o texto
             </button>
           </div>
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden="true"
-            onChange={(e) => pickFile(e.target.files?.[0])}
-          />
           <p className="hint">
-            A fotografia é lida no seu telemóvel e não é enviada para lado nenhum. Na primeira vez,
-            a app descarrega cerca de 13 MB para conseguir ler texto em português.
+            A fotografia ou o PDF são lidos no seu telemóvel e não são enviados para lado nenhum. Na
+            primeira vez, a app descarrega cerca de 13 MB para conseguir ler texto em português.
           </p>
         </>
       )}
@@ -156,33 +186,50 @@ export default function NewLetter() {
                 Usar a imagem inteira
               </button>
             )}
-            <button type="button" onClick={() => fileInput.current?.click()} disabled={busy}>
+            <button type="button" onClick={() => cameraInput.current?.click()} disabled={busy}>
               Outra fotografia
             </button>
           </div>
-          <input
-            ref={fileInput}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden="true"
-            onChange={(e) => pickFile(e.target.files?.[0])}
-          />
           <div className="actions">
             <button type="button" className="primary" onClick={readImage} disabled={busy}>
               {busy ? 'A ler…' : 'Ler o texto'}
             </button>
           </div>
-          {progress && (
-            <div className="ocr-progress">
-              <label htmlFor="ocr-progress">{progress.fase}…</label>
-              <progress id="ocr-progress" max={1} value={progress.progresso} />
-            </div>
-          )}
         </>
       )}
+
+      {progress && (
+        <div className="ocr-progress">
+          <label htmlFor="ocr-progress">{progress.fase}…</label>
+          <progress id="ocr-progress" max={1} value={progress.progresso} />
+        </div>
+      )}
+
+      <input
+        ref={cameraInput}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={(e) => {
+          pickFile(e.target.files?.[0]);
+          e.target.value = '';
+        }}
+      />
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*,application/pdf"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={(e) => {
+          pickFile(e.target.files?.[0]);
+          e.target.value = '';
+        }}
+      />
 
       {step === 'texto' && (
         <form
@@ -196,7 +243,8 @@ export default function NewLetter() {
           <label className="field">
             Texto da carta
             <span className="hint">
-              Confira o texto e corrija o que foi mal lido, sobretudo as datas e os valores.
+              {note && `${note} `}Confira o texto e corrija o que foi mal lido, sobretudo as datas e
+              os valores.
             </span>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={14} required />
           </label>

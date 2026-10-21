@@ -256,7 +256,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 6 — Cartas explicadas com IA (2 sem)
 
-- [x] OCR no dispositivo com Tesseract.js (`por`), com pré-processamento (recorte, contraste, rotação). Ficheiros do OCR servidos pelo próprio site (`/ocr/`), sem CDN
+- [x] OCR no dispositivo com Tesseract.js (`por`), com pré-processamento (recorte, contraste, rotação). Ficheiros do OCR servidos pelo próprio site (`/ocr/`), sem CDN. Cartas em PDF com o pdf.js: texto tirado diretamente dos PDF digitais e OCR página a página dos digitalizados (até 5 páginas)
 - [x] Anonimização: NIF, NISS, IBAN, nomes, moradas, números de processo e matrículas (também telefones, emails, referências e códigos postais), no dispositivo e outra vez no Worker
 - [x] Pacote `packages/ai` com interface comum `extrair(texto) → JSON`
 - [x] Fornecedor `none`: identificação do emissor por palavras-chave (AT, Segurança Social, tribunais, bancos, operadoras, SNS)
