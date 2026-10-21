@@ -139,3 +139,34 @@ describe('computeDeadline', () => {
     ).toThrow(RangeError);
   });
 });
+
+describe('computeDeadline com fim_do_mes ("até ao final do 3.º mês seguinte")', () => {
+  const tresMeses = spec({ quantidade: 3, unidade: 'meses', fim_do_mes: true });
+
+  it('termina no último dia do terceiro mês seguinte', () => {
+    expect(computeDeadline('2026-01-15', tresMeses)).toBe('2026-04-30');
+  });
+
+  it('a partir de fevereiro chega ao fim de maio, e não a 28 de maio', () => {
+    expect(computeDeadline('2026-02-28', tresMeses)).toBe('2026-05-31');
+  });
+
+  it('se o último dia for domingo, transita para segunda-feira', () => {
+    // 31/05/2026 é domingo.
+    expect(computeDeadline('2026-02-28', { ...tresMeses, transita_dia_util: true })).toBe(
+      '2026-06-01',
+    );
+    // 28/02/2027 é domingo; fevereiro de 2027 tem 28 dias.
+    expect(computeDeadline('2026-11-30', { ...tresMeses, transita_dia_util: true })).toBe(
+      '2027-03-01',
+    );
+  });
+
+  it('respeita os anos bissextos', () => {
+    expect(computeDeadline('2027-11-15', tresMeses)).toBe('2028-02-29');
+  });
+
+  it('não se aplica a dias', () => {
+    expect(() => computeDeadline('2026-10-20', spec({ fim_do_mes: true }))).toThrow(RangeError);
+  });
+});

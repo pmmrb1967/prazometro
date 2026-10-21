@@ -66,7 +66,7 @@ Cada ficheiro em `rules/<modulo>/` é validado pelo esquema zod em `packages/eng
 - `id` (`modulo.nome-da-regra`), `modulo`, `titulo`, `descricao` (linguagem simples)
 - `condicoes`: objeto em que cada chave é um campo dos factos e todas têm de se verificar. Valor simples = igualdade; ou operador `{ "em": [...] }`, `{ "nao_em": [...] }`, `{ "diferente": x }`, `{ "min": n }`, `{ "max": n }`, `{ "existe": true|false }`. A chave `qualquer` recebe uma lista de condições das quais basta uma
 - `inicio`: nome do facto que dá a data de início do prazo (por exemplo `data_entrega` ou `data_comunicacao`). Se o facto faltar ou não for uma data válida, a regra não se aplica e `inicio` aparece nas falhas
-- `prazo`: `{ "quantidade": n, "unidade": "dias|meses|anos", "contagem": "corridos|uteis", "transita_dia_util": true|false }`, com `transicao` e `alertas_dias_antes` opcionais (ver abaixo)
+- `prazo`: `{ "quantidade": n, "unidade": "dias|meses|anos", "contagem": "corridos|uteis", "transita_dia_util": true|false }`, com `transicao`, `fim_do_mes` (o prazo acaba no último dia do mês a que se chega, por exemplo "até ao final do 3.º mês seguinte"; só meses e anos) e `alertas_dias_antes` opcionais (ver abaixo)
 - `fontes`: lista de `{ "titulo", "url" (https), "artigo" }`, com pelo menos uma
 - `verificado_em` (AAAA-MM-DD, nunca no futuro) e `verificado_por`
 - `modelos_carta` (ids que têm de existir em `templates/`)
@@ -103,7 +103,7 @@ npx wrangler secret put GEMINI_API_KEY -c workers/api/wrangler.jsonc   # chave d
 
 O `dev` e o `build` da PWA correm antes `scripts/copy-ocr-assets.mjs`, que copia o Tesseract.js e os dados `por` para `apps/web/public/ocr/` (fora do Git).
 
-O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI (migrações D1, Worker `app` e Worker `monitor`) se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub. O painel de admin está em `/admin` e só abre para contas com papel `admin` e sessão aberta com passkey.
+O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI (migrações D1, Worker `app` e Worker `monitor`) se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub. O módulo pós-óbito está escondido até haver revisão jurídica: só abre em desenvolvimento ou depois de abrir `/pos-obito?pre-visualizar` no dispositivo (ver `docs/pos-obito-revisao.md`). O painel de admin está em `/admin` e só abre para contas com papel `admin` e sessão aberta com passkey.
 
 (Atualizar esta secção quando forem criados novos scripts.)
 

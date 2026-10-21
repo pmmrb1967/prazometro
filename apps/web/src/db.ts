@@ -110,6 +110,33 @@ export type AiSettings = {
   uso: Partial<Record<AiProvider, { dia: string; hoje: number; total: number }>>;
 };
 
+/** Estado de cada passo do processo pós-óbito. */
+export type StepState = 'por_fazer' | 'feito' | 'nao_aplica';
+
+export type AssetType = 'conta' | 'imovel' | 'veiculo' | 'seguro' | 'contrato' | 'outro';
+
+/** Um bem ou contrato da pessoa que faleceu (inventário). */
+export type EstateAsset = {
+  id: string;
+  tipo: AssetType;
+  descricao: string;
+  /** Banco, seguradora ou empresa. */
+  entidade?: string;
+  tratado: boolean;
+};
+
+export type DeathProcess = {
+  id: string;
+  /** Opcional: só serve para as cartas e fica no dispositivo. */
+  nome?: string;
+  data_obito: string;
+  /** Data do registo na conservatória; se faltar, os prazos contam da data do óbito. */
+  data_registo_obito?: string;
+  passos: Record<string, { estado: StepState; atualizado_em: string }>;
+  bens: EstateAsset[];
+  criado_em: string;
+};
+
 export const db = new Dexie('prazometro') as Dexie & {
   compras: EntityTable<Purchase, 'id'>;
   pedidos_sns: EntityTable<WaitRequest, 'id'>;
@@ -118,6 +145,7 @@ export const db = new Dexie('prazometro') as Dexie & {
   nuvem: EntityTable<CloudState, 'id'>;
   cartas: EntityTable<ReceivedLetter, 'id'>;
   ia: EntityTable<AiSettings, 'id'>;
+  processos_obito: EntityTable<DeathProcess, 'id'>;
 };
 
 db.version(1).stores({
@@ -137,6 +165,10 @@ db.version(3).stores({
 db.version(4).stores({
   cartas: 'id, criado_em',
   ia: 'id',
+});
+
+db.version(5).stores({
+  processos_obito: 'id, criado_em',
 });
 
 export function newId(): string {

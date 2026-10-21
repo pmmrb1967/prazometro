@@ -837,3 +837,34 @@ pre.anonymized {
 .letter-facts dd {
   margin: 0;
 }
+
+/* Pós-óbito: passos */
+.step-card h3 {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.step-feito,
+.step-nao_aplica {
+  background: var(--bg);
+}
+.tag {
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.15rem 0.6rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+}
+.deadline,
+.deadline-past {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 6px solid var(--attention);
+  background: var(--bg);
+  border-radius: 0 8px 8px 0;
+}
+.deadline-past {
+  border-left-color: var(--muted);
+}

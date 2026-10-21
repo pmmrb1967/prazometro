@@ -7,7 +7,13 @@ import { Link, usePageHeading } from '../router';
 import { LegalNotice } from './LegalNotice';
 
 // Campos que se escrevem em várias linhas.
-const MULTILINE = new Set(['morada', 'loja_morada', 'descricao_defeito', 'situacao']);
+const MULTILINE = new Set([
+  'morada',
+  'loja_morada',
+  'entidade_morada',
+  'descricao_defeito',
+  'situacao',
+]);
 
 type Props = {
   templateId: string;

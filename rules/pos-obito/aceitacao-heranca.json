@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.aceitacao-heranca",
+  "modulo": "pos-obito",
+  "titulo": "Aceitar ou repudiar a herança",
+  "descricao": "O direito de aceitar a herança acaba ao fim de 10 anos a contar do momento em que a pessoa sabe que é herdeira. Quem não quer a herança (por exemplo, por ter mais dívidas do que bens) pode repudiá-la.",
+  "inicio": "data_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 10,
+    "unidade": "anos",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [180]
+  },
+  "fontes": [
+    {
+      "titulo": "Código Civil",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1966-34509075",
+      "artigo": "2059.º, n.º 1 (caducidade do direito de aceitar)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir de jurisprudência sobre o Código Civil; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "O prazo conta-se a partir do conhecimento de ter sido chamado à herança, que pode ser posterior ao óbito. A app conta a partir do óbito, que é a data mais cedo. Não foi possível abrir o texto consolidado do artigo; confirmado por acórdãos da Relação."
+}

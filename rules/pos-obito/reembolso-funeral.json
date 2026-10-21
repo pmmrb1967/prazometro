@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.reembolso-funeral",
+  "modulo": "pos-obito",
+  "titulo": "Pedir o reembolso das despesas de funeral",
+  "descricao": "Quem pagou o funeral pode pedir à Segurança Social o reembolso das despesas, até 3 vezes o IAS (1611,39 euros em 2026), no prazo de 90 dias a contar do registo do óbito. Não se acumula com o subsídio por morte.",
+  "inicio": "data_registo_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 90,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [30, 7]
+  },
+  "fontes": [
+    {
+      "titulo": "Segurança Social: requerimento de reembolso de despesas de funeral (RP 5076)",
+      "url": "https://seg-social.pt/documents/10152/21738/RP_5076/df2a273d-d88e-41eb-a47b-cf6dd8cf0a9c",
+      "artigo": "Prazo de 90 dias a contar do registo do óbito"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do formulário da Segurança Social; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Um folheto da Segurança Social de 2013 contava os 90 dias a partir da morte; o formulário atual conta a partir do registo do óbito. Se a data do registo não for indicada, a app conta a partir da data do óbito (a data mais cedo). Confirmar com um jurista quando se aplica o reembolso e quando se aplica o subsídio por morte."
+}

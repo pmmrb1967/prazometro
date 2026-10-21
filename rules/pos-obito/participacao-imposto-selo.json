@@ -1,0 +1,34 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.participacao-imposto-selo",
+  "modulo": "pos-obito",
+  "titulo": "Participar o óbito às Finanças (Imposto do Selo)",
+  "descricao": "O cabeça de casal tem de entregar a participação do óbito e a relação de bens (modelo 1 do Imposto do Selo) até ao final do terceiro mês seguinte ao óbito. É obrigatória se a pessoa tinha bens em Portugal, mesmo que os herdeiros não paguem imposto.",
+  "inicio": "data_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 3,
+    "unidade": "meses",
+    "contagem": "corridos",
+    "transita_dia_util": true,
+    "fim_do_mes": true,
+    "alertas_dias_antes": [30, 7]
+  },
+  "fontes": [
+    {
+      "titulo": "Código do Imposto do Selo",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/selo/Pages/selo26.aspx",
+      "artigo": "26.º, n.os 1 e 3 (participação até ao final do 3.º mês seguinte)"
+    },
+    {
+      "titulo": "Portal das Finanças: Óbito",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/apoio_ao_contribuinte/Cidadaos/Dados_pessoais_familia/Familia/Obito",
+      "artigo": "Participação (modelo 1 ISTG) e herdeiros isentos"
+    }
+  ],
+  "modelos_carta": ["pos-obito.comunicacao-banco"],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do Portal das Finanças; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "O chefe de finanças pode prorrogar o prazo até 60 dias, a pedido justificado (art. 26.º, n.º 5); a app não conta essa prorrogação."
+}

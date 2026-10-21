@@ -12,6 +12,10 @@ import { RequestDetail } from './modules/sns/RequestDetail';
 import { RequestForm } from './modules/sns/RequestForm';
 import { SnsList } from './modules/sns/SnsList';
 import { MODULES } from './modules';
+import { previewEnabled } from './modules/pos-obito/preview';
+import { ProcessDetail } from './modules/pos-obito/ProcessDetail';
+import { ProcessForm } from './modules/pos-obito/ProcessForm';
+import { ProcessList } from './modules/pos-obito/ProcessList';
 import { usePreferences } from './preferences';
 import { Link, matchPath, usePageHeading, usePath } from './router';
 
@@ -24,6 +28,7 @@ const AdminPage = lazy(() => import('./admin/AdminPage'));
 // A leitura de cartas traz a anonimização e a IA; o OCR só é carregado ao ler uma fotografia.
 const NewLetter = lazy(() => import('./modules/cartas/NewLetter'));
 const AiSettings = lazy(() => import('./modules/cartas/AiSettings'));
+const PosObitoLetterPage = lazy(() => import('./modules/pos-obito/PosObitoLetterPage'));
 
 function Home() {
   const heading = usePageHeading<HTMLHeadingElement>('Início');
@@ -42,23 +47,27 @@ function Home() {
       <InstallPrompt />
 
       <ul className="modules">
-        {MODULES.map((m) => (
-          <li key={m.id}>
-            <article className="module" aria-labelledby={`mod-${m.id}`}>
-              <h2 id={`mod-${m.id}`}>
-                {m.available ? (
-                  <Link to={`/${m.id}`} className="module-link">
-                    {m.title}
-                  </Link>
-                ) : (
-                  m.title
-                )}
-              </h2>
-              <p>{m.summary}</p>
-              {!m.available && <span className="soon">Em breve</span>}
-            </article>
-          </li>
-        ))}
+        {MODULES.map((m) => {
+          const open = m.available || (m.preview && previewEnabled());
+          return (
+            <li key={m.id}>
+              <article className="module" aria-labelledby={`mod-${m.id}`}>
+                <h2 id={`mod-${m.id}`}>
+                  {open ? (
+                    <Link to={`/${m.id}`} className="module-link">
+                      {m.title}
+                    </Link>
+                  ) : (
+                    m.title
+                  )}
+                </h2>
+                <p>{m.summary}</p>
+                {!open && <span className="soon">Em breve</span>}
+                {open && !m.available && <span className="soon">Pré-visualização</span>}
+              </article>
+            </li>
+          );
+        })}
       </ul>
 
       <p className="cloud-link">
@@ -67,6 +76,22 @@ function Home() {
       </p>
 
       <LegalNotice />
+    </>
+  );
+}
+
+/** Módulo à espera de revisão jurídica, fora da pré-visualização. */
+function NotReady() {
+  const heading = usePageHeading<HTMLHeadingElement>('Em preparação');
+  return (
+    <>
+      <h1 ref={heading} tabIndex={-1}>
+        Em preparação
+      </h1>
+      <p>Este tema ainda está a ser revisto por um jurista e vai ficar disponível em breve.</p>
+      <p>
+        <Link to="/">Voltar ao início</Link>
+      </p>
     </>
   );
 }
@@ -105,6 +130,15 @@ function Routes({ path }: { path: string }) {
   if (path === '/cartas/nova') return <NewLetter />;
   if (path === '/cartas/ia') return <AiSettings />;
   if ((m = matchPath('/cartas/:id', path))) return <LetterDetail id={m.id!} />;
+  if (path === '/pos-obito' || path.startsWith('/pos-obito/')) {
+    if (!previewEnabled()) return <NotReady />;
+    if (path === '/pos-obito') return <ProcessList />;
+    if (path === '/pos-obito/novo') return <ProcessForm />;
+    if ((m = matchPath('/pos-obito/:id/editar', path))) return <ProcessForm id={m.id} />;
+    if ((m = matchPath('/pos-obito/:id/carta/:template', path)))
+      return <PosObitoLetterPage id={m.id!} template={m.template!} />;
+    if ((m = matchPath('/pos-obito/:id', path))) return <ProcessDetail id={m.id!} />;
+  }
   if (path === '/copia') return <CloudPage />;
   if (path === '/admin') return <AdminPage />;
   return <NotFound />;

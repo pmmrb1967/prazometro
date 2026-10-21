@@ -1,6 +1,7 @@
 import { todayInLisbon } from '@prazometro/engine';
 import {
   db,
+  type DeathProcess,
   type Profile,
   type Purchase,
   type ReceivedLetter,
@@ -22,6 +23,8 @@ type BackupFile = {
   pedidos_sns?: WaitRequest[];
   /** Opcional: as cópias feitas antes do módulo Cartas não o têm. */
   cartas?: ReceivedLetter[];
+  /** Opcional: as cópias feitas antes do módulo Pós-óbito não o têm. */
+  processos_obito?: DeathProcess[];
   perfil: Profile[];
   ficheiros: { id: string; nome: string; tipo: string; base64: string }[];
 };
@@ -54,10 +57,11 @@ export async function exportBackup({
   converter,
 }: ExportOptions = {}): Promise<string> {
   // A configuração da IA (com as chaves) fica fora das cópias, de propósito.
-  const [compras, pedidos_sns, cartas, perfil, ficheiros] = await Promise.all([
+  const [compras, pedidos_sns, cartas, processos_obito, perfil, ficheiros] = await Promise.all([
     db.compras.toArray(),
     db.pedidos_sns.toArray(),
     db.cartas.toArray(),
+    db.processos_obito.toArray(),
     db.perfil.toArray(),
     withFiles ? db.ficheiros.toArray() : Promise.resolve([]),
   ]);
@@ -68,6 +72,7 @@ export async function exportBackup({
     compras,
     pedidos_sns,
     cartas,
+    processos_obito,
     perfil,
     ficheiros: await Promise.all(
       ficheiros.map(async (original) => {
@@ -93,11 +98,19 @@ export async function importBackup(text: string): Promise<{ compras: number; ped
   if (data.versao !== 1)
     throw new Error('Esta cópia foi feita por uma versão mais recente da app.');
   const pedidos = data.pedidos_sns ?? [];
-  const tables = [db.compras, db.pedidos_sns, db.cartas, db.perfil, db.ficheiros];
+  const tables = [
+    db.compras,
+    db.pedidos_sns,
+    db.cartas,
+    db.processos_obito,
+    db.perfil,
+    db.ficheiros,
+  ];
   await db.transaction('rw', tables, async () => {
     await db.compras.bulkPut(data.compras);
     await db.pedidos_sns.bulkPut(pedidos);
     await db.cartas.bulkPut(data.cartas ?? []);
+    await db.processos_obito.bulkPut(data.processos_obito ?? []);
     await db.perfil.bulkPut(data.perfil ?? []);
     await db.ficheiros.bulkPut(
       (data.ficheiros ?? []).map((f) => ({

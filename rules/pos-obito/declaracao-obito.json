@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.declaracao-obito",
+  "modulo": "pos-obito",
+  "titulo": "Declarar o óbito na conservatória",
+  "descricao": "O óbito tem de ser declarado numa conservatória do registo civil nas 48 horas seguintes. Normalmente é a agência funerária que trata disto.",
+  "inicio": "data_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 2,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": false
+  },
+  "fontes": [
+    {
+      "titulo": "gov.pt: Declarar um óbito",
+      "url": "https://www.gov.pt/servicos/declarar-um-obito",
+      "artigo": "Código do Registo Civil (prazo de 48 horas)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "O prazo legal é de 48 horas a contar da morte (ou da autópsia, do achamento do corpo ou da dispensa de autópsia). A app conta 2 dias a partir da data do óbito. Falta confirmar o artigo do Código do Registo Civil."
+}

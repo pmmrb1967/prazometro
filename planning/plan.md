@@ -274,12 +274,12 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ### Fase 7 — Pós-óbito e heranças (2 sem)
 
-- [ ] Levantamento de passos, prazos e custos com fontes (registo, AT, Segurança Social, bancos, habilitação de herdeiros)
-- [ ] Registar divergências entre fontes e resolvê-las com um jurista
-- [ ] Checklist cronológica com estado por passo
-- [ ] Inventário de bens (contas, imóveis, veículos, seguros, subscrições)
-- [ ] Modelos de carta: cancelamento de contratos, comunicação a bancos e seguradoras
-- [ ] **Revisão jurídica completa antes de publicar**
+- [x] Levantamento de passos, prazos e custos com fontes (registo, AT, Segurança Social, bancos, habilitação de herdeiros): 6 regras em `rules/pos-obito/` e 11 passos, todos "a rever". O motor ganhou `fim_do_mes` para "até ao final do 3.º mês seguinte"
+- [ ] Registar divergências entre fontes e resolvê-las com um jurista (registadas nas `notas` das regras e em `docs/pos-obito-revisao.md`; falta o jurista)
+- [x] Checklist cronológica com estado por passo (por fazer, tratado, não se aplica) e lembretes `.ics`
+- [x] Inventário de bens (contas, imóveis, veículos, seguros, subscrições), com carta sugerida por bem
+- [x] Modelos de carta: cancelamento de contratos, comunicação a bancos e seguradoras
+- [ ] **Revisão jurídica completa antes de publicar** (até lá o módulo só abre em pré-visualização: `/pos-obito?pre-visualizar`)
 - [ ] Linguagem cuidada e tom sensível (testar com pessoas que passaram pelo processo)
 
 **Concluída quando**: um jurista valida o conteúdo e 3 famílias testam o fluxo.

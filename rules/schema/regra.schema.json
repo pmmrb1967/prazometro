@@ -69,6 +69,9 @@
             "sabado_domingo_feriado"
           ]
         },
+        "fim_do_mes": {
+          "type": "boolean"
+        },
         "alertas_dias_antes": {
           "type": "array",
           "items": {

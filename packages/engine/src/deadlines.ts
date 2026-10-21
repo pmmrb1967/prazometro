@@ -1,4 +1,13 @@
-import { addDays, addMonths, addYears, dayOfWeek, type IsoDate } from './date';
+import {
+  addDays,
+  addMonths,
+  addYears,
+  dayOfWeek,
+  daysInMonth,
+  formatDate,
+  parseDate,
+  type IsoDate,
+} from './date';
 import { isHoliday } from './holidays';
 
 // Contagem de prazos segundo o Código Civil, art. 279.º:
@@ -10,6 +19,8 @@ import { isHoliday } from './holidays';
 //   tribunal fechado ao sábado (por exemplo, CPA art. 87.º ou CPC art. 138.º), a regra tem de o
 //   indicar com `transicao: "sabado_domingo_feriado"`.
 // Na contagem em dias úteis não contam sábados, domingos nem feriados nacionais.
+// Com `fim_do_mes`, o prazo termina no último dia do mês a que se chega (por exemplo, "até ao
+// final do terceiro mês seguinte ao óbito", Código do Imposto do Selo, art. 26.º).
 // Na dúvida, o motor dá sempre a data mais cedo: é a que protege quem usa a app.
 
 export type DeadlineUnit = 'dias' | 'meses' | 'anos';
@@ -23,6 +34,8 @@ export type DeadlineSpec = {
   transita_dia_util: boolean;
   /** Que dias fazem o fim do prazo passar para o dia útil seguinte. Por defeito, domingo e feriado. */
   transicao?: DeadlineTransition;
+  /** O prazo termina no último dia do mês a que se chega (só para meses e anos). */
+  fim_do_mes?: boolean;
 };
 
 export function isBusinessDay(date: IsoDate): boolean {
@@ -74,6 +87,12 @@ export function computeDeadline(start: IsoDate, spec: DeadlineSpec): IsoDate {
     end = addMonths(start, quantidade);
   } else {
     end = addYears(start, quantidade);
+  }
+
+  if (spec.fim_do_mes) {
+    if (unidade === 'dias') throw new RangeError('"fim_do_mes" só se aplica a meses e anos');
+    const { year, month } = parseDate(end);
+    end = formatDate(year, month, daysInMonth(year, month));
   }
 
   if (transita_dia_util && mustTransit(end, spec.transicao ?? 'domingo_feriado')) {

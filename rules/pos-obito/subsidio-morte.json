@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.subsidio-morte",
+  "modulo": "pos-obito",
+  "titulo": "Pedir o subsídio por morte",
+  "descricao": "O cônjuge, o unido de facto, os filhos e outros familiares podem ter direito ao subsídio por morte, um pagamento único de 3 vezes o IAS (1611,39 euros em 2026). Tem de ser pedido nos 180 dias seguintes ao registo do óbito.",
+  "inicio": "data_registo_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 180,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [30, 7]
+  },
+  "fontes": [
+    {
+      "titulo": "gov.pt: Requerer o subsídio por morte",
+      "url": "https://www.gov.pt/servicos/requerer-o-subsidio-por-morte",
+      "artigo": "Prazo de 180 dias a contar do registo do óbito"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Se a data do registo não for indicada, a app conta a partir da data do óbito (a data mais cedo). Aplica-se a quem descontava para a Segurança Social; a Caixa Geral de Aposentações tem regras próprias."
+}

@@ -3,6 +3,8 @@ export type ModuleInfo = {
   title: string;
   summary: string;
   available: boolean;
+  /** Só aparece em pré-visualização (conteúdo à espera de revisão jurídica). */
+  preview?: boolean;
 };
 
 export const MODULES: ModuleInfo[] = [
@@ -29,5 +31,6 @@ export const MODULES: ModuleInfo[] = [
     title: 'Depois de um falecimento',
     summary: 'Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias.',
     available: false,
+    preview: true,
   },
 ];

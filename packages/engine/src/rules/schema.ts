@@ -51,12 +51,17 @@ export const DeadlineSchema = z
     contagem: z.enum(['corridos', 'uteis']),
     transita_dia_util: z.boolean(),
     transicao: z.enum(['domingo_feriado', 'sabado_domingo_feriado']).optional(),
+    fim_do_mes: z.boolean().optional(),
     alertas_dias_antes: z.array(DaysBeforeSchema).optional(),
   })
   .strict()
   .refine((p) => p.contagem === 'corridos' || p.unidade === 'dias', {
     message: 'A contagem em dias úteis só se aplica a dias',
     path: ['contagem'],
+  })
+  .refine((p) => !p.fim_do_mes || p.unidade !== 'dias', {
+    message: '"fim_do_mes" só se aplica a meses e anos',
+    path: ['fim_do_mes'],
   })
   .refine((p) => p.transicao === undefined || p.transita_dia_util, {
     message: '"transicao" só faz sentido com "transita_dia_util": true',

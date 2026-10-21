@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "pos-obito.pensao-sobrevivencia",
+  "modulo": "pos-obito",
+  "titulo": "Pedir a pensão de sobrevivência sem perder meses",
+  "descricao": "A pensão de sobrevivência pode ser pedida a qualquer momento. Se for pedida nos 6 meses seguintes à morte, é paga desde o mês seguinte ao falecimento. Depois disso, só é paga a partir do mês seguinte ao pedido.",
+  "inicio": "data_obito",
+  "condicoes": {},
+  "prazo": {
+    "quantidade": 6,
+    "unidade": "meses",
+    "contagem": "corridos",
+    "transita_dia_util": false,
+    "alertas_dias_antes": [30, 7]
+  },
+  "fontes": [
+    {
+      "titulo": "gov.pt: Pedir a pensão de sobrevivência",
+      "url": "https://www.gov.pt/servicos/requerer-a-pensao-de-sobrevivencia",
+      "artigo": "Pedido nos 6 meses após a morte: paga desde o mês seguinte ao falecimento"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-10-21",
+  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "Uma fonte secundária conta os 6 meses a partir do registo do óbito; o gov.pt conta a partir da morte, que é a data mais cedo. Aplica-se ao regime geral da Segurança Social."
+}
