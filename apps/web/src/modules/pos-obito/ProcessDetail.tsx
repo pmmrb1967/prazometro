@@ -8,7 +8,7 @@ import { downloadBlob } from '../../download';
 import { TEMPLATES } from '../../letters';
 import { Link, navigate, usePageHeading } from '../../router';
 import { Inventory } from './Inventory';
-import { PreviewBanner } from './PreviewBanner';
+import { DevelopmentBanner } from './DevelopmentBanner';
 import { calendarEvents, nextDeadline, progress, stepViews, type StepView } from './process';
 import { POS_OBITO_RULES } from './rules';
 import { PHASES } from './steps';
@@ -66,7 +66,7 @@ function Detail({ p }: { p: DeathProcess }) {
       <h1 ref={heading} tabIndex={-1}>
         {title}
       </h1>
-      <PreviewBanner />
+      <DevelopmentBanner />
       <p className="muted">
         Óbito a {formatDateShort(p.data_obito)}
         {p.data_registo_obito && `, registado a ${formatDateShort(p.data_registo_obito)}`}. {feitos}{' '}

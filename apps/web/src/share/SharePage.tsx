@@ -5,7 +5,6 @@ import { Choice } from '../components/Choice';
 import { api } from '../cloud/api';
 import { currentAccount } from '../cloud/cloud';
 import { db, type SentShare, type ShareScope } from '../db';
-import { previewEnabled } from '../modules/pos-obito/preview';
 import { Link, usePageHeading } from '../router';
 import { inviteLink, ShareTooLargeError } from './shareCrypto';
 import { createShare, pushShare, revokeShare, SCOPE_LABELS } from './shares';
@@ -141,9 +140,7 @@ function Orphans({ known }: { known: string[] }) {
 }
 
 function NewShare({ onCreated }: { onCreated: (s: SentShare) => void }) {
-  const scopes = (Object.entries(SCOPE_LABELS) as [ShareScope, string][]).filter(
-    ([s]) => s !== 'pos-obito' || previewEnabled(),
-  );
+  const scopes = Object.entries(SCOPE_LABELS) as [ShareScope, string][];
   const [scope, setScope] = useState<ShareScope>('garantia');
   const [de, setDe] = useState('');
   const [para, setPara] = useState('');

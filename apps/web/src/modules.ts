@@ -3,8 +3,8 @@ export type ModuleInfo = {
   title: string;
   summary: string;
   available: boolean;
-  /** Só aparece em pré-visualização (conteúdo à espera de revisão jurídica). */
-  preview?: boolean;
+  /** Disponível, mas à espera de revisão jurídica: mostra o aviso "Em desenvolvimento". */
+  inDevelopment?: boolean;
 };
 
 export const MODULES: ModuleInfo[] = [
@@ -30,7 +30,7 @@ export const MODULES: ModuleInfo[] = [
     id: 'pos-obito',
     title: 'Depois de um falecimento',
     summary: 'Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias.',
-    available: false,
-    preview: true,
+    available: true,
+    inDevelopment: true,
   },
 ];

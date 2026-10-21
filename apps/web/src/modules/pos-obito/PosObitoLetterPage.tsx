@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { LetterForm } from '../../components/LetterForm';
 import { db, type DeathProcess } from '../../db';
 import { Link } from '../../router';
+import { DevelopmentBanner } from './DevelopmentBanner';
 
 const CHOICES = {
   pedido: [
@@ -29,20 +30,23 @@ export default function PosObitoLetterPage({ id, template }: { id: string; templ
   if (p === undefined || profile === null) return null;
   const assetId = new URLSearchParams(location.search).get('bem');
   return (
-    <LetterForm
-      key={template}
-      templateId={template}
-      initial={prefill(p, assetId)}
-      choices={template === 'pos-obito.cancelamento-contrato' ? CHOICES : undefined}
-      profile={profile}
-      filename={`carta-${template.replace('pos-obito.', '')}-${formatDateShort(todayInLisbon()).replaceAll('/', '-')}.pdf`}
-      backTo={`/pos-obito/${p.id}`}
-      crumbs={
-        <>
-          <Link to="/">Início</Link> › <Link to="/pos-obito">Depois de um falecimento</Link> ›{' '}
-          <Link to={`/pos-obito/${p.id}`}>{p.nome || 'Falecimento'}</Link>
-        </>
-      }
-    />
+    <>
+      <DevelopmentBanner />
+      <LetterForm
+        key={template}
+        templateId={template}
+        initial={prefill(p, assetId)}
+        choices={template === 'pos-obito.cancelamento-contrato' ? CHOICES : undefined}
+        profile={profile}
+        filename={`carta-${template.replace('pos-obito.', '')}-${formatDateShort(todayInLisbon()).replaceAll('/', '-')}.pdf`}
+        backTo={`/pos-obito/${p.id}`}
+        crumbs={
+          <>
+            <Link to="/">Início</Link> › <Link to="/pos-obito">Depois de um falecimento</Link> ›{' '}
+            <Link to={`/pos-obito/${p.id}`}>{p.nome || 'Falecimento'}</Link>
+          </>
+        }
+      />
+    </>
   );
 }

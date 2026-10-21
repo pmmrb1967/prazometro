@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { LegalNotice } from '../../components/LegalNotice';
 import { db, newId, type DeathProcess } from '../../db';
 import { Link, navigate, usePageHeading } from '../../router';
+import { DevelopmentBanner } from './DevelopmentBanner';
 
 type Draft = { nome: string; data_obito: string; data_registo_obito: string };
 
@@ -64,6 +65,7 @@ function ProcessFormInner({ existing }: { existing?: DeathProcess }) {
       <h1 ref={heading} tabIndex={-1}>
         {editing ? 'Alterar dados' : 'Começar'}
       </h1>
+      <DevelopmentBanner />
 
       <form className="form" onSubmit={onSubmit} noValidate>
         {errors.length > 0 && (

@@ -144,18 +144,18 @@ Estimativas indicativas, em semanas de trabalho a solo com Claude Code.
 
 Estado em 2026-10-21 (o que falta validar está na secção 10):
 
-| Fase                      | Estado                                                                 |
-| ------------------------- | ---------------------------------------------------------------------- |
-| 0 — Fundação              | Feita                                                                  |
-| 1 — Motor de regras       | Feita                                                                  |
-| 2 — Garantia              | Feita (falta revisão jurídica)                                         |
-| 3 — Espera no SNS         | Feita (falta revisão jurídica)                                         |
-| 4 — Contas e cópia        | Feita                                                                  |
-| 5 — Admin e monitorização | Feita (por validar; canal de alertas por decidir)                      |
-| 6 — Cartas com IA         | Feita, exceto `gemini-admin` (desligado) e o teste com cartas reais    |
-| 7 — Pós-óbito             | Feita em pré-visualização; falta revisão jurídica e teste com famílias |
-| 8 — Partilha familiar     | Feita (por validar)                                                    |
-| 9 — Lançamento            | Feita, exceto a consulta da marca e as publicações (do autor)          |
+| Fase                      | Estado                                                                             |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| 0 — Fundação              | Feita                                                                              |
+| 1 — Motor de regras       | Feita                                                                              |
+| 2 — Garantia              | Feita (falta revisão jurídica)                                                     |
+| 3 — Espera no SNS         | Feita (falta revisão jurídica)                                                     |
+| 4 — Contas e cópia        | Feita                                                                              |
+| 5 — Admin e monitorização | Feita (por validar; canal de alertas por decidir)                                  |
+| 6 — Cartas com IA         | Feita, exceto `gemini-admin` (desligado) e o teste com cartas reais                |
+| 7 — Pós-óbito             | Aberta com aviso "Em desenvolvimento"; falta revisão jurídica e teste com famílias |
+| 8 — Partilha familiar     | Feita (por validar)                                                                |
+| 9 — Lançamento            | Feita, exceto a consulta da marca e as publicações (do autor)                      |
 
 ### Fase 0 — Fundação (0,5 sem)
 
@@ -294,7 +294,8 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Checklist cronológica com estado por passo (por fazer, tratado, não se aplica) e lembretes `.ics`
 - [x] Inventário de bens (contas, imóveis, veículos, seguros, subscrições), com carta sugerida por bem
 - [x] Modelos de carta: cancelamento de contratos, comunicação a bancos e seguradoras
-- [ ] **Revisão jurídica completa antes de publicar** (até lá o módulo só abre em pré-visualização: `/pos-obito?pre-visualizar`)
+- [ ] **Revisão jurídica completa antes de divulgar** (desde 2026-10-21 o módulo está aberto a todos, por decisão do autor, com o aviso "Em desenvolvimento" em todas as páginas)
+- [ ] Fazer a revisão jurídica do pós-óbito antes das publicações no LinkedIn e nos grupos (fase 9); se não estiver feita, voltar a esconder o módulo
 - [ ] Linguagem cuidada e tom sensível (testar com pessoas que passaram pelo processo)
 
 **Concluída quando**: um jurista valida o conteúdo e 3 famílias testam o fluxo.
@@ -303,7 +304,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 - [x] Só avançar se houver pedidos de utilizadores (o autor pediu para avançar a 2026-10-21)
 - [x] Migração `family_shares` (`db/migrations/0004_family_shares.sql`; no máximo 10 partilhas por conta, até 1,5 MB cada)
-- [x] Convite por ligação, com âmbito: garantias, SNS, cartas ou pós-óbito (este só em pré-visualização). Quem recebe não precisa de conta; quem partilha precisa de conta
+- [x] Convite por ligação, com âmbito: garantias, SNS, cartas ou pós-óbito. Quem recebe não precisa de conta; quem partilha precisa de conta
 - [x] Partilha cifrada ponta a ponta: chave AES-GCM aleatória que só existe na ligação, depois do `#` (nunca chega ao servidor); id e tema ligados ao texto cifrado
 - [x] Revogação de acesso: apaga no servidor; os dados desaparecem do dispositivo de quem recebeu quando abre a app. As partilhas criadas noutro telemóvel também se podem retirar
 - [x] Atualização ao abrir a app (sem tempo real): quem partilha envia só se os dados mudaram; quem recebe usa um pedido condicional (`If-None-Match`)
@@ -371,13 +372,13 @@ Fase 6 (cartas explicadas)
 - [ ] Rever as 3 regras de `rules/cartas/` e os textos "O que pode fazer" (`apps/web/src/modules/cartas/guidance.ts`) com um jurista
 - [ ] Decidir sobre o `gemini-admin` (exige chave paga na UE) e confirmar se os termos da Google permitem o `gemini-own`
 
-Fase 7 (pós-óbito, só em pré-visualização: `/pos-obito?pre-visualizar`)
+Fase 7 (pós-óbito, aberto com o aviso "Em desenvolvimento")
 
 - [ ] Percorrer o fluxo: criar processo, marcar passos, inventário e as 3 cartas
 - [ ] Rever as 6 regras e as divergências de `docs/pos-obito-revisao.md` com um jurista
 - [ ] Confirmar os textos sem fonte oficial direta (Banco de Portugal, ASF, art. 2071.º) e decidir sobre o IRS do ano do óbito, o testamento e os veículos
 - [ ] Testar o tom e a linguagem com 3 famílias que passaram pelo processo
-- [ ] Depois da revisão: passar as regras e as cartas a `"publicada"` e pôr `available: true` em `apps/web/src/modules.ts`
+- [ ] Depois da revisão: passar as regras e as cartas a `"publicada"`, tirar `inDevelopment` em `apps/web/src/modules.ts` e o `DevelopmentBanner` das páginas do módulo
 
 Fase 9 (lançamento)
 

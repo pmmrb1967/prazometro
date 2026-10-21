@@ -12,7 +12,6 @@ import { RequestDetail } from './modules/sns/RequestDetail';
 import { RequestForm } from './modules/sns/RequestForm';
 import { SnsList } from './modules/sns/SnsList';
 import { MODULES } from './modules';
-import { previewEnabled } from './modules/pos-obito/preview';
 import { ProcessDetail } from './modules/pos-obito/ProcessDetail';
 import { ProcessForm } from './modules/pos-obito/ProcessForm';
 import { ProcessList } from './modules/pos-obito/ProcessList';
@@ -56,7 +55,7 @@ function Home() {
 
       <ul className="modules">
         {MODULES.map((m) => {
-          const open = m.available || (m.preview && previewEnabled());
+          const open = m.available;
           return (
             <li key={m.id}>
               <article className="module" aria-labelledby={`mod-${m.id}`}>
@@ -71,7 +70,7 @@ function Home() {
                 </h2>
                 <p>{m.summary}</p>
                 {!open && <span className="soon">Em breve</span>}
-                {open && !m.available && <span className="soon">Pré-visualização</span>}
+                {m.inDevelopment && <span className="soon">Em desenvolvimento</span>}
               </article>
             </li>
           );
@@ -88,22 +87,6 @@ function Home() {
       </p>
 
       <LegalNotice />
-    </>
-  );
-}
-
-/** Módulo à espera de revisão jurídica, fora da pré-visualização. */
-function NotReady() {
-  const heading = usePageHeading<HTMLHeadingElement>('Em preparação');
-  return (
-    <>
-      <h1 ref={heading} tabIndex={-1}>
-        Em preparação
-      </h1>
-      <p>Este tema ainda está a ser revisto por um jurista e vai ficar disponível em breve.</p>
-      <p>
-        <Link to="/">Voltar ao início</Link>
-      </p>
     </>
   );
 }
@@ -143,7 +126,6 @@ function Routes({ path }: { path: string }) {
   if (path === '/cartas/ia') return <AiSettings />;
   if ((m = matchPath('/cartas/:id', path))) return <LetterDetail id={m.id!} />;
   if (path === '/pos-obito' || path.startsWith('/pos-obito/')) {
-    if (!previewEnabled()) return <NotReady />;
     if (path === '/pos-obito') return <ProcessList />;
     if (path === '/pos-obito/novo') return <ProcessForm />;
     if ((m = matchPath('/pos-obito/:id/editar', path))) return <ProcessForm id={m.id} />;

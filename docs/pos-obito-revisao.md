@@ -1,8 +1,7 @@
 # Pós-óbito: pontos para a revisão jurídica
 
-O módulo está escondido em produção. Só abre em pré-visualização: abrir uma vez
-https://app.prazometro.workers.dev/pos-obito?pre-visualizar no dispositivo. Para sair, use o
-botão "Sair da pré-visualização".
+O módulo está aberto a todos em https://app.prazometro.workers.dev/pos-obito, com o aviso
+"Em desenvolvimento" em todas as páginas, até esta revisão estar feita.
 
 Todas as regras (`rules/pos-obito/`) e cartas (`templates/pos-obito/`) estão com
 `estado: "a_rever"`. Os textos dos passos estão em `apps/web/src/modules/pos-obito/steps.ts`.

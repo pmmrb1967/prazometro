@@ -4,7 +4,7 @@ import { LegalNotice } from '../../components/LegalNotice';
 import { db } from '../../db';
 import { Link, usePageHeading } from '../../router';
 import { nextDeadline, progress, stepViews } from './process';
-import { PreviewBanner } from './PreviewBanner';
+import { DevelopmentBanner } from './DevelopmentBanner';
 import { POS_OBITO_RULES } from './rules';
 
 export function ProcessList() {
@@ -20,7 +20,7 @@ export function ProcessList() {
       <h1 ref={heading} tabIndex={-1}>
         Depois de um falecimento
       </h1>
-      <PreviewBanner />
+      <DevelopmentBanner />
       <p className="lead">
         Lamentamos a sua perda. Nesta altura há muita coisa para tratar. A app mostra os passos por
         ordem, com os prazos, os custos e as cartas de que vai precisar. Pode ir fazendo ao seu

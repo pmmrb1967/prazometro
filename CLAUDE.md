@@ -103,7 +103,7 @@ npx wrangler secret put GEMINI_API_KEY -c workers/api/wrangler.jsonc   # chave d
 
 O `dev` e o `build` da PWA correm antes `scripts/copy-ocr-assets.mjs`, que copia o Tesseract.js e os dados `por` para `apps/web/public/ocr/` (fora do Git).
 
-O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI (migrações D1, Worker `app` e Worker `monitor`) se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub. O módulo pós-óbito está escondido até haver revisão jurídica: só abre em desenvolvimento ou depois de abrir `/pos-obito?pre-visualizar` no dispositivo (ver `docs/pos-obito-revisao.md`). A partilha familiar (`/partilhar`) cifra os dados no dispositivo com uma chave que só existe na ligação de convite, depois do `#`; o servidor (`/api/shares`) guarda só o texto cifrado. As páginas de privacidade, termos e aviso legal leem diretamente `docs/*.md` (alterar só lá). As opiniões de `/opiniao` vão para `/api/feedback` e aparecem no painel junto dos relatos de regras. O painel de admin está em `/admin` e só abre para contas com papel `admin` e sessão aberta com passkey.
+O Wrangler autentica-se com `CLOUDFLARE_API_TOKEN`, definido no `.env` da raiz (fora do Git). O token pertence à conta Cloudflare do Prazómetro (Prazometro@outlook.com), nunca à do Faturómetro. A base D1 foi criada com `--jurisdiction eu`. App publicada em https://app.prazometro.workers.dev (PWA servida como static assets) e API em https://app.prazometro.workers.dev/api/ (Worker `app`, subdomínio da conta `prazometro`). Todas as rotas da API ficam sob `/api`. O `main` é publicado automaticamente pela CI (migrações D1, Worker `app` e Worker `monitor`) se existir o segredo `CLOUDFLARE_API_TOKEN` no GitHub. O módulo pós-óbito está aberto a todos com o aviso "Em desenvolvimento" (`DevelopmentBanner`) em todas as páginas, até haver revisão jurídica (ver `docs/pos-obito-revisao.md`). A partilha familiar (`/partilhar`) cifra os dados no dispositivo com uma chave que só existe na ligação de convite, depois do `#`; o servidor (`/api/shares`) guarda só o texto cifrado. As páginas de privacidade, termos e aviso legal leem diretamente `docs/*.md` (alterar só lá). As opiniões de `/opiniao` vão para `/api/feedback` e aparecem no painel junto dos relatos de regras. O painel de admin está em `/admin` e só abre para contas com papel `admin` e sessão aberta com passkey.
 
 (Atualizar esta secção quando forem criados novos scripts.)
 
@@ -141,7 +141,7 @@ Consequências práticas:
 - Registar em logs dados pessoais, texto de cartas ou conteúdo de faturas.
 - Deixar o LLM decidir prazos, montantes ou elegibilidade.
 - Publicar uma regra sem `fontes` e `verificado_em`.
-- Publicar o módulo pós-óbito sem revisão por um jurista.
+- Divulgar o módulo pós-óbito sem revisão por um jurista. Até lá, as regras ficam `a_rever` e todas as páginas do módulo mostram o aviso "Em desenvolvimento".
 - Adicionar serviços que exijam cartão de crédito.
 - Usar português do Brasil.
 
