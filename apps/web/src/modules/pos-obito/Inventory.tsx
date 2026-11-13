@@ -100,12 +100,16 @@ export function Inventory({ p }: { p: DeathProcess }) {
           </select>
         </label>
         <label className="field">
-          Descrição{' '}
-          <span className="optional">(por exemplo, «conta à ordem» ou «casa de Viseu»)</span>
+          <span>
+            Descrição{' '}
+            <span className="optional">(por exemplo, «conta à ordem» ou «casa de Viseu»)</span>
+          </span>
           <input value={descricao} onChange={(e) => setDescricao(e.target.value)} />
         </label>
         <label className="field">
-          Banco, seguradora ou empresa <span className="optional">(opcional)</span>
+          <span>
+            Banco, seguradora ou empresa <span className="optional">(opcional)</span>
+          </span>
           <input value={entidade} onChange={(e) => setEntidade(e.target.value)} />
         </label>
         {error && (

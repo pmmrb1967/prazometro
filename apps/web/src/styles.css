@@ -7,6 +7,12 @@
   --fg: #14243a;
   --muted: #45546a;
   --line: #c9d2de;
+  /* Contornos de campos e botões: pelo menos 3:1 (WCAG 1.4.11). --line fica para divisórias. */
+  --control: #6b7890;
+  /* Texto sobre --brand (botões principais). */
+  --on-brand: #ffffff;
+  --danger: #a3261b;
+  --ok: #1f7a3f;
   --focus: #c47f00;
   --font: 'Atkinson Hyperlegible Next', 'Segoe UI', system-ui, sans-serif;
   color-scheme: light;
@@ -19,6 +25,11 @@
     --fg: #eef3f9;
     --muted: #b3c0d1;
     --line: #2c3e55;
+    --control: #8193ab;
+    --brand: #8fb8e8;
+    --on-brand: #0d1724;
+    --danger: #ff8a80;
+    --ok: #5cc98a;
     --focus: #f4b63a;
     color-scheme: dark;
   }
@@ -31,6 +42,10 @@
   --fg: #ffffff;
   --muted: #ffffff;
   --line: #ffffff;
+  --control: #ffffff;
+  --on-brand: #000000;
+  --danger: #ff8a80;
+  --ok: #ffffff;
   --focus: #ffd400;
   color-scheme: dark;
 }
@@ -65,6 +80,11 @@ body {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  min-height: 0;
+  min-width: 0;
 }
 
 .skip {
@@ -87,7 +107,9 @@ body {
   align-items: center;
   gap: 1rem;
   padding-block: 1rem;
-  padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  /* Alinhado com o conteúdo (52rem) nos ecrãs largos. */
+  padding-inline: max(1rem, env(safe-area-inset-left), calc((100% - 52rem) / 2 + 1rem))
+    max(1rem, env(safe-area-inset-right), calc((100% - 52rem) / 2 + 1rem));
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -132,7 +154,7 @@ button {
   min-width: 48px;
   padding: 0.25rem 0.9rem;
   border-radius: 10px;
-  border: 2px solid var(--line);
+  border: 2px solid var(--control);
   background: var(--surface);
   color: var(--fg);
   cursor: pointer;
@@ -140,7 +162,7 @@ button {
 button[aria-pressed='true'] {
   background: var(--brand);
   border-color: var(--brand);
-  color: var(--bg);
+  color: var(--on-brand);
 }
 
 .page {
@@ -204,7 +226,7 @@ p {
 button.primary {
   background: var(--brand);
   border-color: var(--brand);
-  color: var(--bg);
+  color: var(--on-brand);
   font-weight: 700;
   padding-inline: 1.5rem;
 }
@@ -270,7 +292,12 @@ a {
 }
 .crumbs {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
+}
+.crumbs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .page > h1 {
   margin-bottom: -1rem;
@@ -308,6 +335,13 @@ section {
 .module:has(.module-link) {
   border-color: var(--brand);
 }
+.module:has(.module-link:focus-visible) {
+  outline: 4px solid var(--focus);
+  outline-offset: 3px;
+}
+.module-link:focus-visible {
+  outline: none;
+}
 .module:has(.module-link):hover {
   box-shadow: 0 0 0 2px var(--brand);
 }
@@ -320,7 +354,7 @@ section {
   min-height: 48px;
   padding: 0.25rem 1.1rem;
   border-radius: 10px;
-  border: 2px solid var(--line);
+  border: 2px solid var(--control);
   background: var(--surface);
   color: var(--fg);
   text-decoration: none;
@@ -329,7 +363,7 @@ section {
 .button.primary {
   background: var(--brand);
   border-color: var(--brand);
-  color: var(--bg);
+  color: var(--on-brand);
   font-weight: 700;
   padding-inline: 1.5rem;
 }
@@ -340,8 +374,19 @@ button.danger {
   font-weight: 700;
 }
 button:disabled {
-  opacity: 0.6;
-  cursor: wait;
+  cursor: not-allowed;
+  border-style: dashed;
+  color: var(--muted);
+}
+button.primary:disabled {
+  color: var(--on-brand);
+  opacity: 0.7;
+}
+/* Botões soltos em secções e formulários não esticam até à largura toda. */
+section > button,
+.form > button,
+.page > button {
+  justify-self: start;
 }
 .actions {
   display: flex;
@@ -455,7 +500,7 @@ select {
   font-weight: 400;
   color: var(--fg);
   background: var(--surface);
-  border: 2px solid var(--line);
+  border: 2px solid var(--control);
   border-radius: 10px;
   padding: 0.6rem 0.75rem;
   min-height: 48px;
@@ -478,11 +523,12 @@ input[type='file'] {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   gap: 1rem;
 }
-.row + .hint {
+.row + .hint,
+.form > .field + .hint {
   margin-top: -0.75rem;
 }
 .choice {
-  border: 2px solid var(--line);
+  border: 2px solid var(--control);
   border-radius: 12px;
   padding: 0.75rem 1rem 1rem;
   margin: 0;
@@ -503,14 +549,14 @@ input[type='file'] {
 }
 .missing input,
 .missing textarea {
-  border-color: #a3261b;
+  border-color: var(--danger);
 }
 .field-error {
-  color: #a3261b;
+  color: var(--danger);
   font-weight: 400;
 }
 .errors {
-  border-left: 6px solid #a3261b;
+  border-left: 6px solid var(--danger);
   padding: 0.75rem 1rem;
   background: var(--surface);
   border-radius: 0 10px 10px 0;
@@ -519,7 +565,7 @@ input[type='file'] {
   margin: 0.25rem 0 0;
 }
 .ok {
-  border-left: 6px solid #1f7a3f;
+  border-left: 6px solid var(--ok);
   padding: 0.75rem 1rem;
   background: var(--surface);
   border-radius: 0 10px 10px 0;
@@ -920,17 +966,17 @@ p.card-title {
 }
 
 /* Rodapé e páginas de texto */
-/* Rodapé discreto e centrado, como no Validómetro (cerca de 13 px; cresce com os botões A) */
+/* Rodapé centrado, como no Validómetro, mas com letra legível (cerca de 16 px; cresce com os botões A) */
 .site-footer {
   display: grid;
   justify-items: center;
   gap: 0.35rem;
-  max-width: 46rem;
+  max-width: 52rem;
   margin: 2rem auto 0;
   padding: 1rem 1rem 2rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   text-align: center;
 }
 .site-footer p {
@@ -940,7 +986,12 @@ p.card-title {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.25rem 1rem;
+  gap: 0 1.25rem;
+}
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .site-footer a {
   color: var(--muted);
@@ -965,7 +1016,6 @@ p.card-title {
 
 /* Fatura no topo do registo da compra */
 .invoice-autofill {
-  margin: 1rem 0 1.5rem;
   padding: 1rem 1.25rem;
   border: 2px solid var(--line);
   border-radius: 0.75rem;
@@ -973,4 +1023,65 @@ p.card-title {
 }
 .invoice-autofill h2 {
   margin-top: 0;
+}
+
+/* Aviso de versão nova */
+.update-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem max(1rem, env(safe-area-inset-left));
+  background: var(--attention);
+  color: #14243a;
+  font-weight: 700;
+}
+.update-bar p {
+  margin: 0;
+}
+.update-bar button.primary {
+  background: #16355a;
+  border-color: #16355a;
+  color: #ffffff;
+}
+:root[data-contrast='alto'] .update-bar {
+  background: #000;
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+:root[data-contrast='alto'] .update-bar button.primary {
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+}
+
+/* Telemóvel: logótipo e "Entrar" na primeira linha, letra e contraste na segunda. */
+@media (max-width: 40rem) {
+  .top {
+    gap: 0.5rem 0.75rem;
+    padding-block: 0.75rem;
+  }
+  .top-tools {
+    display: contents;
+  }
+  .account-link {
+    order: 1;
+    margin-left: auto;
+  }
+  .a11y {
+    order: 2;
+    flex-basis: 100%;
+    gap: 0.5rem;
+  }
+  .a11y button {
+    padding-inline: 0.6rem;
+  }
+  .brand img {
+    width: 40px;
+    height: 40px;
+  }
+  .brand-name {
+    font-size: 1.4rem;
+  }
 }

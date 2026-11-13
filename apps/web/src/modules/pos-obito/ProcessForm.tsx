@@ -91,8 +91,10 @@ function ProcessFormInner({ existing }: { existing?: DeathProcess }) {
         </label>
 
         <label className="field">
-          Data do registo do óbito{' '}
-          <span className="optional">(opcional, está na certidão de óbito)</span>
+          <span>
+            Data do registo do óbito{' '}
+            <span className="optional">(opcional, está na certidão de óbito)</span>
+          </span>
           <input
             id="data_registo_obito"
             type="date"
@@ -107,8 +109,10 @@ function ProcessFormInner({ existing }: { existing?: DeathProcess }) {
         </p>
 
         <label className="field">
-          Nome da pessoa que faleceu{' '}
-          <span className="optional">(opcional, serve para as cartas)</span>
+          <span>
+            Nome da pessoa que faleceu{' '}
+            <span className="optional">(opcional, serve para as cartas)</span>
+          </span>
           <input
             id="nome"
             value={d.nome}

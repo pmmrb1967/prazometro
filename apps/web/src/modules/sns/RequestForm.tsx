@@ -174,8 +174,10 @@ function RequestFormInner({ existing }: { existing?: WaitRequest }) {
         <p className="hint">{start.hint}</p>
 
         <label className="field">
-          Descrição{' '}
-          <span className="optional">(opcional, por exemplo «consulta de Ortopedia»)</span>
+          <span>
+            Descrição{' '}
+            <span className="optional">(opcional, por exemplo «consulta de Ortopedia»)</span>
+          </span>
           <input
             id="descricao"
             value={d.descricao}
@@ -185,8 +187,10 @@ function RequestFormInner({ existing }: { existing?: WaitRequest }) {
         </label>
 
         <label className="field">
-          Hospital ou centro de saúde{' '}
-          <span className="optional">(opcional, serve para as cartas)</span>
+          <span>
+            Hospital ou centro de saúde{' '}
+            <span className="optional">(opcional, serve para as cartas)</span>
+          </span>
           <input
             id="instituicao"
             value={d.instituicao}
@@ -195,7 +199,9 @@ function RequestFormInner({ existing }: { existing?: WaitRequest }) {
         </label>
 
         <label className="field">
-          Data já marcada <span className="optional">(opcional, se já tiver)</span>
+          <span>
+            Data já marcada <span className="optional">(opcional, se já tiver)</span>
+          </span>
           <input
             id="data_marcada"
             type="date"
@@ -206,7 +212,9 @@ function RequestFormInner({ existing }: { existing?: WaitRequest }) {
         </label>
 
         <label className="field">
-          Notas <span className="optional">(opcional)</span>
+          <span>
+            Notas <span className="optional">(opcional)</span>
+          </span>
           <textarea
             id="notas"
             rows={3}

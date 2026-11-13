@@ -143,10 +143,13 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
             id="produto"
             value={d.produto}
             onChange={(e) => set('produto', e.target.value)}
-            placeholder="Por exemplo: máquina de lavar roupa"
+            aria-describedby="produto-dica"
             autoComplete="off"
           />
         </label>
+        <p id="produto-dica" className="hint">
+          Por exemplo: máquina de lavar roupa.
+        </p>
 
         <label className="field">
           Onde comprou? (nome da loja)
@@ -154,7 +157,9 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
         </label>
 
         <label className="field">
-          Morada da loja <span className="optional">(opcional, serve para as cartas)</span>
+          <span>
+            Morada da loja <span className="optional">(opcional, serve para as cartas)</span>
+          </span>
           <textarea
             id="loja_morada"
             rows={2}
@@ -240,7 +245,9 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
         )}
 
         <label className="field">
-          Preço <span className="optional">(opcional)</span>
+          <span>
+            Preço <span className="optional">(opcional)</span>
+          </span>
           <input
             id="preco"
             inputMode="decimal"
@@ -251,7 +258,9 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
         </label>
 
         <label className="field">
-          Notas <span className="optional">(opcional)</span>
+          <span>
+            Notas <span className="optional">(opcional)</span>
+          </span>
           <textarea
             id="notas"
             rows={3}

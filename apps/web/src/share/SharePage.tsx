@@ -183,11 +183,15 @@ function NewShare({ onCreated }: { onCreated: (s: SentShare) => void }) {
         onChange={setScope}
       />
       <label className="field">
-        O seu nome <span className="optional">(opcional, para quem recebe saber de quem é)</span>
+        <span>
+          O seu nome <span className="optional">(opcional, para quem recebe saber de quem é)</span>
+        </span>
         <input value={de} onChange={(e) => setDe(e.target.value)} autoComplete="name" />
       </label>
       <label className="field">
-        Para quem <span className="optional">(opcional, só fica neste telemóvel)</span>
+        <span>
+          Para quem <span className="optional">(opcional, só fica neste telemóvel)</span>
+        </span>
         <input value={para} onChange={(e) => setPara(e.target.value)} />
       </label>
       {error && (

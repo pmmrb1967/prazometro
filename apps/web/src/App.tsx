@@ -66,6 +66,7 @@ function Home() {
                   {open ? (
                     <Link to={`/${m.id}`} className="module-link">
                       {m.title}
+                      <span aria-hidden="true"> ›</span>
                     </Link>
                   ) : (
                     m.title
