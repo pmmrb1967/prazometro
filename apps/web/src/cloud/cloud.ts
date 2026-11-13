@@ -8,6 +8,7 @@ import {
   type RegistrationResponseJSON,
 } from '@simplewebauthn/browser';
 import { exportBackup, importBackup } from '../backupData';
+import { markSignedIn } from './session';
 import { db } from '../db';
 import { api, ApiError } from './api';
 import {
@@ -43,7 +44,9 @@ export { generateRecoveryCode, normalizeRecoveryCode };
 /** Conta com sessão aberta, ou null. */
 export async function currentAccount(): Promise<Account | null> {
   try {
-    return await api<Account>('/account');
+    const account = await api<Account>('/account');
+    markSignedIn(true);
+    return account;
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) return null;
     throw e;
@@ -100,6 +103,7 @@ export async function register(code: string) {
   await api('/auth/register/verify', {
     json: { challengeId, response, recoveryVerifier: await recoveryVerifier(code), wraps },
   });
+  markSignedIn(true);
   await saveKey(dek);
 }
 
@@ -114,6 +118,7 @@ export async function loginWithPasskey(): Promise<LoginResult> {
   const response = await startAuthentication({ optionsJSON: await withPrf(options) });
   const prf = takePrf(response);
   await api('/auth/login/verify', { json: { challengeId, response } });
+  markSignedIn(true);
   if (!prf) return { chave: !!(await db.nuvem.get('nuvem')) };
   sessionPrf = { credentialId: response.id, prf };
   const account = (await currentAccount())!;
@@ -136,6 +141,7 @@ export async function loginWithCode(input: string) {
   if (!code)
     throw new ApiError(400, 'O código tem 24 letras e números. Confirme se o escreveu bem.');
   await api('/auth/recover', { json: { recoveryVerifier: await recoveryVerifier(code) } });
+  markSignedIn(true);
   await unlockWithCode(code);
 }
 
@@ -239,10 +245,12 @@ export async function restoreBackup(onProgress?: Progress) {
 
 export async function logout() {
   await api('/auth/logout', { json: {} }).catch(() => undefined);
+  markSignedIn(false);
   await db.nuvem.delete('nuvem');
 }
 
 export async function deleteAccount() {
   await api('/account', { method: 'DELETE' });
+  markSignedIn(false);
   await db.nuvem.delete('nuvem');
 }

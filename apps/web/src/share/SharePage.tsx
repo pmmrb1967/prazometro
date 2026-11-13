@@ -56,10 +56,10 @@ export default function SharePage() {
           <h2 id="sem-conta">Precisa de uma conta</h2>
           <p>
             Para partilhar, a app precisa de guardar os dados cifrados no servidor. Crie uma conta
-            ou entre na cópia na nuvem. Quem recebe não precisa de conta.
+            ou entre na sua. Quem recebe não precisa de conta.
           </p>
-          <Link to="/copia" className="button primary">
-            Ir para a cópia na nuvem
+          <Link to="/conta" className="button primary">
+            Entrar ou criar conta
           </Link>
         </section>
       )}

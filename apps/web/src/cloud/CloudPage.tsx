@@ -75,7 +75,7 @@ function RecoveryCodeBox({
       '',
       'Se perder o código e a passkey, não há forma de recuperar a cópia, nem pelo Prazómetro.',
       '',
-      'Endereço: https://app.prazometro.workers.dev/copia',
+      'Endereço: https://app.prazometro.workers.dev/conta',
     ].join('\n');
     downloadBlob(
       await letterPdf(text, 'Código de recuperação do Prazómetro'),
@@ -253,17 +253,42 @@ function SignedOut({ onSignedIn }: { onSignedIn: () => void }) {
 
   return (
     <>
+      <section aria-labelledby="maneiras">
+        <h2 id="maneiras">Três maneiras de usar</h2>
+        <ul className="ways">
+          <li>
+            <h3>Sem conta</h3>
+            <p>
+              Pode usar tudo sem conta. Os dados ficam só neste dispositivo: se mudar de telemóvel
+              ou o perder, perde-os.
+            </p>
+          </li>
+          <li>
+            <h3>Com conta</h3>
+            <p>
+              Guarda uma cópia cifrada dos seus dados, para os recuperar noutro telemóvel. Entra com
+              a impressão digital ou o rosto, sem email nem palavra-passe.
+            </p>
+          </li>
+          <li>
+            <h3>Com a família</h3>
+            <p>
+              Com conta, pode partilhar os seus prazos com um familiar. Quem recebe não precisa de
+              conta.
+            </p>
+          </li>
+        </ul>
+      </section>
       <section aria-labelledby="novo">
-        <h2 id="novo">Ainda não tem cópia na nuvem</h2>
+        <h2 id="novo">Criar conta</h2>
         <p>
           Os dados são cifrados neste dispositivo antes de saírem. O servidor guarda só um ficheiro
-          ilegível: nem o Prazómetro consegue ver as suas compras, pedidos ou faturas. Não precisa
-          de email nem de palavra-passe.
+          ilegível: nem o Prazómetro consegue ver as suas compras, pedidos ou faturas.
         </p>
         {webauthn ? (
           <div className="actions">
             <button type="button" className="primary" onClick={() => setStep('criar')}>
-              Criar a cópia na nuvem
+              Criar conta
             </button>
           </div>
         ) : (
@@ -274,7 +299,7 @@ function SignedOut({ onSignedIn }: { onSignedIn: () => void }) {
         )}
       </section>
       <section aria-labelledby="ja-tenho">
-        <h2 id="ja-tenho">Já tem cópia na nuvem</h2>
+        <h2 id="ja-tenho">Já tem conta</h2>
         <div className="actions">
           {webauthn && (
             <button type="button" onClick={login} disabled={busy}>
@@ -357,7 +382,7 @@ function SignedIn({
   return (
     <>
       <section aria-labelledby="estado">
-        <h2 id="estado">A sua cópia</h2>
+        <h2 id="estado">Cópia na nuvem</h2>
         {account.copia ? (
           <p>
             Última cópia na nuvem: <strong>{formatWhen(account.copia.created_at)}</strong> (
@@ -427,10 +452,38 @@ function SignedIn({
         </p>
       </section>
 
-      {account.papel === 'admin' && (
+      <section aria-labelledby="familia">
+        <h2 id="familia">Partilhar com a família</h2>
         <p>
-          <Link to="/admin">Abrir o painel de admin</Link>
+          Um familiar acompanha os seus prazos no telemóvel dele. Os dados vão cifrados e pode
+          retirar o acesso quando quiser.
         </p>
+        <div className="actions">
+          <Link to="/partilhar" className="button">
+            Partilhar com a família
+          </Link>
+          <Link to="/partilhas" className="button">
+            Partilhas que recebeu
+          </Link>
+        </div>
+      </section>
+
+      {account.papel === 'admin' && (
+        <section aria-labelledby="admin">
+          <h2 id="admin">Painel de admin</h2>
+          <p>
+            {account.sessao === 'passkey'
+              ? 'Uso do plano gratuito, alertas e relatos.'
+              : 'Para abrir o painel, termine a sessão e entre outra vez com a passkey.'}
+          </p>
+          {account.sessao === 'passkey' && (
+            <div className="actions">
+              <Link to="/admin" className="button">
+                Abrir o painel de admin
+              </Link>
+            </div>
+          )}
+        </section>
       )}
 
       <section aria-labelledby="acesso">
@@ -544,8 +597,9 @@ function SignedIn({
 }
 
 export default function CloudPage() {
-  const heading = usePageHeading<HTMLHeadingElement>('Cópia na nuvem');
   const [account, setAccount] = useState<Account | null | undefined>(undefined);
+  const title = account ? 'A minha conta' : 'Entrar ou criar conta';
+  const heading = usePageHeading<HTMLHeadingElement>(title);
   const [error, setError] = useState<string>();
 
   const [version, setVersion] = useState(0);
@@ -572,11 +626,11 @@ export default function CloudPage() {
         <Link to="/">Início</Link>
       </nav>
       <h1 ref={heading} tabIndex={-1}>
-        Cópia na nuvem
+        {title}
       </h1>
       <p className="lead">
-        Guarde uma cópia cifrada dos seus dados para os recuperar se mudar de telemóvel ou o perder.
-        É opcional: a app funciona sem conta.
+        A conta é opcional: a app funciona sem ela. Serve para guardar uma cópia cifrada dos seus
+        dados e para partilhar prazos com a família.
       </p>
       {error && <p className="errors">{error}</p>}
       {account === null && <SignedOut onSignedIn={refresh} />}

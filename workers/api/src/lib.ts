@@ -8,7 +8,18 @@ export type Env = {
   /** Segredo: chave do Gemini do admin. Nunca vai para o frontend. */
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
+  /** Segredo: identificadores das contas de admin, separados por vírgulas. */
+  ADMIN_IDS?: string;
 };
+
+/** Admin pelo segredo ADMIN_IDS ou, em alternativa, pelo papel 'admin' na D1. */
+export function isAdmin(env: Env, userId: string, dbRole: string): boolean {
+  if (dbRole === 'admin') return true;
+  return (env.ADMIN_IDS ?? '')
+    .split(',')
+    .map((id) => id.trim())
+    .includes(userId);
+}
 
 /** Como foi aberta a sessão: o painel de admin só aceita 'passkey'. */
 export type SessionMethod = 'passkey' | 'recovery';
@@ -136,7 +147,7 @@ export const requireUser: MiddlewareHandler<AppEnv> = async (c, next) => {
   }
   c.set('userId', row.user_id);
   c.set('sessionMethod', row.method);
-  c.set('role', row.role);
+  c.set('role', isAdmin(c.env, row.user_id, row.role) ? 'admin' : 'user');
   await next();
 };
 

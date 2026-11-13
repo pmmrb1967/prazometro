@@ -102,6 +102,16 @@ body {
   font-weight: 700;
 }
 
+.top-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.account-link {
+  font-weight: 700;
+}
+
 .a11y {
   display: flex;
   flex-wrap: wrap;
@@ -638,6 +648,26 @@ h3 {
 }
 .cloud-link {
   margin-top: 1.5rem;
+}
+.ways {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1rem;
+}
+.ways li {
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+.ways h3 {
+  font-size: 1.15rem;
+  margin: 0;
 }
 
 /* Painel de admin */

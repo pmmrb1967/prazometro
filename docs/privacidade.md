@@ -59,7 +59,7 @@ Há um único cookie, só para quem tem conta, que mantém a sessão aberta. É 
 Ao abrigo do Regulamento Geral sobre a Proteção de Dados (RGPD), pode pedir acesso, retificação ou apagamento dos seus dados. Na prática:
 
 - os dados do dispositivo estão sempre consigo e pode exportá-los ou apagá-los na app;
-- para apagar a conta e tudo o que está no servidor, use **Cópia na nuvem > Apagar a conta e as cópias na nuvem**. Também apaga as partilhas com a família. O apagamento é imediato;
+- para apagar a conta e tudo o que está no servidor, use **A minha conta > Apagar a conta e as cópias na nuvem**. Também apaga as partilhas com a família. O apagamento é imediato;
 - para qualquer dúvida, escreva para Prazometro@outlook.com.
 
 Tem também o direito de apresentar queixa à Comissão Nacional de Proteção de Dados (CNPD, www.cnpd.pt).

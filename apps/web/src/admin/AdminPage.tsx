@@ -259,7 +259,7 @@ export default function AdminPage() {
     body =
       error.status === 401 ? (
         <p>
-          Entre primeiro na sua conta em <Link to="/copia">Cópia na nuvem</Link>, com a passkey.
+          Entre primeiro em <Link to="/conta">A minha conta</Link>, com a passkey.
         </p>
       ) : (
         <p className="errors">{error.message}</p>

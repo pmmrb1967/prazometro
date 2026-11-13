@@ -47,7 +47,7 @@ export class Client {
   constructor(
     private DB: D1Database,
     private origin = ORIGIN,
-    private env: Partial<Env> = {},
+    public env: Partial<Env> = {},
   ) {}
 
   async call(

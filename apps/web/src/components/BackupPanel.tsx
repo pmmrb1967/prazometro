@@ -43,7 +43,7 @@ export function BackupPanel() {
         se mudar de telemóvel ou de computador.
       </p>
       <p>
-        Também pode guardar uma <Link to="/copia">cópia na nuvem, cifrada</Link>, para recuperar
+        Também pode guardar uma <Link to="/conta">cópia na nuvem, cifrada</Link>, para recuperar
         tudo noutro telemóvel.
       </p>
       <div className="actions">

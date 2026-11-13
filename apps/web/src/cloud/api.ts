@@ -1,5 +1,7 @@
 // Pedidos à API do Prazómetro (mesmo domínio). A sessão vai num cookie HttpOnly.
 
+import { markSignedIn } from './session';
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -31,6 +33,8 @@ export async function api<T>(
     throw new ApiError(0, 'Sem ligação à internet. Tente outra vez quando tiver rede.');
   }
   if (!res.ok) {
+    // Sessão terminada ou inexistente: a barra de topo volta a mostrar "Entrar".
+    if (res.status === 401) markSignedIn(false);
     const data = (await res.json().catch(() => null)) as { erro?: string } | null;
     throw new ApiError(res.status, data?.erro ?? 'Ocorreu um erro. Tente outra vez.');
   }

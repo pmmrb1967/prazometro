@@ -25,6 +25,22 @@ describe('painel de admin', () => {
     expect((await new Client(DB).call('/admin/usage')).status).toBe(401);
   });
 
+  it('o segredo ADMIN_IDS dá acesso sem mexer na D1', async () => {
+    const { client } = await registerAccount(DB);
+    const me = await client.json<{ id: string; papel: string }>('/account');
+    expect(me.data.papel).toBe('user');
+
+    client.env = { ADMIN_IDS: ` outro-id , ${me.data.id} ` };
+    expect((await client.json<{ papel: string }>('/account')).data.papel).toBe('admin');
+    expect((await client.call('/admin/usage')).status).toBe(200);
+
+    // Uma lista que não o inclui, ou vazia, não dá acesso.
+    client.env = { ADMIN_IDS: 'outro-id' };
+    expect((await client.call('/admin/usage')).status).toBe(403);
+    client.env = { ADMIN_IDS: '' };
+    expect((await client.call('/admin/usage')).status).toBe(403);
+  });
+
   it('exige sessão aberta com passkey, não com o código de recuperação', async () => {
     const { recoveryVerifier, client } = await adminAccount();
     expect((await client.call('/admin/usage')).status).toBe(200);

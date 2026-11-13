@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
+import { useSignedIn } from './cloud/session';
 import { AccessibilityBar } from './components/AccessibilityBar';
 import { InstallPrompt } from './components/InstallPrompt';
 import { CartasList } from './modules/cartas/CartasList';
@@ -21,7 +22,7 @@ import { DocPage } from './pages/DocPage';
 import { Feedback } from './pages/Feedback';
 import { ReceivedList, ReceivedView } from './share/Received';
 import { syncShares } from './share/shares';
-import { Link, matchPath, usePageHeading, usePath } from './router';
+import { Link, matchPath, navigate, usePageHeading, usePath } from './router';
 
 // A página das cartas traz o gerador de PDF; só é descarregada quando é aberta.
 const LetterPage = lazy(() => import('./modules/garantia/LetterPage'));
@@ -78,12 +79,9 @@ function Home() {
       </ul>
 
       <p className="cloud-link">
-        <Link to="/copia">Cópia na nuvem, cifrada</Link>: para não perder os dados se mudar de
-        telemóvel.
-      </p>
-      <p className="cloud-link">
-        <Link to="/partilhar">Partilhar com a família</Link>: um familiar acompanha os seus prazos
-        no telemóvel dele. <Link to="/partilhas">Partilhas que recebeu</Link>.
+        Sem conta, os dados ficam só neste dispositivo. <Link to="/conta">Com uma conta</Link>, pode
+        guardar uma cópia cifrada e partilhar os prazos com a família.{' '}
+        <Link to="/partilhas">Partilhas que recebeu</Link>.
       </p>
 
       <LegalNotice />
@@ -102,6 +100,22 @@ function NotFound() {
         <Link to="/">Voltar ao início</Link>
       </p>
     </>
+  );
+}
+
+/** Endereço antigo: troca-o pelo novo sem deixar o antigo no histórico. */
+function Redirect({ to }: { to: string }) {
+  useEffect(() => navigate(to, { replace: true }), [to]);
+  return null;
+}
+
+/** "Entrar" na barra de topo; "A minha conta" quando este dispositivo já tem sessão. */
+function AccountLink() {
+  const signedIn = useSignedIn();
+  return (
+    <Link to="/conta" className="button account-link">
+      {signedIn ? 'A minha conta' : 'Entrar'}
+    </Link>
   );
 }
 
@@ -142,7 +156,8 @@ function Routes({ path }: { path: string }) {
   if (path === '/partilha') return <AcceptShare />;
   if (path === '/partilhas') return <ReceivedList />;
   if ((m = matchPath('/partilhas/:id', path))) return <ReceivedView id={m.id!} />;
-  if (path === '/copia') return <CloudPage />;
+  if (path === '/conta') return <CloudPage />;
+  if (path === '/copia') return <Redirect to="/conta" />;
   if (path === '/admin') return <AdminPage />;
   return <NotFound />;
 }
@@ -166,7 +181,10 @@ export function App() {
           <img src="/logo.svg" alt="" width="48" height="48" />
           <span className="brand-name">Prazómetro</span>
         </Link>
-        <AccessibilityBar prefs={prefs} onChange={setPrefs} />
+        <div className="top-tools">
+          <AccessibilityBar prefs={prefs} onChange={setPrefs} />
+          <AccountLink />
+        </div>
       </header>
 
       <main id="conteudo" className="page">

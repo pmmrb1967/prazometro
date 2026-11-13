@@ -86,8 +86,8 @@ export default function AiSettings() {
 
       {provider === 'gemini-admin' && (
         <p>
-          A IA do Prazómetro só funciona com sessão iniciada na{' '}
-          <Link to="/copia">Cópia na nuvem</Link>, e tem um limite de leituras por dia.
+          A IA do Prazómetro só funciona com sessão iniciada na <Link to="/conta">conta</Link>, e
+          tem um limite de leituras por dia.
         </p>
       )}
 

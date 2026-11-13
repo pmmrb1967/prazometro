@@ -263,6 +263,8 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Alertas aos 70% e 90%, no máximo um por métrica, patamar e dia (registados em `alerts_sent` e mostrados no painel; o envio ao admin liga-se num só ponto de `workers/monitor/src/monitor.ts`)
 - [x] Modo poupança aos 90%: desliga o proxy de IA do admin e suspende cópias até às 00:00 UTC (as cópias já param; o proxy de IA usa `savingsMode` na fase 6)
 - [x] Rota `/admin` protegida (papel `admin` e passkey)
+- [x] Admin sem SQL: segredo `ADMIN_IDS` com os ids das contas de admin (o papel `admin` na D1 continua a valer)
+- [x] Página "A minha conta" (`/conta`) com "Entrar" na barra de topo: explica o uso sem conta, com conta e com a família; junta a cópia na nuvem, a partilha, o acesso e o painel de admin (`/copia` reencaminha)
 - [x] Painel com gráficos dos últimos 30 dias: armazenamento, linhas lidas e escritas, pedidos, chamadas de IA, utilizadores ativos
 - [x] Lista de relatos "regra desatualizada" com estado (botão em "De onde vêm estas datas", sem conta, no máximo 100 por dia)
 - [ ] ~~Opcional: alerta também por bot de Telegram~~ (posto de lado em 2026-10-21: ver o canal de envio acima)
@@ -347,6 +349,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 
 ## 9. Decisões em aberto
 
+- [ ] Família a editar em conjunto (por exemplo, irmãos no mesmo processo de pós-óbito), cifrado ponta a ponta com uma chave de grupo. Só depois de validar a partilha atual em dois telemóveis e de haver pedidos
 - [x] Confirmar se o D1 permite jurisdição UE ou só indicação de localização: permite (`--jurisdiction eu`), base criada assim em 2026-10-20
 - [x] Escolher biblioteca de passkeys: SimpleWebAuthn (servidor 14.0.3 e navegador 14.0.0), em 2026-10-20
 - [ ] Encontrar jurista para rever as fases 2, 3 e 7
@@ -361,7 +364,7 @@ Feito e testado com dados fictícios, mas à espera de confirmação com uso rea
 
 Fase 5 (admin e monitorização)
 
-- [ ] Abrir `/admin` com a passkey e confirmar os números e os alertas
+- [ ] Pôr o id da conta no segredo `ADMIN_IDS`, abrir `/admin` com a passkey e confirmar os números e os alertas
 - [ ] Escolher o canal dos alertas (por exemplo, WhatsApp)
 
 Fase 6 (cartas explicadas)
