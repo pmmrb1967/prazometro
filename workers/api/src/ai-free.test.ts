@@ -71,6 +71,32 @@ describe('IA gratuita (Workers AI), sem conta', () => {
     expect(row?.device).toMatch(/^[0-9a-f]{64}$/);
   });
 
+  it('lê faturas com o prompt e o esquema da fatura, na mesma quota', async () => {
+    const invoice = { loja: 'Worten', produto: 'Torradeira', data_compra: '', preco: '' };
+    const { AI, sent } = fakeAi(JSON.stringify(invoice));
+    const c = new Client(DB, undefined, { AI });
+    const res = await c.json<{ resultado: unknown; restantes: number }>('/ai/gratuita', {
+      json: {
+        texto: 'WORTEN Fatura FR 1/2 Torradeira Philips 34,99 Cliente: Joaquim Antunes',
+        tarefa: 'fatura',
+      },
+      headers,
+    });
+    expect(res.status).toBe(200);
+    expect(res.data.resultado).toEqual(invoice);
+    expect(res.data.restantes).toBe(FREE_READS_PER_DEVICE - 1);
+    const input = sent[0]!.input as unknown as {
+      messages: { content: string }[];
+      response_format: { json_schema: { name: string } };
+    };
+    expect(input.response_format.json_schema.name).toBe('leitura_fatura');
+    expect(input.messages[0]!.content).toMatch(/registar uma compra/);
+    expect(JSON.stringify(input)).not.toContain('Joaquim');
+    expect(
+      (await c.call('/ai/gratuita', { json: { texto: LETTER, tarefa: 'outra' }, headers })).status,
+    ).toBe(400);
+  });
+
   it('exige o identificador do dispositivo', async () => {
     const c = new Client(DB, undefined, { AI: fakeAi().AI });
     expect((await c.call('/ai/gratuita', { json: { texto: LETTER } })).status).toBe(400);

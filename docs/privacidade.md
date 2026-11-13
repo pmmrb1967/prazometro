@@ -15,7 +15,7 @@ O Prazómetro é uma aplicação gratuita e sem fins comerciais. Foi feita para 
 
 ### No seu dispositivo
 
-Tudo o que escreve ou fotografa na app: compras e faturas, pedidos no SNS, cartas e o texto lido delas, processos depois de um falecimento, o seu nome e morada (se os guardar para as cartas) e as chaves de IA que indicar (cifradas). As fotografias e os PDF das cartas são lidos no próprio dispositivo (OCR) e não são enviados.
+Tudo o que escreve ou fotografa na app: compras e faturas, pedidos no SNS, cartas e o texto lido delas, processos depois de um falecimento, o seu nome e morada (se os guardar para as cartas) e as chaves de IA que indicar (cifradas). As fotografias e os PDF das cartas e das faturas são lidos no próprio dispositivo (OCR) e não são enviados.
 
 Pode apagar estes dados a qualquer momento: em cada item, ou apagando os dados do site nas definições do navegador.
 
@@ -40,13 +40,13 @@ A conta não pede email, nome, telefone nem NIF.
 
 ## Inteligência artificial
 
-A fotografia ou o PDF da carta são sempre lidos no seu dispositivo e nunca são enviados. Pode escolher como o texto lido é resumido:
+A IA serve para perceber cartas e para preencher uma compra a partir da fatura. A fotografia ou o PDF são sempre lidos no seu dispositivo e nunca são enviados. Pode escolher como o texto lido é tratado:
 
 - **IA gratuita (por defeito):** o texto vai ao nosso servidor e é resumido pela IA da Cloudflare (Workers AI), que já aloja o Prazómetro. Não precisa de conta. A Cloudflare não usa o texto para treinar modelos e não o guarda depois de responder; nós também não o guardamos nem o registamos. Para contar o limite diário, a app cria um identificador aleatório neste dispositivo; o servidor guarda só uma versão cifrada desse identificador, que muda todos os dias, com o número de leituras do dia, e apaga-a no dia seguinte;
 - **com a sua própria chave da Google (Gemini) ou da Anthropic (Claude):** o texto vai diretamente do seu dispositivo para essa empresa, ao abrigo do contrato entre si e ela. Não passa pelo nosso servidor;
 - **sem IA:** a app reconhece o essencial por palavras-chave e nada sai do dispositivo.
 
-Em qualquer caso com IA, antes de enviar, a app retira nomes, moradas, NIF, NISS, IBAN, números de processo e outros identificadores, e mostra-lhe o texto exato que vai sair. A IA só resume a carta: os prazos são sempre calculados pelas regras da app.
+Em qualquer caso com IA, antes de enviar, a app retira nomes, moradas, NIF, NISS, IBAN, números de processo e outros identificadores, e mostra-lhe o texto exato que vai sair. A IA só resume a carta ou copia da fatura a loja, o produto, a data e o preço (que a app confere com o texto e que a pessoa confirma): os prazos são sempre calculados pelas regras da app.
 
 ## Quem trata os dados no nosso lugar
 

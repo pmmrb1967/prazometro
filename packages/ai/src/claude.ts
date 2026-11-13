@@ -1,7 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { ProviderError } from './gemini';
-import { SYSTEM_PROMPT, userPrompt } from './prompt';
-import { CLAUDE_DEFAULT_MODEL, EXTRACTION_JSON_SCHEMA } from './schema';
+import { LETTER_TASK } from './prompt';
+import { CLAUDE_DEFAULT_MODEL } from './schema';
+import type { AiTask } from './task';
 
 // Claude (Claude Platform), chamada diretamente do navegador com a chave da própria pessoa.
 // Nunca com a chave do admin. Ponto de entrada próprio (@prazometro/ai/claude) para a app
@@ -29,25 +30,29 @@ function friendly(err: unknown): ProviderError {
 
 export async function callClaude(
   text: string,
-  { key, model = CLAUDE_DEFAULT_MODEL }: { key: string; model?: string },
+  {
+    key,
+    model = CLAUDE_DEFAULT_MODEL,
+    task = LETTER_TASK,
+  }: { key: string; model?: string; task?: AiTask },
 ): Promise<unknown> {
   let response: Anthropic.Message;
   try {
     response = await client(key).messages.create({
       model,
       max_tokens: 4000,
-      system: SYSTEM_PROMPT,
+      system: task.system,
       output_config: {
         effort: 'low',
-        format: { type: 'json_schema', schema: EXTRACTION_JSON_SCHEMA },
+        format: { type: 'json_schema', schema: task.schema },
       },
-      messages: [{ role: 'user', content: userPrompt(text) }],
+      messages: [{ role: 'user', content: task.user(text) }],
     });
   } catch (err) {
     throw friendly(err);
   }
   if (response.stop_reason === 'refusal')
-    throw new ProviderError('A Claude recusou ler esta carta.');
+    throw new ProviderError('A Claude recusou ler este documento.');
   const out = response.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('');
   try {
     return JSON.parse(out);

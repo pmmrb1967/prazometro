@@ -1,3 +1,4 @@
+import type { InvoiceResult } from '@prazometro/ai';
 import { isValidDate, todayInLisbon } from '@prazometro/engine';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState, type FormEvent } from 'react';
@@ -5,6 +6,7 @@ import { Choice } from '../../components/Choice';
 import { LegalNotice } from '../../components/LegalNotice';
 import { db, newId, type Purchase } from '../../db';
 import { Link, navigate, usePageHeading } from '../../router';
+import { InvoiceAutofill } from './InvoiceAutofill';
 
 type Draft = Omit<Purchase, 'id' | 'criado_em' | 'preco'> & { preco: string };
 
@@ -56,7 +58,25 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
   );
   const [fatura, setFatura] = useState<File | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const [deliveryTouched, setDeliveryTouched] = useState(editing);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((prev) => ({ ...prev, [k]: v }));
+
+  /** Põe no formulário o que se leu da fatura; o que não se leu fica como estava. */
+  function applyInvoice({ resultado: r }: InvoiceResult) {
+    setD((prev) => {
+      const next = { ...prev };
+      if (r.produto) next.produto = r.produto;
+      if (r.loja) next.loja = r.loja;
+      if (r.preco) next.preco = r.preco;
+      if (r.data_compra && r.data_compra <= todayInLisbon()) {
+        next.data_compra = r.data_compra;
+        // Sem outra informação, a entrega é no dia da compra: dá a data mais cedo, a segura.
+        if (!deliveryTouched || prev.data_entrega < r.data_compra)
+          next.data_entrega = r.data_compra;
+      }
+      return next;
+    });
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -97,6 +117,13 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
       <h1 ref={heading} tabIndex={-1}>
         {editing ? 'Alterar compra' : 'Registar uma compra'}
       </h1>
+
+      <InvoiceAutofill
+        file={fatura}
+        hasStored={!!existing?.fatura_id}
+        onFile={setFatura}
+        onFill={applyInvoice}
+      />
 
       <form className="form" onSubmit={onSubmit} noValidate>
         {errors.length > 0 && (
@@ -154,7 +181,10 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
               type="date"
               value={d.data_entrega}
               min={d.data_compra}
-              onChange={(e) => set('data_entrega', e.target.value)}
+              onChange={(e) => {
+                setDeliveryTouched(true);
+                set('data_entrega', e.target.value);
+              }}
             />
           </label>
         </div>
@@ -217,17 +247,6 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
             value={d.preco}
             onChange={(e) => set('preco', e.target.value)}
             placeholder="0,00 €"
-          />
-        </label>
-
-        <label className="field">
-          Fotografia ou PDF da fatura{' '}
-          <span className="optional">(opcional, fica só neste dispositivo)</span>
-          <input
-            id="fatura"
-            type="file"
-            accept="image/*,application/pdf"
-            onChange={(e) => setFatura(e.target.files?.[0] ?? null)}
           />
         </label>
 

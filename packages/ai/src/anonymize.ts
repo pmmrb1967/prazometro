@@ -71,7 +71,7 @@ const LABELS = [
   String.raw`Car[oa](?:\(a\))?`,
   String.raw`(?:Sr|Sra|Dr|Dra|Eng)\.ª?`,
   String.raw`(?:Senhor|Senhora|D\.)`,
-  String.raw`(?:Nome|NOME|Destinatário|DESTINATÁRIO|Arguid[oa]|ARGUID[OA]|Executad[oa]|EXECUTAD[OA]|Contribuinte|CONTRIBUINTE|Titular|TITULAR|Réu|Ré|RÉU|Requerid[oa]|Utente|UTENTE|Devedor(?:a)?|DEVEDOR)(?:[ \t]+(?:do|da)[ \t]+[${LOWER}]+)?[ \t]*:`,
+  String.raw`(?:Nome|NOME|Cliente|CLIENTE|Adquirente|ADQUIRENTE|Destinatário|DESTINATÁRIO|Arguid[oa]|ARGUID[OA]|Executad[oa]|EXECUTAD[OA]|Contribuinte|CONTRIBUINTE|Titular|TITULAR|Réu|Ré|RÉU|Requerid[oa]|Utente|UTENTE|Devedor(?:a)?|DEVEDOR)(?:[ \t]+(?:do|da)[ \t]+[${LOWER}]+)?[ \t]*:`,
 ];
 // O nome pode vir na mesma linha ou na linha seguinte ("Exma. Senhora\nAna Carvalho").
 const LABELLED_NAME = new RegExp(`(${LABELS.join('|')})([ \\t]+|[ \\t]*\\n[ \\t]*)(${NAME})`, 'gu');

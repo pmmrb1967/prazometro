@@ -151,27 +151,28 @@ export function freeStatus(): Promise<FreeStatus> {
 /** Função que envia o texto (já anonimizado) ao fornecedor escolhido. */
 export async function providerCall(s: AiSettings): Promise<ProviderCall | undefined> {
   if (s.fornecedor === 'workers-ai') {
-    return async (texto) =>
+    return async (texto, task) =>
       (
         await api<{ resultado: unknown }>('/ai/gratuita', {
-          json: { texto },
+          json: { texto, tarefa: task.id },
           headers: deviceHeader(),
         })
       ).resultado;
   }
   if (s.fornecedor === 'gemini-admin') {
-    return async (texto) =>
-      (await api<{ resultado: unknown }>('/ai/extract', { json: { texto } })).resultado;
+    return async (texto, task) =>
+      (await api<{ resultado: unknown }>('/ai/extract', { json: { texto, tarefa: task.id } }))
+        .resultado;
   }
   if (s.fornecedor === 'gemini-own' || s.fornecedor === 'claude-own') {
     const provider = s.fornecedor;
     const key = await readKey(provider);
     if (!key) return undefined;
     const model = modelOf(s, provider);
-    if (provider === 'gemini-own') return (texto) => callGemini(texto, { key, model });
-    return async (texto) => {
+    if (provider === 'gemini-own') return (texto, task) => callGemini(texto, { key, model, task });
+    return async (texto, task) => {
       const { callClaude } = await import('@prazometro/ai/claude');
-      return callClaude(texto, { key, model });
+      return callClaude(texto, { key, model, task });
     };
   }
   return undefined;

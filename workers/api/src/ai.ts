@@ -1,4 +1,11 @@
-import { anonymize, callGemini, GEMINI_DEFAULT_MODEL, ProviderError } from '@prazometro/ai';
+import {
+  anonymize,
+  callGemini,
+  GEMINI_DEFAULT_MODEL,
+  INVOICE_TASK,
+  LETTER_TASK,
+  ProviderError,
+} from '@prazometro/ai';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { savingsMode, utcDate } from '../../monitor/src/limits';
@@ -38,9 +45,12 @@ ai.post('/extract', requireUser, async (c) => {
     );
   }
   const parsed = z
-    .object({ texto: z.string().trim().min(20).max(MAX_TEXT) })
+    .object({
+      texto: z.string().trim().min(20).max(MAX_TEXT),
+      tarefa: z.enum(['carta', 'fatura']).default('carta'),
+    })
     .safeParse(await c.req.json().catch(() => null));
-  if (!parsed.success) throw new HttpError(400, 'Texto da carta em falta ou demasiado longo.');
+  if (!parsed.success) throw new HttpError(400, 'Texto em falta ou demasiado longo.');
 
   const userId = c.get('userId');
   const date = utcDate(t);
@@ -66,6 +76,7 @@ ai.post('/extract', requireUser, async (c) => {
     resultado = await callGemini(anonymize(parsed.data.texto).texto, {
       key: c.env.GEMINI_API_KEY!,
       model: c.env.GEMINI_MODEL || GEMINI_DEFAULT_MODEL,
+      task: parsed.data.tarefa === 'fatura' ? INVOICE_TASK : LETTER_TASK,
     });
   } catch (err) {
     console.error('gemini-admin falhou', err instanceof ProviderError ? err.status : 'rede');

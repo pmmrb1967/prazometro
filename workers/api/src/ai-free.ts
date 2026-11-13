@@ -1,4 +1,4 @@
-import { anonymize, EXTRACTION_JSON_SCHEMA, SYSTEM_PROMPT, userPrompt } from '@prazometro/ai';
+import { anonymize, INVOICE_TASK, LETTER_TASK } from '@prazometro/ai';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import {
@@ -12,7 +12,7 @@ import {
 } from '../../monitor/src/limits';
 import { HttpError, now, sha256Hex, type AppEnv } from './lib';
 
-// IA gratuita das cartas (fornecedor workers-ai): Workers AI, sem chave e sem conta.
+// IA gratuita das cartas e das faturas (fornecedor workers-ai): Workers AI, sem chave e sem conta.
 // O texto chega já anonimizado do dispositivo e volta a ser anonimizado aqui. Limites: 10
 // leituras por dispositivo e por dia e, para todos, os neurons gratuitos menos uma reserva.
 // O dispositivo é um identificador aleatório criado na app; guarda-se só sha256(dia + id).
@@ -77,9 +77,13 @@ aiFree.post('/', async (c) => {
     );
   }
   const parsed = z
-    .object({ texto: z.string().trim().min(20).max(MAX_TEXT) })
+    .object({
+      texto: z.string().trim().min(20).max(MAX_TEXT),
+      tarefa: z.enum(['carta', 'fatura']).default('carta'),
+    })
     .safeParse(await c.req.json().catch(() => null));
-  if (!parsed.success) throw new HttpError(400, 'Texto da carta em falta ou demasiado longo.');
+  if (!parsed.success) throw new HttpError(400, 'Texto em falta ou demasiado longo.');
+  const task = parsed.data.tarefa === 'fatura' ? INVOICE_TASK : LETTER_TASK;
 
   const u = await usage(c.env.DB, date, device);
   if (u.mine >= FREE_READS_PER_DEVICE) {
@@ -101,12 +105,12 @@ aiFree.post('/', async (c) => {
       WORKERS_AI_MODEL as Parameters<Ai['run']>[0],
       {
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userPrompt(anonymize(parsed.data.texto).texto) },
+          { role: 'system', content: task.system },
+          { role: 'user', content: task.user(anonymize(parsed.data.texto).texto) },
         ],
         response_format: {
           type: 'json_schema',
-          json_schema: { name: 'leitura_carta', schema: EXTRACTION_JSON_SCHEMA, strict: true },
+          json_schema: { name: task.nome, schema: task.schema, strict: true },
         },
         max_completion_tokens: 1500,
         temperature: 0,

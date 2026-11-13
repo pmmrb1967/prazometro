@@ -962,3 +962,15 @@ p.card-title {
   padding: 0.5rem;
   border: 1px solid var(--line);
 }
+
+/* Fatura no topo do registo da compra */
+.invoice-autofill {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+.invoice-autofill h2 {
+  margin-top: 0;
+}

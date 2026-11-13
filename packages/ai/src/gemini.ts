@@ -1,5 +1,5 @@
-import { SYSTEM_PROMPT, userPrompt } from './prompt';
-import { EXTRACTION_JSON_SCHEMA } from './schema';
+import { LETTER_TASK } from './prompt';
+import type { AiTask } from './task';
 
 // Gemini (API da Google). Usado diretamente pelo navegador com a chave da pessoa
 // (gemini-own) e pelo Worker com a chave do admin (gemini-admin).
@@ -44,19 +44,23 @@ function friendly(status: number): string {
 
 export async function callGemini(
   text: string,
-  { key, model = GEMINI_DEFAULT_MODEL }: { key: string; model?: string },
+  {
+    key,
+    model = GEMINI_DEFAULT_MODEL,
+    task = LETTER_TASK,
+  }: { key: string; model?: string; task?: AiTask },
   fetchFn: typeof fetch = fetch,
 ): Promise<unknown> {
   const res = await fetchFn(`${modelPath(model)}:generateContent`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: [{ role: 'user', parts: [{ text: userPrompt(text) }] }],
+      systemInstruction: { parts: [{ text: task.system }] },
+      contents: [{ role: 'user', parts: [{ text: task.user(text) }] }],
       generationConfig: {
         temperature: 0,
         responseMimeType: 'application/json',
-        responseSchema: toGeminiSchema(EXTRACTION_JSON_SCHEMA),
+        responseSchema: toGeminiSchema(task.schema),
       },
     }),
   });

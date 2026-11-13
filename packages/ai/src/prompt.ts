@@ -1,4 +1,5 @@
-import { ISSUER_LABELS, LETTER_TYPE_LABELS } from './schema';
+import { EXTRACTION_JSON_SCHEMA, ISSUER_LABELS, LETTER_TYPE_LABELS } from './schema';
+import type { AiTask } from './task';
 
 // O mesmo prompt para todos os fornecedores (CLAUDE.md, secção IA).
 
@@ -32,3 +33,12 @@ Regras obrigatórias:
 export function userPrompt(text: string): string {
   return `Texto da carta:\n"""\n${text}\n"""`;
 }
+
+/** Ler uma carta oficial (módulo cartas). */
+export const LETTER_TASK: AiTask = {
+  id: 'carta',
+  nome: 'leitura_carta',
+  system: SYSTEM_PROMPT,
+  user: userPrompt,
+  schema: EXTRACTION_JSON_SCHEMA,
+};

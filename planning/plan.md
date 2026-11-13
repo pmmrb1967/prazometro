@@ -199,6 +199,7 @@ Estado em 2026-10-21 (o que falta validar está na secção 10):
 
 - [x] Recolher e validar as regras (bens novos, usados, reparação, substituição) com fontes
 - [x] Formulário de compra: produto, loja, data, novo ou usado, foto da fatura
+- [x] Preencher a compra a partir da fatura (2026-11-13): fatura no topo do formulário, OCR no dispositivo, preenchimento sem IA (loja, data e total por palavras-chave) ou com IA (também o produto; mesma tarefa em todos os fornecedores, `packages/ai/src/invoice.ts`). A data e o total da IA só se aceitam se estiverem escritos na fatura; a entrega fica igual à compra (a data mais cedo) e a pessoa confirma tudo. Falta testar com faturas e talões verdadeiros fotografados
 - [x] Lista de compras com estado da garantia (barra de tempo e próximos marcos)
 - [x] Exportação dos alertas para o calendário
 - [x] Fluxo de reclamação: carta à loja, Livro de Reclamações eletrónico, centro de arbitragem

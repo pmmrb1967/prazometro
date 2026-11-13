@@ -1,6 +1,8 @@
 import { anonymize } from './anonymize';
 import { uniqueDates } from './dates';
 import { extractWithKeywords } from './keywords';
+import { LETTER_TASK } from './prompt';
+import type { AiTask } from './task';
 import { ExtractionSchema, type AiProvider, type Extraction } from './schema';
 
 // Camada de fornecedores de IA: interface comum extrair(texto) → JSON validado com zod.
@@ -12,9 +14,11 @@ export * from './dates';
 export * from './keywords';
 export * from './prompt';
 export * from './gemini';
+export * from './task';
+export * from './invoice';
 
 /** Chama um fornecedor de IA com o texto já anonimizado e devolve o JSON por validar. */
-export type ProviderCall = (anonymizedText: string) => Promise<unknown>;
+export type ProviderCall = (anonymizedText: string, task: AiTask) => Promise<unknown>;
 
 export type ExtractResult = {
   resultado: Extraction;
@@ -41,7 +45,7 @@ export async function extract(
 
   let raw: unknown;
   try {
-    raw = await call(anonymize(text, options).texto);
+    raw = await call(anonymize(text, options).texto, LETTER_TASK);
   } catch (err) {
     return {
       resultado: local(),

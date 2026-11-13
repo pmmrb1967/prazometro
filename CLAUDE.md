@@ -133,7 +133,8 @@ Consequências práticas:
 - Fornecedores: `workers-ai` (gratuita e por defeito: Workers AI via Worker em `/api/ai/gratuita`, sem chave nem conta, 10 leituras por dispositivo e por dia e uma reserva nos 10 000 neurons diários; o dispositivo é um identificador aleatório e o servidor guarda só `sha256(dia + id)`), `none` (palavras-chave), `gemini-own` e `claude-own` (chave do utilizador, chamada direta do navegador) e `gemini-admin` (chave do admin via Worker, desligado por causa dos termos da Google na UE).
 - Para a Claude Platform, a chamada direta do navegador usa o cabeçalho `anthropic-dangerous-direct-browser-access: true`. Só com a chave do próprio utilizador, nunca com a do admin.
 - Modelo por defeito para a Claude: `claude-haiku-5-5` (configurável).
-- Todos os fornecedores recebem o mesmo prompt e devolvem o mesmo esquema JSON, validado com zod. Se a validação falhar, volta ao modo `none`.
+- Usos: ler cartas (`LETTER_TASK`) e preencher uma compra a partir da fatura (`INVOICE_TASK`, em `packages/ai/src/invoice.ts`), com a quota da IA gratuita partilhada. Na fatura, a data e o total da IA só valem se estiverem escritos no texto.
+- Todos os fornecedores recebem o mesmo prompt e devolvem o mesmo esquema JSON para cada tarefa, validado com zod. Se a validação falhar, volta ao modo `none`.
 - **Anonimizar no dispositivo antes de enviar** (NIF, NISS, nomes, moradas, IBAN, números de processo).
 - Chaves do utilizador guardadas só no dispositivo, cifradas com WebCrypto.
 
