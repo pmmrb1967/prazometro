@@ -152,7 +152,7 @@ Estado em 2026-10-21 (o que falta validar está na secção 10):
 | 3 — Espera no SNS         | Feita (falta revisão jurídica)                                                     |
 | 4 — Contas e cópia        | Feita                                                                              |
 | 5 — Admin e monitorização | Feita (por validar; canal de alertas por decidir)                                  |
-| 6 — Cartas com IA         | Feita, exceto `gemini-admin` (desligado) e o teste com cartas reais                |
+| 6 — Cartas com IA         | Feita (IA gratuita com Workers AI), exceto o teste com cartas reais                |
 | 7 — Pós-óbito             | Aberta com aviso "Em desenvolvimento"; falta revisão jurídica e teste com famílias |
 | 8 — Partilha familiar     | Feita (por validar)                                                                |
 | 9 — Lançamento            | Feita, exceto a consulta da marca e as publicações (do autor)                      |
@@ -278,6 +278,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Anonimização: NIF, NISS, IBAN, nomes, moradas, números de processo e matrículas (também telefones, emails, referências e códigos postais), no dispositivo e outra vez no Worker
 - [x] Pacote `packages/ai` com interface comum `extrair(texto) → JSON`
 - [x] Fornecedor `none`: identificação do emissor por palavras-chave (AT, Segurança Social, tribunais, bancos, operadoras, SNS)
+- [x] Fornecedor `workers-ai`, gratuito e por defeito, como no Validómetro (2026-11-13): Workers AI (`@cf/google/gemma-4-26b-a4b-it`, resposta em JSON Schema) em `/api/ai/gratuita` (`workers/api/src/ai-free.ts`), sem chave nem conta. Limites: 10 leituras por dispositivo e por dia (identificador aleatório; o servidor guarda só `sha256(dia + id)` em `ai_free_daily`, migração 0005, apagado no dia seguinte) e, para todos, os 10 000 neurons diários menos 1 000 de reserva. Pausa no modo poupança. O monitor conta os neurons (`ia_neurons`) e alerta aos 70% e 90%, sem ligar o modo poupança. "Testar ligação" e leituras que restam hoje em `/cartas/ia`
 - [ ] Fornecedor `gemini-admin` via Worker, com limite diário por utilizador. Código feito e testado (10 leituras por conta e 200 no total por dia, pausa no modo poupança), mas **desligado**: os termos da API Gemini só permitem serviços pagos em aplicações disponibilizadas a utilizadores no Espaço Económico Europeu (2026-10-21). Liga-se com `AI_ADMIN = "ligado"` e o segredo `GEMINI_API_KEY` se houver uma chave paga ou os termos mudarem
 - [x] Fornecedor `gemini-own`, com chamada direta do navegador (modelo por defeito `gemini-3.5-flash-lite`)
 - [x] Fornecedor `claude-own`, com chamada direta e cabeçalho `anthropic-dangerous-direct-browser-access`, modelo por defeito `claude-haiku-5-5`
@@ -358,7 +359,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [ ] Decidir se o módulo de garantia importa compras do Faturómetro
 - [ ] Decidir se as fotografias das faturas entram nas partilhas familiares (adiado para outra fase; hoje ficam de fora, para cada partilha caber em 1,5 MB no D1)
 - [ ] Domínio pago (por exemplo, `prazometro.pt`): adiado; por agora fica `app.prazometro.workers.dev`, que é gratuito
-- [ ] Definir o limite diário de chamadas de IA por utilizador com a chave do admin (valor inicial no código: 10 por conta e 200 no total; só conta se o `gemini-admin` for ligado)
+- [x] Definir o limite diário de IA (2026-11-13): na IA gratuita, 10 leituras por dispositivo e por dia, sem conta, mais o teto de neurons. O `gemini-admin` mantém 10 por conta e 200 no total, se for ligado
 
 ## 10. Por validar (pelo autor, antes de dar as fases por concluídas)
 
@@ -375,7 +376,9 @@ Fase 6 (cartas explicadas)
 - [ ] Ler cartas e PDF verdadeiros (fotografia, PDF digital e PDF digitalizado) e ver se o texto e as datas saem certos
 - [ ] Juntar cartas reais anonimizadas ao conjunto de teste (hoje são 30 fictícias)
 - [ ] Rever as 3 regras de `rules/cartas/` e os textos "O que pode fazer" (`apps/web/src/modules/cartas/guidance.ts`) com um jurista
-- [ ] Decidir sobre o `gemini-admin` (exige chave paga na UE) e confirmar se os termos da Google permitem o `gemini-own`
+- [x] Decidir sobre o `gemini-admin` (2026-11-13): substituído pela IA gratuita com Workers AI; o código fica, desligado
+- [ ] Confirmar se os termos da Google permitem o `gemini-own` (chave da própria pessoa) na UE
+- [ ] Ler uma carta verdadeira com a IA gratuita em produção e ver o gasto real de neurons no painel (a estimativa é de cerca de 40 por carta)
 
 Fase 7 (pós-óbito, aberto com o aviso "Em desenvolvimento")
 

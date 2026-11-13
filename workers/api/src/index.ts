@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { account } from './account';
 import { admin } from './admin';
 import { ai } from './ai';
+import { aiFree } from './ai-free';
 import { auth } from './auth';
 import { backups } from './backup';
 import { HttpError, requireAppHeader, type AppEnv } from './lib';
@@ -26,6 +27,7 @@ app.route('/backups', backups);
 app.route('/reports', reports);
 app.route('/feedback', feedback);
 app.route('/admin', admin);
+app.route('/ai/gratuita', aiFree);
 app.route('/ai', ai);
 app.route('/shares', shares);
 

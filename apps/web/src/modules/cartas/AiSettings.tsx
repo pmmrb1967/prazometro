@@ -8,6 +8,7 @@ import { api } from '../../cloud/api';
 import { db } from '../../db';
 import { Link, usePageHeading } from '../../router';
 import {
+  freeStatus,
   loadSettings,
   modelOf,
   PROVIDER_LABELS,
@@ -15,6 +16,7 @@ import {
   removeKey,
   saveKey,
   testKey,
+  type FreeStatus,
   type OwnProvider,
 } from './aiConfig';
 
@@ -42,7 +44,10 @@ export default function AiSettings() {
   if (!settings) return null;
   const provider = settings.fornecedor;
   const options: [AiProvider, string][] = [
-    ['none', `${PROVIDER_LABELS.none}: só palavras-chave, a carta nunca sai do telemóvel`],
+    [
+      'workers-ai',
+      `${PROVIDER_LABELS['workers-ai']}: sem chave nem conta, com um limite de leituras por dia`,
+    ],
     ...(adminAvailable || provider === 'gemini-admin'
       ? ([
           [
@@ -53,6 +58,7 @@ export default function AiSettings() {
       : []),
     ['gemini-own', PROVIDER_LABELS['gemini-own']],
     ['claude-own', PROVIDER_LABELS['claude-own']],
+    ['none', `${PROVIDER_LABELS.none}: só palavras-chave, a carta nunca sai do telemóvel`],
   ];
 
   return (
@@ -83,6 +89,8 @@ export default function AiSettings() {
           fotografia nunca é enviada.
         </p>
       )}
+
+      {provider === 'workers-ai' && <FreeAi />}
 
       {provider === 'gemini-admin' && (
         <p>
@@ -118,6 +126,66 @@ export default function AiSettings() {
 
       <LegalNotice />
     </>
+  );
+}
+
+/** IA gratuita: explica os limites e mostra quantas leituras restam hoje neste dispositivo. */
+function FreeAi() {
+  const [status, setStatus] = useState<FreeStatus>();
+  const [testing, setTesting] = useState(false);
+  const [error, setError] = useState<string>();
+
+  async function check() {
+    setTesting(true);
+    setError(undefined);
+    try {
+      setStatus(await freeStatus());
+    } catch (err) {
+      setStatus(undefined);
+      setError((err as Error).message);
+    } finally {
+      setTesting(false);
+    }
+  }
+
+  // Ao abrir, mostra logo quantas leituras restam (sem o estado "a testar").
+  useEffect(() => {
+    let alive = true;
+    freeStatus().then(
+      (s) => alive && setStatus(s),
+      (err: Error) => alive && setError(err.message),
+    );
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return (
+    <section aria-labelledby="gratuita">
+      <h2 id="gratuita">IA gratuita</h2>
+      <p>
+        Não precisa de chave nem de conta. O texto da carta, já sem dados pessoais, é lido pela IA
+        da Cloudflare, que aloja o Prazómetro, e não fica guardado. Há um limite de leituras por dia
+        em cada dispositivo e outro para todos: se esgotar, pode usar a sua chave ou ler sem IA.
+      </p>
+      <div className="actions">
+        <button type="button" onClick={check} disabled={testing}>
+          {testing ? 'A testar…' : 'Testar ligação'}
+        </button>
+      </div>
+      {status && (
+        <p className={status.disponivel ? 'ok' : 'errors'} role="status">
+          {status.disponivel
+            ? `A IA gratuita está disponível. Hoje restam ${status.restantes} de ${status.limite_diario} leituras neste dispositivo.`
+            : 'Hoje a IA gratuita não está disponível. Pode usar a sua chave ou ler sem IA.'}
+        </p>
+      )}
+      {error && (
+        <p className="errors" role="alert">
+          {error}
+        </p>
+      )}
+    </section>
   );
 }
 

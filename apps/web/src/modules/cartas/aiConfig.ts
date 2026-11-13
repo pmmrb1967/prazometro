@@ -20,6 +20,7 @@ export type OwnProvider = 'gemini-own' | 'claude-own';
 
 export const PROVIDER_LABELS: Record<AiProvider, string> = {
   none: 'Sem IA',
+  'workers-ai': 'Gratuita (IA do Prazómetro)',
   'gemini-admin': 'IA do Prazómetro (Gemini)',
   'gemini-own': 'Gemini, com a minha chave',
   'claude-own': 'Claude, com a minha chave',
@@ -30,7 +31,8 @@ export async function loadSettings(): Promise<AiSettings> {
   if (existing) return existing;
   const settings: AiSettings = {
     id: 'ia',
-    fornecedor: 'none',
+    // Por defeito, a IA gratuita: o texto só sai depois de a pessoa ver o que vai ser enviado.
+    fornecedor: 'workers-ai',
     chave_local: await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
       'encrypt',
       'decrypt',
@@ -89,8 +91,55 @@ export async function testKey(provider: OwnProvider, key: string, model: string)
   return testClaudeKey({ key, model });
 }
 
+const DEVICE_KEY = 'prazometro.dispositivo';
+let sessionDevice: string | undefined;
+
+/**
+ * Identificador aleatório deste dispositivo, só para contar as leituras gratuitas do dia.
+ * O servidor guarda apenas sha256(dia + identificador), que muda todos os dias.
+ */
+export function deviceId(): string {
+  try {
+    const saved = localStorage.getItem(DEVICE_KEY);
+    if (saved && /^[A-Za-z0-9_-]{16,64}$/.test(saved)) return saved;
+  } catch {
+    // Sem armazenamento: vale enquanto a página estiver aberta.
+  }
+  if (!sessionDevice) {
+    const bytes = crypto.getRandomValues(new Uint8Array(18));
+    sessionDevice = btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    try {
+      localStorage.setItem(DEVICE_KEY, sessionDevice);
+    } catch {
+      // Idem.
+    }
+  }
+  return sessionDevice;
+}
+
+const deviceHeader = () => ({ 'x-dispositivo': deviceId() });
+
+export type FreeStatus = { disponivel: boolean; restantes: number; limite_diario: number };
+
+/** Estado da IA gratuita para este dispositivo: disponível hoje e leituras que restam. */
+export function freeStatus(): Promise<FreeStatus> {
+  return api<FreeStatus>('/ai/gratuita/status', { headers: deviceHeader() });
+}
+
 /** Função que envia o texto (já anonimizado) ao fornecedor escolhido. */
 export async function providerCall(s: AiSettings): Promise<ProviderCall | undefined> {
+  if (s.fornecedor === 'workers-ai') {
+    return async (texto) =>
+      (
+        await api<{ resultado: unknown }>('/ai/gratuita', {
+          json: { texto },
+          headers: deviceHeader(),
+        })
+      ).resultado;
+  }
   if (s.fornecedor === 'gemini-admin') {
     return async (texto) =>
       (await api<{ resultado: unknown }>('/ai/extract', { json: { texto } })).resultado;

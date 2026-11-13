@@ -1,9 +1,15 @@
 import { z } from 'zod';
 
-// Esquema único da resposta de todos os fornecedores (none, gemini, claude).
+// Esquema único da resposta de todos os fornecedores (none, workers-ai, gemini, claude).
 // A IA só extrai e resume: nunca calcula prazos nem decide direitos (princípio 1).
 
-export const PROVIDERS = ['none', 'gemini-admin', 'gemini-own', 'claude-own'] as const;
+export const PROVIDERS = [
+  'none',
+  'workers-ai',
+  'gemini-admin',
+  'gemini-own',
+  'claude-own',
+] as const;
 export type AiProvider = (typeof PROVIDERS)[number];
 
 /** Modelo por defeito da Claude (configurável pela pessoa). */

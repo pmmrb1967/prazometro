@@ -18,7 +18,7 @@ Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial,
 
 1. **O motor de regras calcula, a IA só lê.** Prazos, elegibilidade e custos saem sempre do motor determinístico (`packages/engine`). A IA só extrai campos e resume texto. Nunca usar um LLM para calcular um prazo ou decidir um direito.
 2. **Local-first.** Os dados do utilizador vivem no dispositivo (IndexedDB). O servidor guarda apenas contas, cópias de segurança **cifradas no cliente**, partilhas e estatísticas agregadas. O servidor nunca vê faturas, cartas ou dados de saúde em claro.
-3. **Custo zero.** Só Cloudflare no plano gratuito: Workers (com static assets), D1 e Cron Triggers. Alertas do admin por WhatsApp com o CallMeBot (gratuito para uso pessoal). **Sem R2** (exige cartão). Sem serviços pagos.
+3. **Custo zero.** Só Cloudflare no plano gratuito: Workers (com static assets), D1, Cron Triggers e Workers AI (neurons gratuitos, para a IA gratuita das cartas). Alertas do admin por WhatsApp com o CallMeBot (gratuito para uso pessoal). **Sem R2** (exige cartão). Sem serviços pagos.
 4. **Cada regra tem fonte e data.** Todas as regras e modelos de carta indicam a fonte legal (com ligação) e a data da última verificação. Regras com mais de 6 meses sem verificação aparecem marcadas como "a verificar".
 5. **Informação, não aconselhamento jurídico.** A consulta jurídica é ato próprio de advogados e solicitadores (Lei 49/2004). Os textos dão informação geral e modelos, e nunca opinião sobre um caso concreto. O aviso legal tem de estar visível em todos os módulos.
 6. **Acessível a 65+.** Letra grande, alto contraste, poucos passos, linguagem simples, sem conta obrigatória.
@@ -51,7 +51,7 @@ prazometro/
 ├── workers/api/              # Worker `app`: serve a PWA e a API Hono em /api (auth, backup, ai-proxy, admin, partilha)
 ├── workers/monitor/          # Cron: lê métricas, grava uso diário, envia alertas
 ├── packages/engine/          # motor de regras, prazos, feriados (sem dependências de UI)
-├── packages/ai/              # camada de fornecedores de IA (none, gemini, claude)
+├── packages/ai/              # camada de fornecedores de IA (none, workers-ai, gemini, claude)
 ├── rules/                    # regras em JSON, uma pasta por módulo
 │   └── schema/               # esquema zod e JSON Schema das regras
 ├── templates/                # modelos de carta (Markdown com campos {{campo}})
@@ -126,11 +126,11 @@ Consequências práticas:
 - Não gerar PDFs nem fazer OCR no Worker (CPU). Tudo isso corre no dispositivo.
 - Não usar bcrypt em JavaScript. Usar WebCrypto (PBKDF2, AES-GCM) ou passkeys.
 - Cópias de segurança partidas em blocos de no máximo 1,5 MB.
-- Ao chegar a 90% de um limite diário, o Worker entra em **modo poupança**: desliga o proxy de IA do admin e suspende as cópias de segurança até ao dia seguinte.
+- Ao chegar a 90% de um limite diário, o Worker entra em **modo poupança**: desliga a IA do Prazómetro (gratuita e do admin) e suspende as cópias de segurança até ao dia seguinte.
 
 ## IA
 
-- Fornecedores: `none` (palavras-chave), `gemini-admin` (chave do admin via Worker, com limite por utilizador), `gemini-own` e `claude-own` (chave do utilizador, chamada direta do navegador).
+- Fornecedores: `workers-ai` (gratuita e por defeito: Workers AI via Worker em `/api/ai/gratuita`, sem chave nem conta, 10 leituras por dispositivo e por dia e uma reserva nos 10 000 neurons diários; o dispositivo é um identificador aleatório e o servidor guarda só `sha256(dia + id)`), `none` (palavras-chave), `gemini-own` e `claude-own` (chave do utilizador, chamada direta do navegador) e `gemini-admin` (chave do admin via Worker, desligado por causa dos termos da Google na UE).
 - Para a Claude Platform, a chamada direta do navegador usa o cabeçalho `anthropic-dangerous-direct-browser-access: true`. Só com a chave do próprio utilizador, nunca com a do admin.
 - Modelo por defeito para a Claude: `claude-haiku-5-5` (configurável).
 - Todos os fornecedores recebem o mesmo prompt e devolvem o mesmo esquema JSON, validado com zod. Se a validação falhar, volta ao modo `none`.

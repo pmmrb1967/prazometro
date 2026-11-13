@@ -40,11 +40,13 @@ A conta não pede email, nome, telefone nem NIF.
 
 ## Inteligência artificial
 
-Por defeito, a app lê as cartas **sem IA**, só no seu dispositivo. Se escolher usar a sua própria chave da Google (Gemini) ou da Anthropic (Claude):
+A fotografia ou o PDF da carta são sempre lidos no seu dispositivo e nunca são enviados. Pode escolher como o texto lido é resumido:
 
-- antes de enviar, a app retira nomes, moradas, NIF, NISS, IBAN, números de processo e outros identificadores, e mostra-lhe o texto exato que vai sair;
-- o texto vai diretamente do seu dispositivo para essa empresa, ao abrigo do contrato entre si e ela. Não passa pelo nosso servidor;
-- a IA só resume a carta. Os prazos são sempre calculados pelas regras da app.
+- **IA gratuita (por defeito):** o texto vai ao nosso servidor e é resumido pela IA da Cloudflare (Workers AI), que já aloja o Prazómetro. Não precisa de conta. A Cloudflare não usa o texto para treinar modelos e não o guarda depois de responder; nós também não o guardamos nem o registamos. Para contar o limite diário, a app cria um identificador aleatório neste dispositivo; o servidor guarda só uma versão cifrada desse identificador, que muda todos os dias, com o número de leituras do dia, e apaga-a no dia seguinte;
+- **com a sua própria chave da Google (Gemini) ou da Anthropic (Claude):** o texto vai diretamente do seu dispositivo para essa empresa, ao abrigo do contrato entre si e ela. Não passa pelo nosso servidor;
+- **sem IA:** a app reconhece o essencial por palavras-chave e nada sai do dispositivo.
+
+Em qualquer caso com IA, antes de enviar, a app retira nomes, moradas, NIF, NISS, IBAN, números de processo e outros identificadores, e mostra-lhe o texto exato que vai sair. A IA só resume a carta: os prazos são sempre calculados pelas regras da app.
 
 ## Quem trata os dados no nosso lugar
 

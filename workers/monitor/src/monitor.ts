@@ -66,19 +66,26 @@ export async function runMonitor(
   }
 
   // Sem estatísticas, o tamanho da base sai da própria consulta (meta.size_after).
-  const [ping, active, accounts, copies, ai] = await db.batch([
+  const [ping, active, accounts, copies, ai, free] = await db.batch([
     db.prepare('SELECT 1'),
     db.prepare('SELECT COUNT(*) AS n FROM users WHERE last_seen_at >= ?').bind(now - 86400),
     db.prepare('SELECT COUNT(*) AS n FROM users'),
     db.prepare("SELECT COALESCE(SUM(size), 0) AS n FROM backup_versions WHERE status = 'complete'"),
     db.prepare('SELECT COALESCE(SUM(calls), 0) AS n FROM ai_usage_daily WHERE date = ?').bind(date),
+    db
+      .prepare(
+        'SELECT COALESCE(SUM(calls), 0) AS n, COALESCE(SUM(neurons), 0) AS neurons FROM ai_free_daily WHERE date = ?',
+      )
+      .bind(date),
   ]);
   const n = (r: D1Result | undefined) => (r!.results[0] as { n: number }).n;
   values.d1_armazenamento ??= ping!.meta.size_after;
   values.utilizadores_ativos = n(active);
   values.contas = n(accounts);
   values.copias_bytes = n(copies);
-  values.chamadas_ia = n(ai);
+  const freeRow = free!.results[0] as { n: number; neurons: number };
+  values.chamadas_ia = n(ai) + freeRow.n;
+  values.ia_neurons = freeRow.neurons;
 
   const entries = Object.entries(values) as [Metric, number][];
   const statements = entries.map(([metric, value]) =>
@@ -90,6 +97,9 @@ export async function runMonitor(
       .bind(date, metric, value, now),
   );
 
+  // A IA gratuita só precisa do dia de hoje: apaga os dias anteriores.
+  statements.push(db.prepare('DELETE FROM ai_free_daily WHERE date < ?').bind(date));
+
   // Alertas: a chave primária de alerts_sent impede repetir o mesmo no mesmo dia.
   const candidates: Alert[] = [];
   const overDaily: Metric[] = [];
@@ -98,7 +108,8 @@ export async function runMonitor(
     if (!limit) continue;
     const pct = (value / limit) * 100;
     for (const t of THRESHOLDS) if (pct >= t) candidates.push({ metric, threshold: t, value });
-    if (METRICS[metric].diario && pct >= SAVINGS_THRESHOLD) overDaily.push(metric);
+    const info = METRICS[metric];
+    if (info.diario && !info.sem_poupanca && pct >= SAVINGS_THRESHOLD) overDaily.push(metric);
   }
   if (result.analyticsError) candidates.push({ metric: 'monitor', threshold: 0, value: 0 });
   const alertStart = statements.length;

@@ -174,6 +174,27 @@ describe('monitor', () => {
   });
 });
 
+describe('IA gratuita (Workers AI)', () => {
+  it('conta os neurons, alerta aos 90% sem ligar o modo poupança e apaga os dias anteriores', async () => {
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO ai_free_daily VALUES ('2026-10-20', 'a', 3, 6000)"),
+      env.DB.prepare("INSERT INTO ai_free_daily VALUES ('2026-10-20', 'b', 2, 3200)"),
+      env.DB.prepare("INSERT INTO ai_free_daily VALUES ('2026-10-19', 'c', 9, 9000)"),
+    ]);
+    const r = await runMonitor(env, at('2026-10-20T15:05:00Z'), analytics({}).fetchFn);
+    expect(r.values.ia_neurons).toBe(9200);
+    expect(r.values.chamadas_ia).toBe(5);
+    expect(r.alerts.filter((a) => a.metric === 'ia_neurons').map((a) => a.threshold)).toEqual([
+      70, 90,
+    ]);
+    expect(r.savings).toBeNull();
+    const old = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM ai_free_daily WHERE date = '2026-10-19'",
+    ).first<{ n: number }>();
+    expect(old?.n).toBe(0);
+  });
+});
+
 describe('alertas por WhatsApp', () => {
   /** Analytics falsa e, para o CallMeBot, a resposta indicada; guarda os envios. */
   function withWhatsApp(use: Parameters<typeof analytics>[0], reply = 'Message queued') {

@@ -8,6 +8,8 @@ export type Env = {
   /** Segredo: chave do Gemini do admin. Nunca vai para o frontend. */
   GEMINI_API_KEY?: string;
   GEMINI_MODEL?: string;
+  /** Workers AI: a IA gratuita das cartas (fornecedor workers-ai). */
+  AI?: Ai;
   /** Segredo: identificadores das contas de admin, separados por vírgulas. */
   ADMIN_IDS?: string;
 };
