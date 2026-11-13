@@ -212,26 +212,23 @@ export function App() {
       </main>
 
       <footer className="site-footer">
-        <nav aria-label="Informação">
+        <p>© 2026 Paulo Barbosa</p>
+        <nav aria-label="Informação" className="footer-links">
           <Link to="/sobre">Como funciona</Link>
           <Link to="/opiniao">Dar a sua opinião</Link>
           <Link to="/privacidade">Privacidade</Link>
           <Link to="/termos">Termos</Link>
           <Link to="/aviso-legal">Aviso legal</Link>
-        </nav>
-        <p>Prazómetro: gratuito, sem publicidade e sem fins comerciais.</p>
-        <p className="footer-meta">
-          © 2026 Paulo Barbosa · Versão {APP_VERSION} ({APP_COMMIT})
-        </p>
-        <p className="footer-meta">
-          Código aberto,{' '}
           <a href={LICENSE_URL} target="_blank" rel="noreferrer">
-            licença AGPL-3.0
-          </a>{' '}
-          ·{' '}
+            Licença AGPL-3.0
+          </a>
           <a href={SOURCE_URL} target="_blank" rel="noreferrer">
             Código no GitHub
           </a>
+        </nav>
+        <p>Prazómetro: gratuito, sem publicidade e sem fins comerciais.</p>
+        <p>
+          Versão {APP_VERSION} ({APP_COMMIT})
         </p>
       </footer>
     </>
