@@ -364,7 +364,7 @@ Feito e testado com dados fictícios, mas à espera de confirmação com uso rea
 
 Fase 5 (admin e monitorização)
 
-- [ ] Pôr o id da conta no segredo `ADMIN_IDS`, abrir `/admin` com a passkey e confirmar os números e os alertas
+- [x] Pôr o id da conta no segredo `ADMIN_IDS`, abrir `/admin` com a passkey e confirmar os números e os alertas (2026-11-13: o painel abre em produção e o monitor grava todas as métricas desde 2026-10-21, sem falhas; sem alertas porque o uso está muito abaixo dos 70%; os alertas só foram testados com dados simulados)
 - [ ] Escolher o canal dos alertas (por exemplo, WhatsApp)
 
 Fase 6 (cartas explicadas)
