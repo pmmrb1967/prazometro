@@ -8,6 +8,14 @@ import { db, type SentShare, type ShareScope } from '../db';
 import { Link, usePageHeading } from '../router';
 import { inviteLink, ShareTooLargeError } from './shareCrypto';
 import { createShare, pushShare, revokeShare, SCOPE_LABELS } from './shares';
+import {
+  inviteText,
+  isComputer,
+  openWhatsapp,
+  saveDesktopChoice,
+  savedDesktopChoice,
+  type WhatsAppDesktop,
+} from './whatsapp';
 
 const link = (s: SentShare) => inviteLink(location.origin, s.id, s.chave);
 
@@ -196,11 +204,63 @@ function NewShare({ onCreated }: { onCreated: (s: SentShare) => void }) {
   );
 }
 
+/** "Enviar por WhatsApp": no computador, pergunta uma vez se abre a app ou o WhatsApp Web. */
+function WhatsAppButton({ text }: { text: string }) {
+  const [asking, setAsking] = useState(false);
+  const [openedOnComputer, setOpenedOnComputer] = useState(false);
+
+  function send() {
+    if (!isComputer()) return openWhatsapp('mobile', text);
+    const saved = savedDesktopChoice();
+    if (!saved) return setAsking(true);
+    openWhatsapp(saved, text);
+    setOpenedOnComputer(true);
+  }
+
+  function choose(choice: WhatsAppDesktop) {
+    saveDesktopChoice(choice);
+    setAsking(false);
+    openWhatsapp(choice, text);
+    setOpenedOnComputer(true);
+  }
+
+  return (
+    <>
+      <button type="button" onClick={send}>
+        Enviar por WhatsApp
+      </button>
+      {asking && (
+        <div className="notice whatsapp-choice" role="group" aria-label="Como abrir o WhatsApp">
+          <p>Como quer abrir o WhatsApp neste computador?</p>
+          <div className="actions">
+            <button type="button" onClick={() => choose('app')}>
+              Na app do WhatsApp
+            </button>
+            <button type="button" onClick={() => choose('web')}>
+              No WhatsApp Web
+            </button>
+          </div>
+        </div>
+      )}
+      {openedOnComputer && !asking && (
+        <button
+          type="button"
+          className="link-button whatsapp-choice"
+          onClick={() => setAsking(true)}
+        >
+          Não abriu? Escolher outra forma
+        </button>
+      )}
+    </>
+  );
+}
+
 function CopyOrSend({ share }: { share: SentShare }) {
   const [copied, setCopied] = useState(false);
   const url = link(share);
   return (
     <div className="actions">
+      <WhatsAppButton text={inviteText(share.ambito, url)} />
       <button
         type="button"
         onClick={async () => {
@@ -231,8 +291,8 @@ function Created({ share, onDone }: { share: SentShare; onDone: () => void }) {
     <section aria-labelledby="criada" className="form">
       <h2 id="criada">Ligação criada</h2>
       <p>
-        Envie esta ligação a {share.para || 'quem vai acompanhar'}. Ao abri-la, a pessoa vê{' '}
-        <strong>{SCOPE_LABELS[share.ambito].toLowerCase()}</strong> no telemóvel dela.
+        Envie esta ligação a {share.para || 'quem vai acompanhar'}. Ao abri-la, a pessoa vê o tema{' '}
+        <strong>{SCOPE_LABELS[share.ambito]}</strong> no telemóvel dela.
       </p>
       <p className="share-link">{link(share)}</p>
       <CopyOrSend share={share} />

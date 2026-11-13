@@ -311,6 +311,7 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Partilha cifrada ponta a ponta: chave AES-GCM aleatória que só existe na ligação, depois do `#` (nunca chega ao servidor); id e tema ligados ao texto cifrado
 - [x] Revogação de acesso: apaga no servidor; os dados desaparecem do dispositivo de quem recebeu quando abre a app. As partilhas criadas noutro telemóvel também se podem retirar
 - [x] Atualização ao abrir a app (sem tempo real): quem partilha envia só se os dados mudaram; quem recebe usa um pedido condicional (`If-None-Match`)
+- [x] Botão "Enviar por WhatsApp" no convite, como no Poder e Beleza (`apps/web/src/share/whatsapp.ts`): abre o WhatsApp com a mensagem e a ligação já escritas, sem número, para a pessoa escolher o familiar; no computador pergunta uma vez se abre a app ou o WhatsApp Web
 
 ### Fase 9 — Lançamento (0,5 sem, em paralelo a partir da fase 5)
 
