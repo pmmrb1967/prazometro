@@ -259,8 +259,8 @@ Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se
 - [x] Worker `monitor` com Cron Trigger de hora a hora (ao minuto 5, sem endereço público)
 - [x] Leitura da GraphQL Analytics API (`d1AnalyticsAdaptiveGroups`, pedidos ao Worker) com token só de leitura (segredo `CF_ANALYTICS_TOKEN`, "Account Analytics: Read"; a gravar desde 2026-10-21)
 - [x] Tamanho de cada base e da conta, comparado com 500 MB e 5 GB (sem token, o tamanho da base sai da própria consulta ao D1)
-- [x] Envio dos alertas ao admin por WhatsApp com o CallMeBot (`workers/monitor/src/notify.ts`; segredos `WHATSAPP_PHONE` e `WHATSAPP_APIKEY`). O Email Routing exige domínio próprio (pago) e a API oficial do WhatsApp cobra cada mensagem e pede meio de pagamento; o CallMeBot é gratuito para uso pessoal, só envia para o número do admin, e a mensagem leva só números agregados. **Ativação pendente** (ver secção 10); se o CallMeBot não responder, passar para Web Push
-- [ ] **Alternativa provável: alertas por notificação da própria app (Web Push)**, como no Validómetro (`src/worker/webpush.ts`, VAPID e RFC 8291/8292 só com WebCrypto): subscrição do admin no painel, envio pelo Worker `monitor`, sem serviços de terceiros. No iPhone exige a app instalada no ecrã principal. Fazer se a ativação do CallMeBot falhar, ou em vez dele, por ser mais fiável
+- [x] Envio dos alertas ao admin por WhatsApp com o CallMeBot (`workers/monitor/src/notify.ts`; segredos `WHATSAPP_PHONE` e `WHATSAPP_APIKEY`). O Email Routing exige domínio próprio (pago) e a API oficial do WhatsApp cobra cada mensagem e pede meio de pagamento; o CallMeBot é gratuito para uso pessoal, só envia para o número do admin, e a mensagem leva só números agregados. Ativado e testado a 2026-11-13
+- [ ] **Alternativa (opcional): alertas por notificação da própria app (Web Push)**, como no Validómetro (`src/worker/webpush.ts`, VAPID e RFC 8291/8292 só com WebCrypto): subscrição do admin no painel, envio pelo Worker `monitor`, sem serviços de terceiros. No iPhone exige a app instalada no ecrã principal. Só se o CallMeBot deixar de funcionar
 - [x] Alertas aos 70% e 90%, no máximo um por métrica, patamar e dia (registados em `alerts_sent` e mostrados no painel; o envio ao admin liga-se num só ponto de `workers/monitor/src/monitor.ts`)
 - [x] Modo poupança aos 90%: desliga o proxy de IA do admin e suspende cópias até às 00:00 UTC (as cópias já param; o proxy de IA usa `savingsMode` na fase 6)
 - [x] Rota `/admin` protegida (papel `admin` e passkey)
@@ -368,7 +368,7 @@ Feito e testado com dados fictícios, mas à espera de confirmação com uso rea
 Fase 5 (admin e monitorização)
 
 - [x] Pôr o id da conta no segredo `ADMIN_IDS`, abrir `/admin` com a passkey e confirmar os números e os alertas (2026-11-13: o painel abre em produção e o monitor grava todas as métricas desde 2026-10-21, sem falhas; sem alertas porque o uso está muito abaixo dos 70%; os alertas só foram testados com dados simulados)
-- [ ] Ativar o CallMeBot no WhatsApp do admin, pôr os segredos `WHATSAPP_PHONE` e `WHATSAPP_APIKEY` no Worker `monitor` e receber uma mensagem de teste (canal escolhido a 2026-11-13: WhatsApp). **2026-11-13: a mensagem de ativação para +34 644 26 33 77 ficou sem resposta.** Segundo o CallMeBot, tentar de novo uma só vez depois de 24 horas (a partir de 2026-11-14); suporte no Telegram `@callmebot_com`. Se voltar a falhar, implementar o Web Push (fase 5) e retirar o CallMeBot
+- [x] Ativar o CallMeBot no WhatsApp do admin, pôr os segredos `WHATSAPP_PHONE` e `WHATSAPP_APIKEY` no Worker `monitor` e receber uma mensagem de teste (2026-11-13: ativação feita, segredos postos, mensagem de teste recebida)
 
 Fase 6 (cartas explicadas)
 
