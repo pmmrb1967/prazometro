@@ -1,4 +1,5 @@
 import { readAnalytics } from './analytics';
+import { alertMessage, sendWhatsApp } from './notify';
 import {
   METRICS,
   nextUtcMidnight,
@@ -18,6 +19,9 @@ export type MonitorEnv = {
   ACCOUNT_ID: string;
   DATABASE_ID: string;
   CF_ANALYTICS_TOKEN?: string;
+  /** Segredos do CallMeBot: número do admin com indicativo (+351…) e a chave recebida. */
+  WHATSAPP_PHONE?: string;
+  WHATSAPP_APIKEY?: string;
 };
 
 export type Alert = { metric: Metric | 'monitor'; threshold: number; value: number };
@@ -28,6 +32,8 @@ export type MonitorResult = {
   alerts: Alert[];
   savings: 'ligado' | 'mantido' | 'desligado' | null;
   analyticsError?: string;
+  /** 'enviado', 'sem_canal' (faltam os segredos) ou a mensagem de erro do envio. */
+  whatsapp?: string;
 };
 
 export async function runMonitor(
@@ -130,7 +136,24 @@ export async function runMonitor(
 
   const results = statements.length ? await db.batch(statements) : [];
   result.alerts = candidates.filter((_, i) => results[alertStart + i]!.meta.changes === 1);
-  // Aqui entrará o envio dos alertas novos ao admin (por exemplo, WhatsApp). Por agora ficam
-  // registados em alerts_sent e aparecem no painel.
+
+  // Envio dos alertas novos ao admin. Ficam sempre em alerts_sent e no painel, mesmo se o
+  // envio falhar; não se repete na hora seguinte (um aviso por métrica, patamar e dia).
+  if (result.alerts.length) {
+    if (!env.WHATSAPP_PHONE || !env.WHATSAPP_APIKEY) {
+      result.whatsapp = 'sem_canal';
+    } else {
+      try {
+        await sendWhatsApp(
+          { phone: env.WHATSAPP_PHONE, apikey: env.WHATSAPP_APIKEY },
+          alertMessage(date, result.alerts, result.savings === 'ligado'),
+          fetchFn,
+        );
+        result.whatsapp = 'enviado';
+      } catch (e) {
+        result.whatsapp = e instanceof Error ? e.message : 'WhatsApp: erro';
+      }
+    }
+  }
   return result;
 }

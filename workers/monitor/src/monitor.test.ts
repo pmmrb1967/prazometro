@@ -173,3 +173,65 @@ describe('monitor', () => {
     });
   });
 });
+
+describe('alertas por WhatsApp', () => {
+  /** Analytics falsa e, para o CallMeBot, a resposta indicada; guarda os envios. */
+  function withWhatsApp(use: Parameters<typeof analytics>[0], reply = 'Message queued') {
+    const base = analytics(use).fetchFn;
+    const sent: URL[] = [];
+    const fetchFn = (async (url: string, init: RequestInit) => {
+      if (!url.startsWith('https://api.callmebot.com/')) return base(url, init);
+      sent.push(new URL(url));
+      return new Response(reply);
+    }) as unknown as typeof fetch;
+    return { fetchFn, sent };
+  }
+
+  it('envia uma mensagem com os alertas novos e não repete na hora seguinte', async () => {
+    env = { ...env, WHATSAPP_PHONE: '+351912345678', WHATSAPP_APIKEY: '123123' };
+    const { fetchFn, sent } = withWhatsApp({ requests: 91_000 });
+    const t = at('2026-10-20T15:05:00Z');
+    const r = await runMonitor(env, t, fetchFn);
+    expect(r.whatsapp).toBe('enviado');
+    expect(sent).toHaveLength(1);
+    expect(sent[0]!.searchParams.get('phone')).toBe('+351912345678');
+    expect(sent[0]!.searchParams.get('apikey')).toBe('123123');
+    const text = sent[0]!.searchParams.get('text')!;
+    expect(text).toContain('Pedidos aos Workers: 70% do limite');
+    expect(text).toContain('Pedidos aos Workers: 90% do limite');
+    expect(text).toContain('Modo poupança ligado');
+
+    const r2 = await runMonitor(env, t + 3600, fetchFn);
+    expect(r2.whatsapp).toBeUndefined();
+    expect(sent).toHaveLength(1);
+  });
+
+  it('sem alertas não envia nada', async () => {
+    env = { ...env, WHATSAPP_PHONE: '+351912345678', WHATSAPP_APIKEY: '123123' };
+    const { fetchFn, sent } = withWhatsApp({ requests: 10 });
+    const r = await runMonitor(env, at('2026-10-20T15:05:00Z'), fetchFn);
+    expect(r.whatsapp).toBeUndefined();
+    expect(sent).toHaveLength(0);
+  });
+
+  it('sem os segredos, o alerta fica só no painel', async () => {
+    const { fetchFn, sent } = withWhatsApp({ rowsWritten: 75_000 });
+    const r = await runMonitor(env, at('2026-10-20T15:05:00Z'), fetchFn);
+    expect(r.alerts).toHaveLength(1);
+    expect(r.whatsapp).toBe('sem_canal');
+    expect(sent).toHaveLength(0);
+  });
+
+  it('se o CallMeBot recusar, o alerta fica registado e o erro não mostra a chave', async () => {
+    env = { ...env, WHATSAPP_PHONE: '+351912345678', WHATSAPP_APIKEY: 'chave-secreta' };
+    const { fetchFn } = withWhatsApp({ rowsWritten: 75_000 }, 'APIKey is invalid');
+    const r = await runMonitor(env, at('2026-10-20T15:05:00Z'), fetchFn);
+    expect(r.whatsapp).toMatch(/recusou/);
+    expect(r.whatsapp).not.toContain('chave-secreta');
+    expect(r.whatsapp).not.toContain('912345678');
+    const row = await env.DB.prepare('SELECT COUNT(*) AS n FROM alerts_sent').first<{
+      n: number;
+    }>();
+    expect(row?.n).toBe(1);
+  });
+});

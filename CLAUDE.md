@@ -18,7 +18,7 @@ Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial,
 
 1. **O motor de regras calcula, a IA só lê.** Prazos, elegibilidade e custos saem sempre do motor determinístico (`packages/engine`). A IA só extrai campos e resume texto. Nunca usar um LLM para calcular um prazo ou decidir um direito.
 2. **Local-first.** Os dados do utilizador vivem no dispositivo (IndexedDB). O servidor guarda apenas contas, cópias de segurança **cifradas no cliente**, partilhas e estatísticas agregadas. O servidor nunca vê faturas, cartas ou dados de saúde em claro.
-3. **Custo zero.** Só Cloudflare no plano gratuito: Workers (com static assets), D1, Cron Triggers e envio de email para endereços verificados. **Sem R2** (exige cartão). Sem serviços pagos.
+3. **Custo zero.** Só Cloudflare no plano gratuito: Workers (com static assets), D1 e Cron Triggers. Alertas do admin por WhatsApp com o CallMeBot (gratuito para uso pessoal). **Sem R2** (exige cartão). Sem serviços pagos.
 4. **Cada regra tem fonte e data.** Todas as regras e modelos de carta indicam a fonte legal (com ligação) e a data da última verificação. Regras com mais de 6 meses sem verificação aparecem marcadas como "a verificar".
 5. **Informação, não aconselhamento jurídico.** A consulta jurídica é ato próprio de advogados e solicitadores (Lei 49/2004). Os textos dão informação geral e modelos, e nunca opinião sobre um caso concreto. O aviso legal tem de estar visível em todos os módulos.
 6. **Acessível a 65+.** Letra grande, alto contraste, poucos passos, linguagem simples, sem conta obrigatória.
@@ -36,7 +36,7 @@ Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial,
 | Lembretes     | Exportação `.ics`                                                                                                         |
 | API           | Cloudflare Worker em TypeScript com Hono                                                                                  |
 | Base de dados | Cloudflare D1 (SQLite)                                                                                                    |
-| Monitorização | Worker com Cron Trigger, GraphQL Analytics API, `send_email` binding                                                      |
+| Monitorização | Worker com Cron Trigger, GraphQL Analytics API, alertas por WhatsApp (CallMeBot)                                          |
 | Autenticação  | Passkeys (WebAuthn) com código de recuperação                                                                             |
 | Testes        | Vitest (motor e Worker), Playwright (fluxos principais)                                                                   |
 
@@ -97,6 +97,8 @@ npx wrangler d1 migrations apply prazometro --local
 npm run deploy                   # build da PWA + publicação do Worker app (PWA em /, API em /api)
 npx wrangler dev -c workers/monitor/wrangler.jsonc --test-scheduled   # monitor local (/__scheduled corre o cron)
 npx wrangler secret put CF_ANALYTICS_TOKEN -c workers/monitor/wrangler.jsonc   # token só com "Account Analytics: Read"
+npx wrangler secret put WHATSAPP_PHONE -c workers/monitor/wrangler.jsonc   # número do admin com indicativo (+351…), para os alertas
+npx wrangler secret put WHATSAPP_APIKEY -c workers/monitor/wrangler.jsonc  # chave do CallMeBot (ativação em callmebot.com/blog/free-api-whatsapp-messages)
 npx wrangler secret put ADMIN_IDS -c workers/api/wrangler.jsonc   # contas de admin: ids separados por vírgulas (id em A minha conta > Detalhes técnicos)
 npx wrangler secret put GEMINI_API_KEY -c workers/api/wrangler.jsonc   # chave do admin para o gemini-admin (só com AI_ADMIN = "ligado" nas vars; desligado por causa dos termos da Google na UE)
 ```
