@@ -79,6 +79,25 @@ export async function readKey(provider: OwnProvider): Promise<string | undefined
   return secret ? decrypt(s.chave_local, secret) : undefined;
 }
 
+/** Modelos à escolha com chave própria (verificados a 2026-11-13); o primeiro é o de origem. */
+export const MODEL_OPTIONS: Record<OwnProvider, { id: string; label: string }[]> = {
+  'gemini-own': [
+    { id: GEMINI_DEFAULT_MODEL, label: 'Gemini 3.5 Flash-Lite (o mais barato)' },
+    { id: 'gemini-3.8-flash', label: 'Gemini 3.8 Flash (mais capaz)' },
+  ],
+  'claude-own': [
+    { id: CLAUDE_DEFAULT_MODEL, label: 'Claude Haiku 5.5 (o mais barato)' },
+    { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5 (equilibrado)' },
+    { id: 'claude-opus-5-5', label: 'Claude Opus 5.5 (o mais capaz)' },
+  ],
+};
+
+/** Mostra só o início típico e os últimos 4 caracteres: chega para reconhecer a chave, não para a usar. */
+export function keyHint(key: string): string {
+  const prefix = ['sk-ant-', 'AIza'].find((start) => key.startsWith(start)) ?? '';
+  return `${prefix}…${key.slice(-4)}`;
+}
+
 export const modelOf = (s: AiSettings, p: OwnProvider) =>
   p === 'gemini-own'
     ? s.modelo_gemini || GEMINI_DEFAULT_MODEL

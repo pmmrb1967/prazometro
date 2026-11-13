@@ -9,7 +9,9 @@ import { db } from '../../db';
 import { Link, usePageHeading } from '../../router';
 import {
   freeStatus,
+  keyHint,
   loadSettings,
+  MODEL_OPTIONS,
   modelOf,
   PROVIDER_LABELS,
   readKey,
@@ -195,10 +197,29 @@ function OwnKey({ provider }: { provider: OwnProvider }) {
   const [state, setState] = useState<'idle' | 'testing' | 'ok'>('idle');
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
+  const [hint, setHint] = useState<string>();
+  const stored = provider === 'gemini-own' ? settings?.chave_gemini : settings?.chave_claude;
+
+  // A chave guardada só se mostra pelos últimos 4 caracteres (decifrada aqui, no dispositivo).
+  useEffect(() => {
+    let alive = true;
+    (stored ? readKey(provider) : Promise.resolve(undefined)).then(
+      (k) => alive && setHint(k ? keyHint(k) : undefined),
+      () => alive && setHint(undefined),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [provider, stored]);
+
   if (!settings) return null;
-  const stored = provider === 'gemini-own' ? settings.chave_gemini : settings.chave_claude;
   const modelField = provider === 'gemini-own' ? 'modelo_gemini' : 'modelo_claude';
   const link = KEY_LINKS[provider];
+  const current = modelOf(settings, provider);
+  // Um modelo escrito antes à mão continua na lista, para não mudar sem a pessoa saber.
+  const models = MODEL_OPTIONS[provider].some((m) => m.id === current)
+    ? MODEL_OPTIONS[provider]
+    : [...MODEL_OPTIONS[provider], { id: current, label: current }];
 
   async function save(e: FormEvent) {
     e.preventDefault();
@@ -251,22 +272,28 @@ function OwnKey({ provider }: { provider: OwnProvider }) {
             type="password"
             value={key}
             onChange={(e) => setKey(e.target.value)}
+            placeholder={hint ?? (provider === 'gemini-own' ? 'AIza…' : 'sk-ant-…')}
             autoComplete="off"
             spellCheck={false}
             required
           />
         </label>
         <label className="field">
-          Modelo <span className="optional">(opcional)</span>
-          <input
-            type="text"
-            value={settings[modelField] ?? ''}
-            placeholder={modelOf({ ...settings, [modelField]: undefined }, provider)}
+          Modelo
+          <select
+            value={current}
             onChange={(e) =>
-              db.ia.update('ia', { [modelField]: e.target.value.trim() || undefined })
+              db.ia.update('ia', {
+                [modelField]: e.target.value === models[0]!.id ? undefined : e.target.value,
+              })
             }
-            spellCheck={false}
-          />
+          >
+            {models.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.label}
+              </option>
+            ))}
+          </select>
         </label>
         <div className="actions">
           <button type="submit" className="primary">
@@ -287,7 +314,11 @@ function OwnKey({ provider }: { provider: OwnProvider }) {
             </button>
           )}
         </div>
-        {stored && !message && <p className="hint">Há uma chave guardada.</p>}
+        {stored && !message && (
+          <p className="hint">
+            Há uma chave guardada{hint ? `, terminada em ${hint.slice(-4)}` : ''}.
+          </p>
+        )}
         {message && (
           <p className="ok" role="status">
             {message}
