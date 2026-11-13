@@ -927,6 +927,28 @@ p.card-title {
   border-top: 2px solid var(--line);
   color: var(--muted);
 }
+.footer-meta {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Aviso de versão nova, por baixo da barra de topo */
+.update-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding-block: 0.75rem;
+  padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  background: var(--surface);
+  border-bottom: 3px solid var(--brand);
+  font-weight: 700;
+}
+.update-bar p {
+  margin: 0;
+}
+
 .site-footer nav {
   display: flex;
   flex-wrap: wrap;

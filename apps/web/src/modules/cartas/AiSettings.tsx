@@ -237,6 +237,13 @@ function OwnKey({ provider }: { provider: OwnProvider }) {
         Prazómetro. O uso conta na sua conta{' '}
         {provider === 'gemini-own' ? 'Google' : 'da Claude Platform'}.
       </p>
+      {provider === 'gemini-own' && (
+        <p className="notice">
+          Atenção: na União Europeia, os termos da Google só permitem usar o Gemini numa app como
+          esta com a faturação ativa (paga) num projeto do Google Cloud. A chave gratuita do Google
+          AI Studio não serve. Se não tiver faturação ativa, use a IA gratuita do Prazómetro.
+        </p>
+      )}
       <form className="form" onSubmit={save}>
         <label className="field">
           {stored ? 'Substituir a chave' : 'Chave'}

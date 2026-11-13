@@ -12,7 +12,7 @@ O **Prazómetro** é uma PWA gratuita, em português europeu, que ajuda qualquer
 3. **Cartas explicadas**: foto de uma carta oficial, resumo simples, prazo e o que fazer.
 4. **Pós-óbito e heranças**: checklist com prazos, custos e cartas.
 
-Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial, do mesmo autor do Faturómetro.
+Público principal: pessoas 65+, imigrantes e famílias. Projeto não comercial, do mesmo autor do Faturómetro. Código aberto em https://github.com/pmmrb1967/prazometro (público), com a licença AGPL-3.0-or-later (`LICENSE`). O rodapé mostra © 2026 Paulo Barbosa, a versão (`apps/web/package.json`) e o commit do build; uma versão nova é anunciada por uma barra no topo (`apps/web/src/pwa.ts`), nunca aplicada sozinha.
 
 ## Princípios inegociáveis
 

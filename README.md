@@ -8,12 +8,12 @@ Pensada para pessoas com mais de 65 anos, imigrantes e famílias: letra grande, 
 
 ## O que faz
 
-| Módulo                       | Para quê                                                                                                           | Estado                                         |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
-| **Garantia de uma compra**   | Registar a compra, receber lembretes antes do fim da garantia legal de 3 anos e gerar a carta de reclamação        | Em desenvolvimento                             |
-| **Espera no SNS**            | Ver se a espera por uma consulta ou cirurgia já passou o tempo máximo de resposta garantido (TMRG) e gerar a carta | Planeado                                       |
-| **Perceber uma carta**       | Fotografar uma carta oficial e ver, em palavras simples, quem a enviou, o que pede e até quando                    | Planeado                                       |
-| **Depois de um falecimento** | Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias                                          | Planeado (só depois de revisão por um jurista) |
+| Módulo                       | Para quê                                                                                                           | Estado                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| **Garantia de uma compra**   | Registar a compra, receber lembretes antes do fim da garantia legal de 3 anos e gerar a carta de reclamação        | Disponível                                       |
+| **Espera no SNS**            | Ver se a espera por uma consulta ou cirurgia já passou o tempo máximo de resposta garantido (TMRG) e gerar a carta | Disponível                                       |
+| **Perceber uma carta**       | Fotografar uma carta oficial e ver, em palavras simples, quem a enviou, o que pede e até quando                    | Disponível, com IA gratuita opcional             |
+| **Depois de um falecimento** | Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias                                          | Em desenvolvimento, à espera de revisão jurídica |
 
 Os lembretes vão para o calendário do telemóvel (ficheiro `.ics`) e as cartas são geradas em PDF no próprio dispositivo.
 
@@ -59,7 +59,7 @@ npm run lint && npm run typecheck && npm test && npm run validate:rules
 apps/web/          PWA (React, Vite, vite-plugin-pwa)
 workers/api/       Worker "app": serve a PWA e a API Hono em /api
 packages/engine/   motor de regras: datas, feriados, prazos, condições, cartas em PDF, .ics
-packages/ai/       fornecedores de IA (nenhum, Gemini, Claude)
+packages/ai/       fornecedores de IA (nenhum, gratuita com Workers AI, Gemini, Claude)
 rules/             regras em JSON, uma pasta por módulo, validadas por rules/schema/
 templates/         modelos de carta em Markdown com {{campos}}
 db/migrations/     migrações da base D1
@@ -81,4 +81,4 @@ npm run deploy               # build da PWA + publicação do Worker
 
 ## Licença
 
-© 2026 Paulo Barbosa. Licença ainda por definir.
+© 2026 Paulo Barbosa. Código aberto, com a licença [GNU Affero General Public License v3.0 ou posterior](LICENSE) (AGPL-3.0-or-later): pode usar, estudar, alterar e redistribuir o código, e quem disponibilizar uma versão alterada como serviço na internet tem de publicar também o código dessa versão.

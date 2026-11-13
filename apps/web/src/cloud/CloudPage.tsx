@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { LegalNotice } from '../components/LegalNotice';
 import { db } from '../db';
 import { downloadBlob } from '../download';
+import { PROVIDER_LABELS } from '../modules/cartas/aiConfig';
 import { Link, usePageHeading } from '../router';
 import {
   addPasskey,
@@ -468,6 +469,8 @@ function SignedIn({
         </div>
       </section>
 
+      <AiSummary />
+
       {account.papel === 'admin' && (
         <section aria-labelledby="admin">
           <h2 id="admin">Painel de admin</h2>
@@ -505,7 +508,7 @@ function SignedIn({
               })
             }
           >
-            Criar uma passkey neste dispositivo
+            Criar passkey neste dispositivo
           </button>
           {!newCode && (
             <button
@@ -513,9 +516,21 @@ function SignedIn({
               disabled={!!busy}
               onClick={() => setNewCode(generateRecoveryCode())}
             >
-              Fazer um novo código de recuperação
+              Novo código de recuperação
             </button>
           )}
+          <button
+            type="button"
+            disabled={!!busy}
+            onClick={() =>
+              run('sair', async () => {
+                await logout();
+                onSignedOut();
+              })
+            }
+          >
+            Terminar sessão
+          </button>
         </div>
         {newCode && (
           <>
@@ -536,20 +551,6 @@ function SignedIn({
             </button>
           </>
         )}
-        <div className="actions">
-          <button
-            type="button"
-            disabled={!!busy}
-            onClick={() =>
-              run('sair', async () => {
-                await logout();
-                onSignedOut();
-              })
-            }
-          >
-            Terminar sessão neste dispositivo
-          </button>
-        </div>
       </section>
 
       <details className="sources">
@@ -596,6 +597,36 @@ function SignedIn({
   );
 }
 
+/** Que IA lê as cartas neste dispositivo e se há chave pessoal; tudo se gere em /cartas/ia. */
+function AiSummary() {
+  const settings = useLiveQuery(() => db.ia.get('ia'), [], null);
+  if (settings === null) return null;
+  const provider = settings?.fornecedor ?? 'workers-ai';
+  const keys = [settings?.chave_gemini && 'Gemini', settings?.chave_claude && 'Claude'].filter(
+    Boolean,
+  );
+  return (
+    <section aria-labelledby="ia">
+      <h2 id="ia">IA para ler cartas</h2>
+      <p>
+        Neste dispositivo: <strong>{PROVIDER_LABELS[provider]}</strong>.{' '}
+        {keys.length
+          ? `Chave pessoal guardada: ${keys.join(' e ')}.`
+          : 'Sem chave pessoal guardada.'}
+      </p>
+      <p className="hint">
+        As chaves pessoais ficam só neste dispositivo, cifradas: não vão para a conta nem para as
+        cópias na nuvem. Noutro dispositivo, tem de as pôr outra vez.
+      </p>
+      <div className="actions">
+        <Link to="/cartas/ia" className="button">
+          Escolher a IA ou gerir a chave
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default function CloudPage() {
   const [account, setAccount] = useState<Account | null | undefined>(undefined);
   const title = account ? 'A minha conta' : 'Entrar ou criar conta';
@@ -635,6 +666,7 @@ export default function CloudPage() {
       {error && <p className="errors">{error}</p>}
       {account === null && <SignedOut onSignedIn={refresh} />}
       {account && <SignedIn account={account} onChange={refresh} onSignedOut={refresh} />}
+      {account === null && <AiSummary />}
       <LegalNotice />
     </>
   );

@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
+import { APP_COMMIT, APP_VERSION, LICENSE_URL, SOURCE_URL } from './buildInfo';
 import { useSignedIn } from './cloud/session';
+import { applyUpdate, useUpdateAvailable } from './pwa';
 import { AccessibilityBar } from './components/AccessibilityBar';
 import { InstallPrompt } from './components/InstallPrompt';
 import { CartasList } from './modules/cartas/CartasList';
@@ -109,6 +111,20 @@ function Redirect({ to }: { to: string }) {
   return null;
 }
 
+/** Aviso de versão nova: só recarrega quando a pessoa carrega no botão. */
+function UpdateBar() {
+  const available = useUpdateAvailable();
+  if (!available) return null;
+  return (
+    <div className="update-bar" role="status">
+      <p>Há uma versão nova do Prazómetro.</p>
+      <button type="button" className="primary" onClick={applyUpdate}>
+        Atualizar agora
+      </button>
+    </div>
+  );
+}
+
 /** "Entrar" na barra de topo; "A minha conta" quando este dispositivo já tem sessão. */
 function AccountLink() {
   const signedIn = useSignedIn();
@@ -187,6 +203,8 @@ export function App() {
         </div>
       </header>
 
+      <UpdateBar />
+
       <main id="conteudo" className="page">
         <Suspense fallback={<p>A carregar…</p>}>
           <Routes path={path} />
@@ -202,6 +220,19 @@ export function App() {
           <Link to="/aviso-legal">Aviso legal</Link>
         </nav>
         <p>Prazómetro: gratuito, sem publicidade e sem fins comerciais.</p>
+        <p className="footer-meta">
+          © 2026 Paulo Barbosa · Versão {APP_VERSION} ({APP_COMMIT})
+        </p>
+        <p className="footer-meta">
+          Código aberto,{' '}
+          <a href={LICENSE_URL} target="_blank" rel="noreferrer">
+            licença AGPL-3.0
+          </a>{' '}
+          ·{' '}
+          <a href={SOURCE_URL} target="_blank" rel="noreferrer">
+            Código no GitHub
+          </a>
+        </p>
       </footer>
     </>
   );

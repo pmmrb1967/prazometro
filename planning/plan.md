@@ -377,8 +377,9 @@ Fase 6 (cartas explicadas)
 - [ ] Juntar cartas reais anonimizadas ao conjunto de teste (hoje são 30 fictícias)
 - [ ] Rever as 3 regras de `rules/cartas/` e os textos "O que pode fazer" (`apps/web/src/modules/cartas/guidance.ts`) com um jurista
 - [x] Decidir sobre o `gemini-admin` (2026-11-13): substituído pela IA gratuita com Workers AI; o código fica, desligado
-- [ ] Confirmar se os termos da Google permitem o `gemini-own` (chave da própria pessoa) na UE
-- [ ] Ler uma carta verdadeira com a IA gratuita em produção e ver o gasto real de neurons no painel (a estimativa é de cerca de 40 por carta)
+- [x] Confirmar se os termos da Google permitem o `gemini-own` na UE (2026-11-13, termos da Gemini API em vigor desde 2026-03-23, https://aistudio.google.com/docs/terms): "You may use only Paid Services when making API Clients available to users in the European Economic Area", e o acesso só é pago com um projeto Google Cloud com faturação ativa. O `gemini-own` fica, mas só com chave de faturação ativa: o ecrã da chave avisa que a chave gratuita do AI Studio não serve. (O Validómetro diz "tem um plano gratuito" no Gemini: rever lá também)
+- [x] Medir a IA gratuita com as 30 cartas fictícias (2026-11-13, Workers AI verdadeiro): emissor 30/30, datas 30/30, tipo 27/30 (trocou audiência da Segurança Social por "outro", PERSI por "cobrança" e uma fatura da água por "liquidação de imposto"), nenhuma data inventada; 11 a 15 neurons por carta (média 13), cerca de 700 cartas por dia nos 9 000 neurons; 2 a 6 segundos por carta (raramente mais)
+- [ ] Ler cartas verdadeiras com a IA gratuita em produção e confirmar o acerto e o gasto de neurons no painel
 
 Fase 7 (pós-óbito, aberto com o aviso "Em desenvolvimento")
 
