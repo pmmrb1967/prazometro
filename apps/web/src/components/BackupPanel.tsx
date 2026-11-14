@@ -1,6 +1,6 @@
 import { todayInLisbon } from '@prazometro/engine';
 import { useRef, useState } from 'react';
-import { exportBackup, importBackup } from '../backupData';
+import { describeCounts, exportBackup, importBackup } from '../backupData';
 import { downloadBlob } from '../download';
 import { Link } from '../router';
 
@@ -26,7 +26,7 @@ export function BackupPanel() {
       const n = await importBackup(await file.text());
       setMessage({
         kind: 'ok',
-        text: `Cópia recuperada: ${n.compras} compra(s) e ${n.pedidos} pedido(s) no SNS.`,
+        text: `Cópia recuperada: ${describeCounts(n)}.`,
       });
     } catch (e) {
       setMessage({ kind: 'erro', text: (e as Error).message });

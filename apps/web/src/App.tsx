@@ -24,6 +24,7 @@ import { DocPage } from './pages/DocPage';
 import { Feedback } from './pages/Feedback';
 import { ReceivedList, ReceivedView } from './share/Received';
 import { syncShares } from './share/shares';
+import { db } from './db';
 import { Link, matchPath, navigate, usePageHeading, usePath } from './router';
 
 // A página das cartas traz o gerador de PDF; só é descarregada quando é aberta.
@@ -195,9 +196,25 @@ export function App() {
   const [prefs, setPrefs] = usePreferences();
   const path = usePath();
 
-  // Partilhas familiares: envia as alterações e vai buscar as recebidas ao abrir a app.
+  // Ao abrir a app: junta os dados com a cópia da nuvem (se houver conta) e depois envia as
+  // partilhas familiares que mudaram e vai buscar as recebidas. Ao sair da app, envia o que
+  // mudou; ao voltar, vai ver se há novidades dos outros dispositivos.
   useEffect(() => {
-    syncShares();
+    // O código da conta (com as passkeys) só se carrega em dispositivos com conta.
+    const autoSync = async (reason: 'abrir' | 'voltar' | 'sair') => {
+      if (!(await db.nuvem.count())) return;
+      const cloud = await import('./cloud/cloud');
+      await cloud.autoSync(reason);
+    };
+    void autoSync('abrir')
+      .catch(() => undefined)
+      .finally(() => syncShares());
+    const onVisibility = () =>
+      void autoSync(document.visibilityState === 'hidden' ? 'sair' : 'voltar').catch(
+        () => undefined,
+      );
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
   }, []);
 
   return (

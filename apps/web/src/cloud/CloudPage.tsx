@@ -1,7 +1,8 @@
 import { browserSupportsWebAuthn } from '@simplewebauthn/browser';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { LegalNotice } from '../components/LegalNotice';
+import { countAll, describeCounts } from '../backupData';
 import { db } from '../db';
 import { downloadBlob } from '../download';
 import { PROVIDER_LABELS } from '../modules/cartas/aiConfig';
@@ -17,8 +18,8 @@ import {
   passkeyErrorMessage,
   register,
   replaceRecoveryCode,
-  restoreBackup,
   unlockWithCode,
+  synchronize,
   uploadBackup,
   type Account,
 } from './cloud';
@@ -333,7 +334,17 @@ function SignedIn({
   const [message, setMessage] = useState<Message>();
   const [newCode, setNewCode] = useState<string>();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [confirmRestore, setConfirmRestore] = useState(false);
+
+  // Primeira vez neste dispositivo (por exemplo, logo depois de escrever o código de
+  // recuperação): sincroniza já, sem esperar que a pessoa carregue no botão.
+  const firstSync = useRef(false);
+  const needsFirstSync = !!state && state.sincronizado_em === undefined;
+  useEffect(() => {
+    if (!needsFirstSync || firstSync.current) return;
+    firstSync.current = true;
+    void sync();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsFirstSync]);
 
   if (state === null) return null;
   const fotos = fotosChoice ?? state?.incluir_fotos ?? true;
@@ -355,6 +366,22 @@ function SignedIn({
 
   const onProgress = (verb: string) => (done: number, total: number) =>
     setProgress(total > 1 ? `${verb}: ${done} de ${total} partes` : `${verb}…`);
+
+  function sync() {
+    return run('sincronizar', async () => {
+      const r = await synchronize((fase, done, total) => onProgress(fase)(done, total));
+      const counts = describeCounts(await countAll());
+      return {
+        kind: 'ok',
+        text:
+          (r.recebidos > 0
+            ? `Sincronizado: ${r.recebidos} alteração(ões) recebida(s) de outro dispositivo.`
+            : r.enviado
+              ? 'Sincronizado: as alterações deste dispositivo foram enviadas.'
+              : 'Sincronizado: não havia nada de novo.') + ` Neste dispositivo: ${counts}.`,
+      };
+    });
+  }
 
   if (!state) {
     return (
@@ -383,74 +410,56 @@ function SignedIn({
   return (
     <>
       <section aria-labelledby="estado">
-        <h2 id="estado">Cópia na nuvem</h2>
-        {account.copia ? (
-          <p>
-            Última cópia na nuvem: <strong>{formatWhen(account.copia.created_at)}</strong> (
-            {formatSize(account.copia.size)}).
-          </p>
-        ) : (
-          <p>Ainda não há nenhuma cópia na nuvem.</p>
-        )}
-        <label className="check">
-          <input type="checkbox" checked={fotos} onChange={(e) => setFotos(e.target.checked)} />
-          Incluir as fotografias das faturas (comprimidas, ocupam mais espaço)
-        </label>
-        <div className="actions">
-          <button
-            type="button"
-            className="primary"
-            disabled={!!busy}
-            onClick={() =>
-              run('copia', async () => {
-                const size = await uploadBackup(fotos, onProgress('A enviar'));
-                return { kind: 'ok', text: `Cópia feita (${formatSize(size)}).` };
-              })
-            }
-          >
-            {busy === 'copia' ? 'A fazer a cópia…' : 'Fazer cópia agora'}
-          </button>
-          {account.copia && !confirmRestore && (
-            <button type="button" disabled={!!busy} onClick={() => setConfirmRestore(true)}>
-              Recuperar a cópia neste dispositivo
-            </button>
+        <h2 id="estado">Sincronizar os dispositivos</h2>
+        <p>
+          A app junta os dados deste dispositivo com a cópia cifrada na nuvem e envia o resultado.
+          Assim vê no computador as faturas e as cartas que leu no telemóvel, e ao contrário. Se o
+          mesmo registo for alterado nos dois, fica a alteração mais recente. O que apagar num
+          dispositivo também desaparece dos outros.
+        </p>
+        <p>
+          {state.sincronizado_em ? (
+            <>
+              Última sincronização: <strong>{formatWhen(state.sincronizado_em / 1000)}</strong>
+              {account.copia && <> ({formatSize(account.copia.size)} na nuvem)</>}.
+            </>
+          ) : account.copia ? (
+            <>
+              Este dispositivo ainda não foi sincronizado. Última cópia na nuvem:{' '}
+              <strong>{formatWhen(account.copia.created_at)}</strong>.
+            </>
+          ) : (
+            'Ainda não há nenhuma cópia na nuvem.'
           )}
+        </p>
+        <div className="actions">
+          <button type="button" className="primary" disabled={!!busy} onClick={sync}>
+            {busy === 'sincronizar' ? 'A sincronizar…' : 'Sincronizar agora'}
+          </button>
         </div>
-        {confirmRestore && (
-          <div className="notice">
-            <p>
-              Os dados da cópia juntam-se aos que já tem neste dispositivo. Os registos que existam
-              nos dois ficam com a versão da cópia.
-            </p>
-            <div className="actions">
-              <button
-                type="button"
-                className="primary"
-                disabled={!!busy}
-                onClick={() =>
-                  run('recuperar', async () => {
-                    setConfirmRestore(false);
-                    const n = await restoreBackup(onProgress('A descarregar'));
-                    return {
-                      kind: 'ok',
-                      text: `Cópia recuperada: ${n.compras} compra(s) e ${n.pedidos} pedido(s) no SNS.`,
-                    };
-                  })
-                }
-              >
-                Sim, recuperar
-              </button>
-              <button type="button" onClick={() => setConfirmRestore(false)}>
-                Não
-              </button>
-            </div>
-          </div>
-        )}
         {progress && <p role="status">{progress}</p>}
         <Status message={message} />
-        <p className="hint">
-          A app não faz cópias sozinha: faça uma cópia sempre que registar algo importante.
-        </p>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={state.sincronizar_sozinho !== false}
+            onChange={(e) =>
+              void db.nuvem.update('nuvem', { sincronizar_sozinho: e.target.checked })
+            }
+          />
+          Sincronizar sozinho ao abrir e ao sair da app
+        </label>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={fotos}
+            onChange={(e) => {
+              setFotos(e.target.checked);
+              void db.nuvem.update('nuvem', { incluir_fotos: e.target.checked });
+            }}
+          />
+          Incluir as fotografias das faturas (comprimidas, ocupam mais espaço)
+        </label>
       </section>
 
       <section aria-labelledby="familia">

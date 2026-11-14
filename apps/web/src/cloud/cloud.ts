@@ -9,7 +9,8 @@ import {
 } from '@simplewebauthn/browser';
 import { exportBackup, importBackup } from '../backupData';
 import { markSignedIn } from './session';
-import { db } from '../db';
+import { db, SYNCED_TABLES } from '../db';
+import { hasLocalChanges, type Stamped } from './merge';
 import { api, ApiError } from './api';
 import {
   decryptBackup,
@@ -197,10 +198,15 @@ export async function replaceRecoveryCode(code: string) {
 
 export type Progress = (done: number, total: number) => void;
 
-/** Faz a cópia: junta os dados, comprime, cifra e envia em blocos. */
+/** Faz a cópia: junta os dados, comprime, cifra e envia em blocos. Devolve o tamanho. */
 export async function uploadBackup(incluirFotos: boolean, onProgress?: Progress) {
+  return (await upload(incluirFotos, onProgress)).size;
+}
+
+async function upload(incluirFotos: boolean, onProgress?: Progress) {
   const state = await db.nuvem.get('nuvem');
   if (!state) throw new ApiError(400, 'Primeiro recupere a chave das cópias neste dispositivo.');
+  const started = Date.now();
   const json = await exportBackup({ ficheiros: incluirFotos, converter: compressPhoto });
   const prepared = await prepareBackup(new TextEncoder().encode(json), state.chave);
   const { version } = await api<{ version: number }>('/backups', {
@@ -216,15 +222,19 @@ export async function uploadBackup(incluirFotos: boolean, onProgress?: Progress)
   await db.nuvem.update('nuvem', {
     ultima_copia: new Date().toISOString(),
     incluir_fotos: incluirFotos,
+    versao_nuvem: version,
+    sincronizado_em: started,
   });
-  return prepared.size;
+  return { size: prepared.size, version };
 }
 
+type Latest = { version: number; chunk_count: number };
+
 /** Descarrega, decifra e junta a cópia aos dados deste dispositivo. */
-export async function restoreBackup(onProgress?: Progress) {
+export async function restoreBackup(onProgress?: Progress, known?: Latest) {
   const state = await db.nuvem.get('nuvem');
   if (!state) throw new ApiError(400, 'Primeiro recupere a chave das cópias neste dispositivo.');
-  const latest = await api<{ version: number; chunk_count: number }>('/backups/latest');
+  const latest = known ?? (await api<Latest>('/backups/latest'));
   const chunks: Uint8Array[] = [];
   onProgress?.(0, latest.chunk_count);
   for (let i = 0; i < latest.chunk_count; i++) {
@@ -240,7 +250,78 @@ export async function restoreBackup(onProgress?: Progress) {
       'Não foi possível decifrar a cópia. Entre outra vez com o código de recuperação.',
     );
   }
-  return importBackup(new TextDecoder().decode(plain));
+  const result = await importBackup(new TextDecoder().decode(plain));
+  await db.nuvem.update('nuvem', { versao_nuvem: latest.version });
+  return result;
+}
+
+// ---- Sincronização -------------------------------------------------------------------------
+// Junta a cópia da nuvem com este dispositivo (registo a registo, fica a alteração mais recente)
+// e envia o resultado. Só descarrega quando a cópia da nuvem mudou e só envia quando há
+// alterações neste dispositivo, para gastar o mínimo de pedidos e de dados.
+
+export type SyncResult = { recebidos: number; enviado: boolean };
+
+let syncing: Promise<SyncResult> | undefined;
+const syncListeners = new Set<() => void>();
+
+/** Avisa quem mostra o estado (a página da conta) quando uma sincronização acaba. */
+export function onSynced(f: () => void) {
+  syncListeners.add(f);
+  return () => void syncListeners.delete(f);
+}
+
+export function synchronize(onProgress?: (fase: string, done: number, total: number) => void) {
+  syncing ??= runSync(onProgress).finally(() => {
+    syncing = undefined;
+    syncListeners.forEach((f) => f());
+  });
+  return syncing;
+}
+
+async function runSync(
+  onProgress?: (fase: string, done: number, total: number) => void,
+): Promise<SyncResult> {
+  const state = await db.nuvem.get('nuvem');
+  if (!state) throw new ApiError(400, 'Primeiro recupere a chave das cópias neste dispositivo.');
+  let recebidos = 0;
+  const latest = await api<Latest>('/backups/latest').catch((e: unknown) => {
+    if (e instanceof ApiError && e.status === 404) return undefined;
+    throw e;
+  });
+  if (latest && latest.version !== state.versao_nuvem) {
+    const r = await restoreBackup((d, t) => onProgress?.('A receber', d, t), latest);
+    recebidos = r.alterados;
+  }
+  // A hora marca-se antes de juntar os dados: o que mudar durante o envio vai na próxima vez.
+  const started = Date.now();
+  const tables = await Promise.all(SYNCED_TABLES.map((t) => db.table<Stamped>(t).toArray()));
+  const pending =
+    !latest || hasLocalChanges(tables, await db.apagados.toArray(), state.sincronizado_em);
+  if (pending) {
+    await upload(state.incluir_fotos ?? true, (d, t) => onProgress?.('A enviar', d, t));
+  }
+  await db.nuvem.update('nuvem', { sincronizado_em: started });
+  return { recebidos, enviado: pending };
+}
+
+let lastAuto = 0;
+
+/**
+ * Sincronização automática (com sessão aberta e a opção ligada): ao abrir a app, ao voltar a
+ * ela depois de 5 minutos e ao sair (se houver alterações). Os erros (sem rede, modo poupança,
+ * sessão expirada) ficam calados: tenta-se outra vez da próxima vez.
+ */
+export async function autoSync(reason: 'abrir' | 'voltar' | 'sair') {
+  const state = await db.nuvem.get('nuvem');
+  if (!state || state.sincronizar_sozinho === false) return;
+  if (reason === 'voltar' && Date.now() - lastAuto < 5 * 60_000) return;
+  if (reason === 'sair') {
+    const tables = await Promise.all(SYNCED_TABLES.map((t) => db.table<Stamped>(t).toArray()));
+    if (!hasLocalChanges(tables, await db.apagados.toArray(), state.sincronizado_em)) return;
+  }
+  lastAuto = Date.now();
+  await synchronize().catch(() => undefined);
 }
 
 export async function logout() {

@@ -248,6 +248,7 @@ Notas da Fase 3 (2026-10-20):
 - [x] Restauro noutro dispositivo (com a passkey sincronizada ou com o código; testado no navegador com autenticador virtual)
 - [x] Opção de incluir fotos na cópia (comprimidas em WebP, até 1600 px)
 - [x] Apagar conta e todos os dados (direito ao apagamento, RGPD)
+- [x] Sincronização entre dispositivos (2026-11-14): cada registo guarda a hora da última alteração e cada apagamento deixa uma nota (180 dias); a junção fica com a alteração mais recente (`apps/web/src/cloud/merge.ts`). Sozinha ao abrir e ao sair da app, só descarrega quando a cópia muda e só envia quando há alterações
 - [x] Testes de cópia e restauro com 1 MB, 5 MB e 20 MB (`apps/web/src/cloud/crypto.test.ts`; envio e receção de 5 MB no Worker em `workers/api/src/backup.test.ts`)
 
 Limites: 20 MB por pessoa e 400 MB no total (o D1 tem 500 MB por base), e só se guarda a última cópia de cada pessoa.

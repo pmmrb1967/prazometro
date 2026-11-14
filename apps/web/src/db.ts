@@ -1,12 +1,19 @@
 import type { AiProvider, Extraction } from '@prazometro/ai';
 import Dexie, { type EntityTable } from 'dexie';
+import { tombstoneId, type Tombstone } from './cloud/merge';
 
 // Dados do utilizador: ficam só neste dispositivo (IndexedDB). Nunca vão para o servidor em claro.
+
+/** Registos que vão nas cópias e na sincronização entre dispositivos. */
+export type Synced = {
+  /** Hora da última alteração neste ou noutro dispositivo (ms desde 1970), posta pela base. */
+  atualizado_em?: number;
+};
 
 export type ItemState = 'novo' | 'recondicionado' | 'usado';
 export type YesNoUnsure = 'sim' | 'nao' | 'nao_sei';
 
-export type Purchase = {
+export type Purchase = Synced & {
   id: string;
   produto: string;
   loja: string;
@@ -40,7 +47,7 @@ export type WaitType =
 export type Area = 'geral' | 'oncologica' | 'cardiaca';
 export type Priority = 'muito_prioritaria' | 'prioritaria' | 'normal' | 'nao_sei';
 
-export type WaitRequest = {
+export type WaitRequest = Synced & {
   id: string;
   tipo: WaitType;
   /** O que está à espera, nas palavras da pessoa (por exemplo, "consulta de Ortopedia"). */
@@ -59,10 +66,10 @@ export type WaitRequest = {
   criado_em: string;
 };
 
-export type StoredFile = { id: string; nome: string; tipo: string; blob: Blob };
+export type StoredFile = Synced & { id: string; nome: string; tipo: string; blob: Blob };
 
 /** Dados para as cartas, guardados só se a pessoa quiser. */
-export type Profile = {
+export type Profile = Synced & {
   id: 'perfil';
   nome: string;
   morada: string;
@@ -76,22 +83,29 @@ export type CloudState = {
   chave: CryptoKey;
   ultima_copia?: string;
   incluir_fotos?: boolean;
+  /** Hora da última sincronização (ms): o que mudou depois ainda não está na nuvem. */
+  sincronizado_em?: number;
+  /** Versão da cópia na nuvem já junta a este dispositivo (só se descarrega quando muda). */
+  versao_nuvem?: number;
+  /** Sincronizar sozinho ao abrir e ao sair da app (por defeito, sim). */
+  sincronizar_sozinho?: boolean;
 };
 
 /** Uma carta recebida, lida no dispositivo (o texto nunca vai para a nuvem em claro). */
-export type ReceivedLetter = Extraction & {
-  id: string;
-  /** Texto lido por OCR ou colado, corrigido pela pessoa. */
-  texto: string;
-  /** Data escrita na carta. */
-  data_carta?: string;
-  /** Dia em que a pessoa recebeu a carta. */
-  data_rececao?: string;
-  /** Feita: a pessoa marcou que já tratou do assunto. */
-  tratada_em?: string;
-  fornecedor: AiProvider;
-  criado_em: string;
-};
+export type ReceivedLetter = Extraction &
+  Synced & {
+    id: string;
+    /** Texto lido por OCR ou colado, corrigido pela pessoa. */
+    texto: string;
+    /** Data escrita na carta. */
+    data_carta?: string;
+    /** Dia em que a pessoa recebeu a carta. */
+    data_rececao?: string;
+    /** Feita: a pessoa marcou que já tratou do assunto. */
+    tratada_em?: string;
+    fornecedor: AiProvider;
+    criado_em: string;
+  };
 
 /** Chave de IA cifrada com a chave local (AES-GCM). */
 export type EncryptedSecret = { iv: Uint8Array; dados: ArrayBuffer };
@@ -125,7 +139,7 @@ export type EstateAsset = {
   tratado: boolean;
 };
 
-export type DeathProcess = {
+export type DeathProcess = Synced & {
   id: string;
   /** Opcional: só serve para as cartas e fica no dispositivo. */
   nome?: string;
@@ -187,6 +201,7 @@ export const db = new Dexie('prazometro') as Dexie & {
   processos_obito: EntityTable<DeathProcess, 'id'>;
   partilhas_enviadas: EntityTable<SentShare, 'id'>;
   partilhas_recebidas: EntityTable<ReceivedShare, 'id'>;
+  apagados: EntityTable<Tombstone, 'id'>;
 };
 
 db.version(1).stores({
@@ -216,6 +231,60 @@ db.version(6).stores({
   partilhas_enviadas: 'id, criado_em',
   partilhas_recebidas: 'id, recebida_em',
 });
+
+db.version(7).stores({
+  apagados: 'id, apagado_em',
+});
+
+// ---- Sincronização entre dispositivos ------------------------------------------------------
+// Cada alteração a um registo sincronizado guarda a hora (atualizado_em) e cada apagamento deixa
+// uma nota em "apagados". A junção com a nuvem (cloud/merge.ts) usa-as para ficar sempre com a
+// alteração mais recente. Ao gravar o que veio da nuvem, as horas originais mantêm-se.
+
+export const SYNCED_TABLES = [
+  'compras',
+  'pedidos_sns',
+  'cartas',
+  'processos_obito',
+  'perfil',
+  'ficheiros',
+] as const;
+export type SyncedTable = (typeof SYNCED_TABLES)[number];
+
+let applyingRemote = false;
+
+/** Grava o que veio da nuvem sem mudar as horas nem criar notas de apagamento novas. */
+export async function applyRemote<T>(work: () => Promise<T>): Promise<T> {
+  applyingRemote = true;
+  try {
+    return await work();
+  } finally {
+    applyingRemote = false;
+  }
+}
+
+for (const name of SYNCED_TABLES) {
+  const table = db.table<Synced & { id: string }, string>(name);
+  table.hook('creating', (_key, obj) => {
+    if (!applyingRemote) obj.atualizado_em = Date.now();
+  });
+  table.hook('updating', () => (applyingRemote ? undefined : { atualizado_em: Date.now() }));
+  table.hook('deleting', function (key) {
+    if (applyingRemote) return;
+    const registo = String(key);
+    // A nota grava-se depois, fora da transação do apagamento (que só abrange esta tabela).
+    this.onsuccess = () => {
+      setTimeout(() => {
+        void db.apagados.put({
+          id: tombstoneId(name, registo),
+          tabela: name,
+          registo,
+          apagado_em: Date.now(),
+        });
+      });
+    };
+  });
+}
 
 export function newId(): string {
   return crypto.randomUUID();
