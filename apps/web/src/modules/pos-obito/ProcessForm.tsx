@@ -1,9 +1,11 @@
+import type { DeathCertificateReading } from '@prazometro/ai';
 import { isValidDate, todayInLisbon } from '@prazometro/engine';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState, type FormEvent } from 'react';
 import { LegalNotice } from '../../components/LegalNotice';
 import { db, newId, type DeathProcess } from '../../db';
 import { Link, navigate, usePageHeading } from '../../router';
+import { CertificateAutofill } from './CertificateAutofill';
 import { DevelopmentBanner } from './DevelopmentBanner';
 
 type Draft = { nome: string; data_obito: string; data_registo_obito: string };
@@ -39,6 +41,19 @@ function ProcessFormInner({ existing }: { existing?: DeathProcess }) {
   const [errors, setErrors] = useState<string[]>([]);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((prev) => ({ ...prev, [k]: v }));
 
+  /** Põe no formulário o que se leu da certidão; o que não se leu fica como estava. */
+  function applyCertificate(r: DeathCertificateReading) {
+    const today = todayInLisbon();
+    setD((prev) => ({
+      nome: r.nome || prev.nome,
+      data_obito: r.data_obito && r.data_obito <= today ? r.data_obito : prev.data_obito,
+      data_registo_obito:
+        r.data_registo_obito && r.data_registo_obito <= today
+          ? r.data_registo_obito
+          : prev.data_registo_obito,
+    }));
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const errs = validate(d);
@@ -66,6 +81,8 @@ function ProcessFormInner({ existing }: { existing?: DeathProcess }) {
         {editing ? 'Alterar dados' : 'Começar'}
       </h1>
       <DevelopmentBanner />
+
+      <CertificateAutofill onFill={applyCertificate} />
 
       <form className="form" onSubmit={onSubmit} noValidate>
         {errors.length > 0 && (

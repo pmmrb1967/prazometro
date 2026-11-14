@@ -5,8 +5,9 @@ import { db } from '../../db';
 import { Link } from '../../router';
 import { InvoicePreview } from './InvoicePreview';
 import { loadSettings, PROVIDER_LABELS, providerCall, recordUse } from '../cartas/aiConfig';
-import { loadImage, OcrError, prepare, recognize, type OcrProgress } from '../cartas/ocr';
-import { PdfError, readPdf } from '../cartas/pdf';
+import { OcrError, type OcrProgress } from '../cartas/ocr';
+import { PdfError } from '../cartas/pdf';
+import { readDocumentText } from '../cartas/readDocument';
 
 // Fatura no topo do registo da compra: fica guardada só no dispositivo e, se a pessoa quiser,
 // preenche o formulário. A leitura sem IA corre toda no telemóvel; com IA, mostra antes o
@@ -56,15 +57,9 @@ export function InvoiceAutofill({
     setBusy(true);
     setProgress({ fase: 'A preparar a leitura', progresso: 0 });
     try {
-      let read: string;
-      if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) {
-        const pdf = await readPdf(f);
-        read = pdf.tipo === 'texto' ? pdf.texto : await recognize(pdf.paginas, setProgress);
-      } else {
-        read = await recognize(prepare(await loadImage(f), 0), setProgress);
-      }
-      setText(read);
-      if (read.trim().length < 20) {
+      const content = await readDocumentText(f, setProgress);
+      setText(content);
+      if (content.trim().length < 20) {
         setError(
           'Quase não foi possível ler a fatura. A fatura fica guardada, mas preencha os campos à mão (ou tire outra fotografia com mais luz).',
         );

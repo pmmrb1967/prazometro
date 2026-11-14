@@ -16,6 +16,7 @@ export * from './prompt';
 export * from './gemini';
 export * from './task';
 export * from './invoice';
+export * from './deathCertificate';
 
 /** Chama um fornecedor de IA com o texto já anonimizado e devolve o JSON por validar. */
 export type ProviderCall = (anonymizedText: string, task: AiTask) => Promise<unknown>;
