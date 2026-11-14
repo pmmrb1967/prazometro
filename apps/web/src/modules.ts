@@ -28,7 +28,7 @@ export const MODULES: ModuleInfo[] = [
   },
   {
     id: 'pos-obito',
-    title: 'Depois de um falecimento',
+    title: 'Após um falecimento',
     summary: 'Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias.',
     available: true,
     inDevelopment: true,

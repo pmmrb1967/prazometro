@@ -8,12 +8,12 @@ Pensada para pessoas com mais de 65 anos, imigrantes e famílias: letra grande, 
 
 ## O que faz
 
-| Módulo                       | Para quê                                                                                                           | Estado                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
-| **Garantia de uma compra**   | Registar a compra, receber lembretes antes do fim da garantia legal de 3 anos e gerar a carta de reclamação        | Disponível                                       |
-| **Espera no SNS**            | Ver se a espera por uma consulta ou cirurgia já passou o tempo máximo de resposta garantido (TMRG) e gerar a carta | Disponível                                       |
-| **Perceber uma carta**       | Fotografar uma carta oficial e ver, em palavras simples, quem a enviou, o que pede e até quando                    | Disponível, com IA gratuita opcional             |
-| **Depois de um falecimento** | Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias                                          | Em desenvolvimento, à espera de revisão jurídica |
+| Módulo                     | Para quê                                                                                                           | Estado                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| **Garantia de uma compra** | Registar a compra, receber lembretes antes do fim da garantia legal de 3 anos e gerar a carta de reclamação        | Disponível                                       |
+| **Espera no SNS**          | Ver se a espera por uma consulta ou cirurgia já passou o tempo máximo de resposta garantido (TMRG) e gerar a carta | Disponível                                       |
+| **Perceber uma carta**     | Fotografar uma carta oficial e ver, em palavras simples, quem a enviou, o que pede e até quando                    | Disponível, com IA gratuita opcional             |
+| **Após um falecimento**    | Os passos, prazos e custos a tratar, por ordem, com as cartas necessárias                                          | Em desenvolvimento, à espera de revisão jurídica |
 
 Os lembretes vão para o calendário do telemóvel (ficheiro `.ics`) e as cartas são geradas em PDF no próprio dispositivo.
 

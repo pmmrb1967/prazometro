@@ -8,7 +8,7 @@ import { DevelopmentBanner } from './DevelopmentBanner';
 import { POS_OBITO_RULES } from './rules';
 
 export function ProcessList() {
-  const heading = usePageHeading<HTMLHeadingElement>('Depois de um falecimento');
+  const heading = usePageHeading<HTMLHeadingElement>('Após um falecimento');
   const processos = useLiveQuery(() => db.processos_obito.orderBy('criado_em').reverse().toArray());
   const today = todayInLisbon();
 
@@ -18,7 +18,7 @@ export function ProcessList() {
         <Link to="/">Início</Link>
       </nav>
       <h1 ref={heading} tabIndex={-1}>
-        Depois de um falecimento
+        Após um falecimento
       </h1>
       <DevelopmentBanner />
       <p className="lead">

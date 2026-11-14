@@ -66,7 +66,8 @@ function Home() {
                   {open ? (
                     <Link to={`/${m.id}`} className="module-link">
                       {m.title}
-                      <span aria-hidden="true"> ›</span>
+                      {/* Espaço inseparável: a seta nunca fica sozinha na linha seguinte. */}
+                      <span aria-hidden="true">{' ›'}</span>
                     </Link>
                   ) : (
                     m.title
@@ -131,7 +132,18 @@ function AccountLink() {
   const signedIn = useSignedIn();
   return (
     <Link to="/conta" className="button account-link">
-      {signedIn ? 'A minha conta' : 'Entrar'}
+      <svg className="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+      </svg>
+      {signedIn ? (
+        <>
+          <span className="label-long">A minha conta</span>
+          <span className="label-short">Conta</span>
+        </>
+      ) : (
+        'Entrar'
+      )}
     </Link>
   );
 }

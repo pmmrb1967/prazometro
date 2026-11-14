@@ -42,7 +42,7 @@ export default function PosObitoLetterPage({ id, template }: { id: string; templ
         backTo={`/pos-obito/${p.id}`}
         crumbs={
           <>
-            <Link to="/">Início</Link> › <Link to="/pos-obito">Depois de um falecimento</Link> ›{' '}
+            <Link to="/">Início</Link> › <Link to="/pos-obito">Após um falecimento</Link> ›{' '}
             <Link to={`/pos-obito/${p.id}`}>{p.nome || 'Falecimento'}</Link>
           </>
         }

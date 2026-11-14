@@ -7,7 +7,7 @@ const TOPICS: [string, string][] = [
   ['garantia', 'Garantia de uma compra'],
   ['sns', 'Espera no SNS'],
   ['cartas', 'Perceber uma carta'],
-  ['pos-obito', 'Depois de um falecimento'],
+  ['pos-obito', 'Após um falecimento'],
   ['partilha', 'Partilha com a família'],
 ];
 

@@ -61,7 +61,7 @@ function Detail({ p }: { p: DeathProcess }) {
   return (
     <>
       <nav className="crumbs" aria-label="Caminho">
-        <Link to="/">Início</Link> › <Link to="/pos-obito">Depois de um falecimento</Link>
+        <Link to="/">Início</Link> › <Link to="/pos-obito">Após um falecimento</Link>
       </nav>
       <h1 ref={heading} tabIndex={-1}>
         {title}

@@ -198,6 +198,16 @@ h1:focus {
 /* ---------- 3. Estrutura da página ---------- */
 
 .top {
+  /* O cabeçalho não cresce com o tamanho da letra escolhido: já é grande, cabe sempre em duas
+     linhas no telemóvel e os botões "A" não fogem do dedo ao mudar de tamanho. Dentro dele,
+     as medidas são em em (relativas a estes 18px). */
+  font-size: calc(1rem / var(--font-scale));
+  --space-1: 0.25em;
+  --space-2: 0.5em;
+  --space-3: 0.75em;
+  --space-4: 1em;
+  --gutter-left: max(var(--space-4), env(safe-area-inset-left));
+  --gutter-right: max(var(--space-4), env(safe-area-inset-right));
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -217,8 +227,33 @@ h1:focus {
   text-decoration: none;
 }
 .brand-name {
-  font-size: 1.6rem;
+  font-size: 1.6em;
   font-weight: 700;
+}
+.top button,
+.top .button {
+  padding-inline: 0.9em;
+}
+.top .icon {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.top .icon .icon-fill {
+  fill: currentColor;
+  stroke: none;
+}
+.account-link,
+.a11y-contrast {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.label-short {
+  display: none;
 }
 .top-tools,
 .a11y {
@@ -1041,8 +1076,11 @@ pre.anonymized {
 
 /* ---------- 8. Telemóvel ---------- */
 
-/* Logótipo e "Entrar" na primeira linha; letra e contraste na segunda. */
+/* Logótipo e conta na primeira linha; letra e contraste na segunda. */
 @media (max-width: 40rem) {
+  .module {
+    padding: var(--space-4);
+  }
   .top {
     gap: var(--space-2) var(--space-3);
     padding-block: var(--space-3);
@@ -1057,16 +1095,46 @@ pre.anonymized {
   .a11y {
     order: 2;
     flex-basis: 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
     gap: var(--space-2);
   }
-  .a11y button {
-    padding-inline: 0.6rem;
+  .top button,
+  .top .button {
+    padding-inline: 0.6em;
   }
   .brand img {
     width: 40px;
     height: 40px;
   }
   .brand-name {
-    font-size: 1.4rem;
+    font-size: 1.4em;
+  }
+}
+
+/* Até tablets: textos curtos no cabeçalho ("Conta", "Contraste"), para caber numa linha. */
+@media (max-width: 60rem) {
+  .label-long {
+    display: none;
+  }
+  .label-short {
+    display: inline;
+  }
+}
+
+/* Telemóveis estreitos (até 384 px): nome e logótipo um pouco mais pequenos. */
+@media (max-width: 24rem) {
+  .brand {
+    gap: var(--space-2);
+  }
+  .brand img {
+    width: 34px;
+    height: 34px;
+  }
+  .brand-name {
+    font-size: 1.2em;
+  }
+  .top .icon {
+    display: none;
   }
 }

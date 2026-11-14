@@ -9,7 +9,7 @@ export const SCOPE_LABELS: Record<ShareScope, string> = {
   garantia: 'Garantias das compras',
   sns: 'Espera no SNS',
   cartas: 'Cartas',
-  'pos-obito': 'Depois de um falecimento',
+  'pos-obito': 'Após um falecimento',
 };
 
 const FORMAT = 'prazometro-partilha';
