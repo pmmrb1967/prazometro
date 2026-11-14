@@ -74,6 +74,12 @@ export const FREE_NEURONS_PER_DAY = 10_000;
 export const NEURON_RESERVE = 1_000;
 /** Leituras gratuitas por dispositivo e por dia. */
 export const FREE_READS_PER_DEVICE = 10;
+/**
+ * Por rede (endereço IP) e por dia: um script que invente identificadores continua limitado
+ * a 30% dos neurons do dia. Largo, porque na rede móvel muitos telemóveis partilham o IP.
+ */
+export const FREE_READS_PER_ADDRESS = 30;
+export const FREE_NEURONS_PER_ADDRESS = 3_000;
 export const WORKERS_AI_MODEL = '@cf/google/gemma-4-26b-a4b-it';
 
 /** Neurons gastos, pelos preços de catálogo (US$ por milhão de tokens) e o preço do neuron. */

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  FREE_NEURONS_PER_ADDRESS,
   FREE_NEURONS_PER_DAY,
   FREE_READS_PER_DEVICE,
   NEURON_RESERVE,
@@ -156,5 +157,76 @@ describe('IA gratuita (Workers AI), sem conta', () => {
     expect(res.status).toBe(502);
     const row = await DB.prepare('SELECT calls FROM ai_free_daily').first<{ calls: number }>();
     expect(row?.calls).toBe(1);
+  });
+
+  describe('por rede (endereço IP)', () => {
+    const ip = { 'cf-connecting-ip': '203.0.113.7' };
+
+    it('para um script que invente um dispositivo novo a cada pedido', async () => {
+      const c = new Client(DB, undefined, { AI: fakeAi().AI });
+      const first = await c.call('/ai/gratuita', {
+        json: { texto: LETTER },
+        headers: { ...headers, ...ip },
+      });
+      expect(first.status).toBe(200);
+      await DB.prepare('UPDATE ai_free_address_daily SET neurons = ?')
+        .bind(FREE_NEURONS_PER_ADDRESS)
+        .run();
+      const fresh = await c.json<{ erro: string }>('/ai/gratuita', {
+        json: { texto: LETTER },
+        headers: { 'x-dispositivo': 'dispositivo-inventado-0001', ...ip },
+      });
+      expect(fresh.status).toBe(429);
+      expect(fresh.data.erro).toMatch(/a partir desta rede/);
+      // Outra rede continua a poder ler.
+      const other = await c.call('/ai/gratuita', {
+        json: { texto: LETTER },
+        headers: {
+          'x-dispositivo': 'dispositivo-inventado-0002',
+          'cf-connecting-ip': '203.0.113.8',
+        },
+      });
+      expect(other.status).toBe(200);
+    });
+
+    it('guarda só um hash com o sal do dia, e apaga os dias anteriores', async () => {
+      await DB.batch([
+        DB.prepare("INSERT INTO settings VALUES ('ia_sal_2000-01-01', 'velho', 0)"),
+        DB.prepare("INSERT INTO ai_free_address_daily VALUES ('2000-01-01', 'velho', 1, 1)"),
+      ]);
+      const c = new Client(DB, undefined, { AI: fakeAi().AI });
+      await c.call('/ai/gratuita', { json: { texto: LETTER }, headers: { ...headers, ...ip } });
+      const rows = await DB.prepare(
+        'SELECT date, address, calls, neurons FROM ai_free_address_daily',
+      ).all<{
+        date: string;
+        address: string;
+        calls: number;
+        neurons: number;
+      }>();
+      expect(rows.results).toHaveLength(1);
+      const [row] = rows.results;
+      expect(row!.calls).toBe(1);
+      expect(row!.neurons).toBeGreaterThan(0);
+      expect(row!.address).toMatch(/^[0-9a-f]{64}$/);
+      expect(row!.address).not.toContain('203.0.113');
+      const salts = await DB.prepare("SELECT key FROM settings WHERE key LIKE 'ia_sal_%'").all<{
+        key: string;
+      }>();
+      expect(salts.results.map((s) => s.key)).toEqual([`ia_sal_${row!.date}`]);
+    });
+
+    it('limita as leituras por minuto', async () => {
+      const AI_RATE_LIMIT = { limit: async () => ({ success: false }) } as unknown as RateLimit;
+      const { AI, sent } = fakeAi();
+      const c = new Client(DB, undefined, { AI, AI_RATE_LIMIT });
+      const res = await c.json<{ erro: string }>('/ai/gratuita', {
+        json: { texto: LETTER },
+        headers: { ...headers, ...ip },
+      });
+      expect(res.status).toBe(429);
+      expect(res.data.erro).toMatch(/Muitos pedidos/);
+      expect(sent).toHaveLength(0);
+    });
   });
 });

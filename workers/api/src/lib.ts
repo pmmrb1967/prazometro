@@ -10,6 +10,8 @@ export type Env = {
   GEMINI_MODEL?: string;
   /** Workers AI: a IA gratuita das cartas (fornecedor workers-ai). */
   AI?: Ai;
+  /** IA gratuita: leituras por minuto por endereço IP (binding da Cloudflare, em memória). */
+  AI_RATE_LIMIT?: RateLimit;
   /** Segredo: identificadores das contas de admin, separados por vírgulas. */
   ADMIN_IDS?: string;
 };
