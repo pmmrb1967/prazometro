@@ -1,27 +1,17 @@
 import { buildIcs, formatDateShort, todayInLisbon } from '@prazometro/engine';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { LegalNotice } from '../../components/LegalNotice';
 import { RuleSources } from '../../components/RuleSources';
 import { db } from '../../db';
 import { downloadBlob, slug } from '../../download';
 import { Link, navigate, usePageHeading } from '../../router';
+import { InvoicePreview } from './InvoicePreview';
 import { GARANTIA_RULES } from './rules';
 import { StatusSummary } from './StatusSummary';
 import { calendarEvents, warrantyStatus } from './warranty';
 
 const STATE_LABEL = { novo: 'Novo', recondicionado: 'Recondicionado', usado: 'Usado' };
-
-function useObjectUrl(blob?: Blob) {
-  const url = useMemo(() => (blob ? URL.createObjectURL(blob) : undefined), [blob]);
-  useEffect(
-    () => () => {
-      if (url) URL.revokeObjectURL(url);
-    },
-    [url],
-  );
-  return url;
-}
 
 export function PurchaseDetail({ id }: { id: string }) {
   const p = useLiveQuery(() => db.compras.get(id), [id]);
@@ -29,7 +19,6 @@ export function PurchaseDetail({ id }: { id: string }) {
     () => (p?.fatura_id ? db.ficheiros.get(p.fatura_id) : undefined),
     [p?.fatura_id],
   );
-  const faturaUrl = useObjectUrl(fatura?.blob);
   const heading = usePageHeading<HTMLHeadingElement>(p?.produto ?? 'Compra');
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -126,19 +115,13 @@ export function PurchaseDetail({ id }: { id: string }) {
         </Link>
       </div>
 
-      {(faturaUrl || p.preco !== undefined || p.notas) && (
+      {(fatura || p.preco !== undefined || p.notas) && (
         <section aria-labelledby="detalhes">
           <h2 id="detalhes">Detalhes</h2>
           {p.preco !== undefined && (
             <p>Preço: {p.preco.toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' })}</p>
           )}
-          {faturaUrl && (
-            <p>
-              <a href={faturaUrl} target="_blank" rel="noreferrer">
-                Ver a fatura guardada
-              </a>
-            </p>
-          )}
+          <InvoicePreview blob={fatura?.blob} label="Fatura guardada" />
           {p.notas && <p className="notes">{p.notas}</p>}
         </section>
       )}

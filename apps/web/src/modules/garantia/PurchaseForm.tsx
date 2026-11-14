@@ -120,7 +120,7 @@ function PurchaseFormInner({ existing }: { existing?: Purchase }) {
 
       <InvoiceAutofill
         file={fatura}
-        hasStored={!!existing?.fatura_id}
+        storedId={existing?.fatura_id}
         onFile={setFatura}
         onFill={applyInvoice}
       />

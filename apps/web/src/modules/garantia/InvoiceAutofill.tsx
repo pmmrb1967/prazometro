@@ -3,8 +3,9 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useRef, useState } from 'react';
 import { db } from '../../db';
 import { Link } from '../../router';
+import { InvoicePreview } from './InvoicePreview';
 import { loadSettings, PROVIDER_LABELS, providerCall, recordUse } from '../cartas/aiConfig';
-import { loadImage, prepare, recognize, type OcrProgress } from '../cartas/ocr';
+import { loadImage, OcrError, prepare, recognize, type OcrProgress } from '../cartas/ocr';
 import { PdfError, readPdf } from '../cartas/pdf';
 
 // Fatura no topo do registo da compra: fica guardada só no dispositivo e, se a pessoa quiser,
@@ -15,18 +16,22 @@ type Step = 'inicio' | 'lido' | 'confirmar';
 
 export function InvoiceAutofill({
   file,
-  hasStored,
+  storedId,
   onFile,
   onFill,
 }: {
   file: File | null;
-  /** A compra já tem uma fatura guardada (ao alterar). */
-  hasStored: boolean;
+  /** Fatura já guardada na compra (ao alterar). */
+  storedId?: string;
   onFile: (f: File) => void;
   onFill: (r: InvoiceResult) => void;
 }) {
   const settings = useLiveQuery(() => db.ia.get('ia'));
   const profile = useLiveQuery(() => db.perfil.get('perfil'));
+  const stored = useLiveQuery(
+    () => (storedId ? db.ficheiros.get(storedId) : undefined),
+    [storedId],
+  );
   const [step, setStep] = useState<Step>('inicio');
   const [text, setText] = useState('');
   const [progress, setProgress] = useState<OcrProgress>();
@@ -39,9 +44,13 @@ export function InvoiceAutofill({
   const provider = settings?.fornecedor ?? 'none';
   const names = profile?.nome ? [profile.nome] : [];
 
-  async function pick(f: File | undefined) {
+  function pick(f: File | undefined) {
     if (!f) return;
     onFile(f);
+    void read(f);
+  }
+
+  async function read(f: File) {
     setError(undefined);
     setDone(undefined);
     setBusy(true);
@@ -64,10 +73,12 @@ export function InvoiceAutofill({
         setStep('lido');
       }
     } catch (err) {
+      // Só o tipo de erro, nunca o conteúdo da fatura.
+      console.warn('Leitura da fatura falhou:', (err as Error)?.name, (err as Error)?.message);
       setError(
-        err instanceof PdfError
-          ? err.message
-          : 'Não foi possível ler a fatura. Ela fica guardada, mas preencha os campos à mão.',
+        err instanceof PdfError || err instanceof OcrError
+          ? `${err.message} A fatura fica guardada na mesma.`
+          : 'Não foi possível ler a fatura. Na primeira vez, a leitura precisa de internet para descarregar o português. Pode tentar outra vez ou preencher os campos à mão: a fatura fica guardada na mesma.',
       );
       setStep('inicio');
     } finally {
@@ -189,11 +200,18 @@ export function InvoiceAutofill({
         />
       )}
 
-      {(file || hasStored) && step === 'inicio' && (
-        <p className="hint">
-          {file ? `Fatura junta: ${file.name || 'fotografia'}.` : 'Já tem uma fatura guardada.'}{' '}
-          {file ? 'Fica guardada quando carregar em Guardar.' : 'Para a trocar, escolha outra.'}
-        </p>
+      {(file || stored) && step === 'inicio' && (
+        <>
+          <InvoicePreview
+            blob={file ?? stored?.blob}
+            label={file ? 'Fatura que vai ficar guardada' : 'Fatura guardada'}
+          />
+          <p className="hint">
+            {file
+              ? 'Esta é a fatura que fica guardada quando carregar em Guardar. Para a trocar, fotografe ou escolha outra.'
+              : 'Já tem esta fatura guardada. Para a trocar, fotografe ou escolha outra.'}
+          </p>
+        </>
       )}
       {done && (
         <p className="ok" role="status">
@@ -201,9 +219,16 @@ export function InvoiceAutofill({
         </p>
       )}
       {error && (
-        <p className="errors" role="alert">
-          {error}
-        </p>
+        <div className="errors" role="alert">
+          <p>{error}</p>
+          {file && !busy && (
+            <div className="actions">
+              <button type="button" onClick={() => void read(file)}>
+                Tentar ler outra vez
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       <input

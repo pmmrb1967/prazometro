@@ -828,6 +828,27 @@ pre.anonymized {
 .invoice-autofill {
   padding-block: var(--space-4);
 }
+.invoice-autofill .errors {
+  display: grid;
+  gap: var(--space-3);
+}
+.invoice-autofill .errors p {
+  margin: 0;
+}
+.invoice-preview {
+  margin: var(--space-3) 0 0;
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+.invoice-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 16rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
 
 /* Pós-óbito: passos já tratados ou que não se aplicam ficam com o fundo da página. */
 .step-card h3 {

@@ -7,8 +7,40 @@ export type Rotation = 0 | 90 | 180 | 270;
 
 const MAX_SIDE = 2400;
 
+/** Erro com uma mensagem já pronta para mostrar à pessoa. */
+export class OcrError extends Error {}
+
+/**
+ * Abre a fotografia, já direita (orientação EXIF). Alguns navegadores não aceitam as opções do
+ * createImageBitmap, por isso tenta-se sem elas e, por fim, com um <img>. Formatos que o
+ * navegador não sabe abrir (por exemplo, HEIC no Android) dão um OcrError com explicação.
+ */
 export async function loadImage(file: Blob): Promise<ImageBitmap> {
-  return createImageBitmap(file, { imageOrientation: 'from-image' });
+  try {
+    return await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch {
+    // tenta a seguir
+  }
+  try {
+    return await createImageBitmap(file);
+  } catch {
+    // tenta a seguir
+  }
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    return await createImageBitmap(img);
+  } catch {
+    throw new OcrError(
+      /heic|heif/i.test(file.type) || (file instanceof File && /\.hei[cf]$/i.test(file.name))
+        ? 'Esta fotografia está no formato HEIC, que este navegador não consegue abrir. Use o botão de fotografar ou guarde a fotografia como JPEG.'
+        : 'Não foi possível abrir esta fotografia. Experimente tirar outra.',
+    );
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 /** Desenha a imagem rodada e recortada num canvas, já pronta para o OCR. */
@@ -26,36 +58,40 @@ export function prepare(
   const srcH = Math.max(1, Math.round(c.h * fullH));
   const scale = Math.min(1, MAX_SIDE / Math.max(srcW, srcH));
 
-  // 1. Imagem inteira rodada.
-  const rotated = document.createElement('canvas');
-  rotated.width = fullW;
-  rotated.height = fullH;
-  const r = rotated.getContext('2d')!;
-  r.translate(fullW / 2, fullH / 2);
-  r.rotate((rotation * Math.PI) / 180);
-  r.drawImage(image, -image.width / 2, -image.height / 2);
-
-  // 2. Recorte e redução.
+  // Um só canvas já do tamanho final: rodar, recortar e reduzir com uma transformação. Um
+  // canvas intermédio do tamanho da fotografia (12 a 50 MP) passa o limite de memória de alguns
+  // telemóveis e a leitura falha.
   const out = document.createElement('canvas');
-  out.width = Math.round(srcW * scale);
-  out.height = Math.round(srcH * scale);
+  out.width = Math.max(1, Math.round(srcW * scale));
+  out.height = Math.max(1, Math.round(srcH * scale));
   const o = out.getContext('2d', { willReadFrequently: true })!;
-  o.drawImage(
-    rotated,
-    Math.round(c.x * fullW),
-    Math.round(c.y * fullH),
-    srcW,
-    srcH,
-    0,
-    0,
-    out.width,
-    out.height,
-  );
+  o.fillStyle = '#fff';
+  o.fillRect(0, 0, out.width, out.height);
+  o.scale(scale, scale);
+  o.translate(-Math.round(c.x * fullW) + fullW / 2, -Math.round(c.y * fullH) + fullH / 2);
+  o.rotate((rotation * Math.PI) / 180);
+  o.drawImage(image, -image.width / 2, -image.height / 2);
+  o.setTransform(1, 0, 0, 1, 0, 0);
   if (enhance) grayscaleAndStretch(o, out.width, out.height);
   return out;
 }
 
-/** Tons de cinzento e contraste automático (estica entre os percentis 2 e 98). */
+/**
+ * Limites para o contraste automático: estica entre os percentis 2 e 98. Devolve undefined se a
+ * imagem for quase toda de um só tom (papel branco com pouco texto): esticar aí punha tudo a preto.
+ */
+export function contrastRange(
+  hist: ArrayLike<number>,
+  total: number,
+): [number, number] | undefined {
+  let lo = 0;
+  let hi = 255;
+  for (let acc = 0; lo < 255 && (acc += hist[lo]!) < total * 0.02; lo++);
+  for (let acc = 0; hi > 0 && (acc += hist[hi]!) < total * 0.02; hi--);
+  return hi - lo >= 32 ? [lo, hi] : undefined;
+}
+
+/** Tons de cinzento e contraste automático. */
 function grayscaleAndStretch(ctx: CanvasRenderingContext2D, w: number, h: number) {
   const img = ctx.getImageData(0, 0, w, h);
   const d = img.data;
@@ -65,14 +101,11 @@ function grayscaleAndStretch(ctx: CanvasRenderingContext2D, w: number, h: number
     d[i] = g;
     hist[g]!++;
   }
-  const total = w * h;
-  let lo = 0;
-  let hi = 255;
-  for (let acc = 0; lo < 255 && (acc += hist[lo]!) < total * 0.02; lo++);
-  for (let acc = 0; hi > 0 && (acc += hist[hi]!) < total * 0.02; hi--);
-  const range = Math.max(1, hi - lo);
+  const range = contrastRange(hist, w * h);
+  const [lo, hi] = range ?? [0, 255];
+  const span = hi - lo;
   for (let i = 0; i < d.length; i += 4) {
-    const v = Math.max(0, Math.min(255, ((d[i]! - lo) * 255) / range));
+    const v = Math.max(0, Math.min(255, ((d[i]! - lo) * 255) / span));
     d[i] = d[i + 1] = d[i + 2] = v;
   }
   ctx.putImageData(img, 0, 0);
