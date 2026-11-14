@@ -312,6 +312,8 @@ function Created({ share, onDone }: { share: SentShare; onDone: () => void }) {
 
 function SentCard({ share: s }: { share: SentShare }) {
   const [confirm, setConfirm] = useState(false);
+  // As formas de enviar a ligação só aparecem a pedido: no cartão ficam três botões numa linha.
+  const [sending, setSending] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string }>();
 
@@ -340,8 +342,10 @@ function SentCard({ share: s }: { share: SentShare }) {
             : 'Ainda não enviada'}
         </span>
       </p>
-      <CopyOrSend share={s} />
       <div className="actions">
+        <button type="button" aria-expanded={sending} onClick={() => setSending((v) => !v)}>
+          Enviar a ligação
+        </button>
         <button
           type="button"
           disabled={busy}
@@ -369,6 +373,7 @@ function SentCard({ share: s }: { share: SentShare }) {
           </button>
         )}
       </div>
+      {sending && <CopyOrSend share={s} />}
       {confirm && (
         <p className="hint">
           A ligação deixa de funcionar e os dados desaparecem do telemóvel da outra pessoa quando

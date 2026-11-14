@@ -62,8 +62,47 @@ const NOT_NAMES = new Set(
     'segurada',
     'exmo',
     'exma',
+    'requerido',
+    'requerida',
+    'exequente',
+    'executado',
+    'executada',
+    'conservador',
+    'oficial',
+    'mandatário',
+    'advogado',
+    'advogada',
+    'processo',
+    'cédula',
+    'declarante',
   ].map((w) => w.toLowerCase()),
 );
+
+/** Primeiras palavras de entidades: "Exequente: Banco Fictício, S.A." não é um nome a apagar. */
+const ORGANIZATIONS = new Set([
+  'banco',
+  'caixa',
+  'sociedade',
+  'companhia',
+  'instituto',
+  'câmara',
+  'município',
+  'ministério',
+  'autoridade',
+  'agência',
+  'serviço',
+  'serviços',
+  'tribunal',
+  'conservatória',
+  'juízo',
+  'ordem',
+  'fundo',
+  'seguradora',
+  'empresa',
+  'condomínio',
+  'estado',
+  'fazenda',
+]);
 
 const LABELS = [
   String.raw`Exm[oa]s?\.?(?:\(a\))?[ \t]+(?:Senhor(?:\(a\)|a)?|Sr(?:a|\.ª|ª)?\.?(?:\(a\))?)`,
@@ -71,10 +110,55 @@ const LABELS = [
   String.raw`Car[oa](?:\(a\))?`,
   String.raw`(?:Sr|Sra|Dr|Dra|Eng)\.ª?`,
   String.raw`(?:Senhor|Senhora|D\.)`,
-  String.raw`(?:Nome|NOME|Cliente|CLIENTE|Adquirente|ADQUIRENTE|Destinatário|DESTINATÁRIO|Arguid[oa]|ARGUID[OA]|Executad[oa]|EXECUTAD[OA]|Contribuinte|CONTRIBUINTE|Titular|TITULAR|Réu|Ré|RÉU|Requerid[oa]|Utente|UTENTE|Devedor(?:a)?|DEVEDOR)(?:[ \t]+(?:do|da)[ \t]+[${LOWER}]+)?[ \t]*:`,
+  String.raw`(?:Nome(?:\/Designação)?|NOME|Cliente|CLIENTE|Adquirente|ADQUIRENTE|Destinatário|DESTINATÁRIO|Arguid[oa]|ARGUID[OA]|Executad[oa](?:\(s\))?|EXECUTAD[OA]|Contribuinte|CONTRIBUINTE|Titular|TITULAR|Réu|Ré|RÉU|Requerid[oa]|Requerente|REQUERENTE|Exequente(?:\(s\))?|Declarante(?:\(s\))?|Pai|PAI|Mãe|MÃE|Cônjuge|Utente|UTENTE|Devedor(?:a)?|DEVEDOR)(?:[ \t]+(?:do|da)[ \t]+[${LOWER}]+)?[ \t]*:`,
 ];
+// Ruído do OCR entre o rótulo e o nome: "Requerido: |", "Requerente: :", "*** :".
+const NOISE = `[ \\t|:;"'“”*]`;
+// Uma letra minúscula colada ao nome ("iAna") também é ruído do OCR.
+const JUNK = `(?:[${LOWER}](?=[${UPPER}]))?`;
 // O nome pode vir na mesma linha ou na linha seguinte ("Exma. Senhora\nAna Carvalho").
-const LABELLED_NAME = new RegExp(`(${LABELS.join('|')})([ \\t]+|[ \\t]*\\n[ \\t]*)(${NAME})`, 'gu');
+const LABELLED_NAME = new RegExp(
+  `(${LABELS.join('|')})((?:${NOISE}*\\n)?${NOISE}*${JUNK})(${NAME})`,
+  'gu',
+);
+
+/**
+ * Papéis seguidos de um nome sem ":" ("Conservador, Vítor Silva", "Advogada, Ana Sousa",
+ * "Executado(s) Rui Costa", "agente de execução ANTÓNIO REIS", "Viúvo(a) José Lima").
+ * Exige pelo menos duas palavras, para não apanhar "Agente de Execução PROCESSO".
+ */
+const ROLES = [
+  String.raw`Conservador(?:a)?`,
+  'CONSERVADOR',
+  String.raw`Advogad[oa]`,
+  String.raw`Secretári[oa]`,
+  String.raw`Oficial de registos`,
+  String.raw`Mandatári[oa]`,
+  'MANDATÁRIO',
+  String.raw`Solicitador(?:a)?`,
+  String.raw`[Aa]gente de [Ee]xecução`,
+  'AGENTE DE EXECUÇÃO',
+  String.raw`Juiz(?:a)?`,
+  String.raw`Procurador(?:a)?`,
+  String.raw`Notári[oa]`,
+  'Testemunha',
+  'Requerente',
+  String.raw`Requerid[oa]`,
+  String.raw`Exequente(?:\(s\))?`,
+  String.raw`Executad[oa](?:\(s\))?`,
+  String.raw`Viúv[oa](?:\(a\))?`,
+  String.raw`Casad[oa](?:\(a\))?(?:[ \t]+com)?`,
+  'mim',
+];
+const NAME_2 = `${WORD}(?:[ \\t]+(?:${CONNECTOR}[ \\t]+)?${WORD}){1,6}`;
+const ROLE_NAME = new RegExp(
+  `(?<![\\p{L}])((?:${ROLES.join('|')})(?![\\p{L}])[ \\t]*[,:]?(?:${NOISE}*\\n)?${NOISE}*${JUNK})(${NAME_2})`,
+  'gu',
+);
+
+/** Moradas indicadas por um rótulo, com a linha seguinte se continuar a morada (tem números). */
+const LABELLED_ADDRESS =
+  /((?:Morada|MORADA|Naturalidade|NATURALIDADE|Sepultad[oa]|[Rr]esid[êe]ncia(?:[ \t]+habitual)?(?:[ \t]+em)?|[Rr]esidente[ \t]+em|[Dd]omic[íi]lio(?:[ \t]+profissional)?(?:[ \t]+(?:em|na|no))?)[ \t]*:?[ \t]*)([^\n]{3,100}(?:\n(?![^\n]*:)[^\n]{0,60}\d[^\n]{0,60})?)/gu;
 
 const STREET = [
   'Rua',
@@ -98,6 +182,8 @@ const STREET = [
   'Caminho',
   'Rotunda',
   'Edifício',
+  'Al\\.',
+  'Al',
 ];
 const STREET_ALL = [...STREET, ...STREET.map((s) => s.toUpperCase())];
 const ADDRESS = new RegExp(`\\b(?:${STREET_ALL.join('|')})[ \\t][^\\n]{0,100}`, 'gu');
@@ -108,22 +194,50 @@ const POSTAL = new RegExp(
 );
 
 const REFERENCE = new RegExp(
-  String.raw`\b((?:[Pp]rocesso|PROCESSO|[Pp]roc\.|[Aa]uto|AUTO|[Rr]eferência|REFERÊNCIA|[Rr]ef\.|[Cc]ontrato|CONTRATO|[Cc]liente|CLIENTE|[Cc]onta|CONTA|[Aa]pólice|[Dd]ocumento|DOCUMENTO|[Ff]atura|FATURA|[Nn]ota de cobrança|[Ll]icença|[Cc]ertidão|[Ii]nstalação|CPE|CIL|[Cc]artão de [Cc]idadão)(?:[ \t]+(?:n\.?[ \t]?[ºo°]\.?|número|nr\.?|N\.?º))?[ \t]*[:-]?[ \t]*)([A-Z0-9][A-Z0-9/.\-]{3,}[A-Z0-9])`,
+  String.raw`\b((?:[Pp]rocesso|PROCESSO|[Pp]roc\.|[Aa]uto|AUTO|[Rr]eferência|REFERÊNCIA|[Rr]ef\.|[Cc]ontrato|CONTRATO|[Cc]liente|CLIENTE|[Cc]onta|CONTA|[Aa]pólice|[Dd]ocumento|DOCUMENTO|[Ff]atura|FATURA|[Nn]ota de cobrança|[Ll]icença|[Cc]ertidão|[Ii]nstalação|CPE|CIL|[Cc]artão de [Cc]idadão|[Cc]édula|CÉDULA)(?:[ \t]+(?:n\.?[ \t]?[ºo°]\.?|número|nr\.?|N\.?º))?[ \t]*[:-]?[ \t]*)([A-Za-z0-9][A-Za-z0-9/.\-]{2,}[A-Za-z0-9])`,
   'gu',
 );
 const COURT_CASE = /\b\d{1,7}\/\d{2,4}\.\d{0,2}[A-Z][A-Z0-9]*(?:[.-][A-Z0-9]+)*\b/g;
-const IBAN = /\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){3,7}(?:[ ]?[A-Z0-9]{1,3})?\b/g;
+/** "n.º 723/2021", "nº 5985/2008": números de processos e de assentos (as leis já estão protegidas). */
+const NUMBERED_CASE = /((?:\bn\.?[ \t]?[ºo°]\.?|\bnº)[ \t]*)(\d{1,7}\/\d{2,4})\b/g;
+/** Referências internas como "PEDel/19/2021". */
+const INTERNAL_REF = /\b[A-Za-z]{2,8}\/\d{1,6}\/\d{2,4}\b/g;
+/** Registos dos CTT ("RA123456789PT"). */
+// O OCR troca às vezes um algarismo por uma letra ("RAS59540499PT").
+const TRACKING = /\b[A-Z]{2,3}\d{8,9}[A-Z]{2}\b/g;
+// O IBAN pode ser partido pelo OCR em duas linhas.
+const IBAN = /\b[A-Z]{2}\d{2}(?:[ \n]?[A-Z0-9]{4}){3,7}(?:[ \n]?[A-Z0-9]{1,3})?\b/g;
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
+/** O OCR lê muitas vezes o "@" como "&"; e o que vem depois de "Email:" é sempre um email. */
+const EMAIL_OCR = /[\w.+-]+&[\w-]+(?:\.[\w-]+)+/g;
+const LABELLED_EMAIL = /(\b[Ee]-?mail[ \t]*:[ \t]*)([^\s[]\S*)/g;
 const PLATE =
   /\b(?:[A-Z]{2}[- ·]\d{2}[- ·](?:\d{2}|[A-Z]{2})|\d{2}[- ·][A-Z]{2}[- ·]\d{2}|\d{2}[- ·]\d{2}[- ·][A-Z]{2})\b/g;
 const LONG_NUMBER = /(?<![\w/])(?:\+\s?)?\d(?:[ .]?\d){6,}(?![\w/])/g;
 /** Montantes ("1.234,56 €") e referências legais ("Lei n.º 7/2009", "artigo 175.º"): protegidos. */
-const AMOUNT = /\b\d{1,3}(?:\.\d{3})*,\d{2}\b|\b\d+,\d{2}\b/g;
+const AMOUNT =
+  /\b\d{1,3}(?:\.\d{3})*,\d{2}\b|\b\d+,\d{2}\b|\b\d+\.\d{2}(?=[ \t]*(?:€|EUR\b|[Ee]uros?\b))/g;
 const LAW =
   /\b(?:Lei|Decreto-Lei|DL|Portaria|Despacho|Regulamento|Decreto Regulamentar)(?:[ \t]+n\.?[ \t]?º)?[ \t]*\d+(?:[-/][\dA-Z]+)*(?:\/\d+)?/g;
 
 function escape(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const ACCENTS: Record<string, string> = {
+  a: '[aáàâãä]',
+  e: '[eéèêë]',
+  i: '[iíìîï]',
+  o: '[oóòôõö]',
+  u: '[uúùûü]',
+  c: '[cç]',
+};
+
+/** Expressão que aceita a palavra com ou sem acentos (usar com a bandeira "i"). */
+function accentless(word: string): string {
+  return [...word.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()]
+    .map((ch) => ACCENTS[ch] ?? escape(ch))
+    .join('');
 }
 
 export function anonymize(text: string, options: AnonymizeOptions = {}): Anonymized {
@@ -145,8 +259,13 @@ export function anonymize(text: string, options: AnonymizeOptions = {}): Anonymi
   // 2. Identificadores com formato próprio.
   t = t
     .replace(EMAIL, () => mark('EMAIL'))
+    .replace(EMAIL_OCR, () => mark('EMAIL'))
+    .replace(LABELLED_EMAIL, (_m, label: string) => `${label}${mark('EMAIL')}`)
+    .replace(TRACKING, () => mark('REFERÊNCIA'))
     .replace(IBAN, () => mark('IBAN'))
     .replace(COURT_CASE, () => mark('PROCESSO'))
+    .replace(NUMBERED_CASE, (_m, label: string) => `${label}${mark('PROCESSO')}`)
+    .replace(INTERNAL_REF, () => mark('REFERÊNCIA'))
     .replace(REFERENCE, (_m, label: string, code: string) =>
       /\d/.test(code) ? `${label}${mark('REFERÊNCIA')}` : `${label}${code}`,
     )
@@ -160,7 +279,10 @@ export function anonymize(text: string, options: AnonymizeOptions = {}): Anonymi
     });
 
   // 3. Moradas e códigos postais.
-  t = t.replace(ADDRESS, () => mark('MORADA')).replace(POSTAL, () => mark('CÓDIGO POSTAL'));
+  t = t
+    .replace(LABELLED_ADDRESS, (_m, label: string) => `${label}${mark('MORADA')}`)
+    .replace(ADDRESS, () => mark('MORADA'))
+    .replace(POSTAL, () => mark('CÓDIGO POSTAL'));
 
   // 4. Nomes: depois de "Exmo. Senhor", "Nome:", etc., os indicados pela pessoa e os mesmos
   //    nomes noutros sítios da carta.
@@ -168,12 +290,18 @@ export function anonymize(text: string, options: AnonymizeOptions = {}): Anonymi
   for (const n of options.nomes ?? []) {
     for (const w of n.split(/\s+/)) if (w.length >= 3) found.add(w);
   }
-  t = t.replace(LABELLED_NAME, (m, label: string, space: string, name: string) => {
+  const replaceName = (m: string, before: string, name: string) => {
     const words = name.split(/[ \t]+/).filter((w) => !/^(?:d[aeo]s?|e)$/i.test(w));
     if (words.every((w) => NOT_NAMES.has(w.toLowerCase()))) return m;
+    if (ORGANIZATIONS.has(words[0]!.toLowerCase())) return m;
     for (const w of words) if (w.length >= 3 && !NOT_NAMES.has(w.toLowerCase())) found.add(w);
-    return `${label}${space}${mark('NOME')}`;
-  });
+    return `${before}${mark('NOME')}`;
+  };
+  t = t
+    .replace(LABELLED_NAME, (m, label: string, space: string, name: string) =>
+      replaceName(m, label + space, name),
+    )
+    .replace(ROLE_NAME, (m, role: string, name: string) => replaceName(m, role, name));
   // Linha só com um nome, logo acima de uma morada (bloco do destinatário).
   t = t.replace(
     new RegExp(`^([ \\t]*)(${NAME})[ \\t]*\\n(?=[ \\t]*\\[MORADA\\])`, 'gmu'),
@@ -183,7 +311,8 @@ export function anonymize(text: string, options: AnonymizeOptions = {}): Anonymi
     },
   );
   if (found.size) {
-    const words = [...found].sort((a, b) => b.length - a.length).map(escape);
+    // Sem distinguir acentos nem maiúsculas: "Vítor" e "Vitor", "António" e "ANTONIO".
+    const words = [...found].sort((a, b) => b.length - a.length).map(accentless);
     const any = new RegExp(
       `(?<![\\p{L}])(?:${words.join('|')})(?:[ \\t]+(?:${CONNECTOR}[ \\t]+)?(?:${words.join('|')}))*(?![\\p{L}])`,
       'giu',
