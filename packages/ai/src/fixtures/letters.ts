@@ -177,6 +177,20 @@ Fica citado para contestar no prazo de 30 dias, a que acresce uma dilação de 5
 Porto, 8 de julho de 2026`,
   },
   {
+    id: 'tribunal-execucao-1',
+    emissor: 'tribunal',
+    tipo: 'citacao_execucao',
+    datas: ['2026-04-09'],
+    texto: `Agente de Execução Fictício — Cédula 9999
+CITAÇÃO PRÉVIA - 728.º CPC
+Processo: 1234/26.5T8LOU
+Tribunal Judicial da Comarca do Porto Este, Lousada - Juízo de Execução - Juiz 2
+Exequente(s): Banco Fictício, S.A.
+Data: 09-04-2026
+FUNDAMENTO DA CITAÇÃO
+Fica citado, nos termos do artigo 728.º do Código de Processo Civil (CPC), para o processo de execução à margem referenciado, tendo o prazo de 20 (vinte) dias para pagar ou se opor (através de embargos de executado).`,
+  },
+  {
     id: 'tribunal-penhora-1',
     emissor: 'tribunal',
     tipo: 'cobranca',

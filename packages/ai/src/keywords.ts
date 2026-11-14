@@ -175,6 +175,8 @@ const DATE_MEANINGS: [string[], string][] = [
   [['notificacao', 'notificado em'], 'Data da notificação'],
   [['emitid', 'data de emissao', 'data do documento', 'data:'], 'Data da carta'],
   [['periodo', 'referente'], 'Período a que se refere'],
+  // "Até ao dia 8 de cada mês, a partir de 1 de setembro": a data é um início, não um limite.
+  [['a partir de', 'com inicio em', 'produz efeitos'], 'Data a partir da qual se aplica'],
 ];
 
 function issuerOf(text: string): { emissor: Issuer; nome: string } {
@@ -194,8 +196,19 @@ function issuerOf(text: string): { emissor: Issuer; nome: string } {
   return { emissor: bestScore >= 3 ? best : 'outro', nome: '' };
 }
 
+/** Citação numa execução: tem de ser uma citação e falar da execução ou dos embargos. */
+function isEnforcementSummons(f: string): boolean {
+  return (
+    /\b(fica citad|e citad|citacao)/.test(f) &&
+    /\b(execucao|executad|embargos|728)/.test(f) &&
+    !f.includes('execucao fiscal')
+  );
+}
+
 function typeOf(text: string, emissor: Issuer): LetterType {
   const f = fold(text);
+  // Antes da citação geral: a execução tem um prazo mais curto (20 dias, e não 30).
+  if (emissor === 'tribunal' && isEnforcementSummons(f)) return 'citacao_execucao';
   for (const [type, clues] of TYPE_CLUES) {
     if (type === 'contraordenacao_transito' && emissor !== 'transito') continue;
     if (type === 'audicao_previa_at' && emissor !== 'at') continue;
@@ -242,6 +255,14 @@ const SUMMARIES: Record<LetterType, { resumo: string; pedido: string; consequenc
     consequencias:
       'Se não contestar no prazo, os factos alegados podem ser considerados verdadeiros e o tribunal pode decidir contra si.',
   },
+  citacao_execucao: {
+    resumo:
+      'É uma citação numa execução: alguém pede, através do tribunal ou de um agente de execução, que pague uma dívida.',
+    pedido:
+      'Pode pagar o valor indicado ou opor-se à execução (embargos de executado) dentro do prazo.',
+    consequencias:
+      'Se não pagar nem se opuser no prazo, a execução continua e podem ser penhorados bens, como o salário ou contas bancárias.',
+  },
   cobranca: {
     resumo: 'É um pedido de pagamento de um valor que consideram em dívida.',
     pedido: 'Pedem que pague ou regularize o valor indicado.',
@@ -279,7 +300,8 @@ export function extractWithKeywords(text: string): Extraction {
     text
       .split('\n')
       .map((l) => l.trim())
-      .find((l) => /^(assunto|ref\.?\s*:|referente)/i.test(fold(l))) ?? '';
+      // Só rótulos de assunto ("Assunto", "Ref.:", "Referente:"); "referente a Fulano" não é.
+      .find((l) => /^(assunto|ref\.?\s*:|referente\s*:)/i.test(fold(l))) ?? '';
   return {
     emissor,
     emissor_nome: nome,

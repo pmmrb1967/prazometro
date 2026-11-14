@@ -52,7 +52,7 @@ export default defineConfig({
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/ocr/'),
             handler: 'CacheFirst',
-            options: { cacheName: 'ocr', expiration: { maxEntries: 10 } },
+            options: { cacheName: 'ocr', expiration: { maxEntries: 20 } },
           },
         ],
         // A API está no mesmo domínio: o service worker nunca a deve servir da cache.

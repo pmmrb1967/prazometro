@@ -59,6 +59,23 @@ describe('Cartas: citação para contestar (30 dias, tribunais fechados ao sába
   });
 });
 
+describe('Cartas: citação numa execução (20 dias, art. 728.º CPC)', () => {
+  it('conta 20 dias seguidos, mais cedo do que a citação para contestar (30)', () => {
+    // Citada a 9/4/2021 (sexta): 20 dias acabam a 29/4/2021 (quinta).
+    expect(deadline({ tipo_carta: 'citacao_execucao', data_inicio: '2021-04-09' })).toEqual({
+      id: 'cartas.citacao-execucao',
+      prazo: '2021-04-29',
+    });
+  });
+
+  it('um fim num sábado passa para segunda-feira', () => {
+    // 4/10/2026 (domingo) + 20 = 24/10/2026 (sábado) → 26/10 (segunda).
+    expect(deadline({ tipo_carta: 'citacao_execucao', data_inicio: '2026-10-04' })?.prazo).toBe(
+      '2026-10-26',
+    );
+  });
+});
+
 it('sem tipo reconhecido ou sem data, nenhuma regra se aplica', () => {
   expect(deadline({ tipo_carta: 'cobranca', data_inicio: '2026-10-01' })).toBeUndefined();
   expect(deadline({ tipo_carta: 'citacao_tribunal' })).toBeUndefined();

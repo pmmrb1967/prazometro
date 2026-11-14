@@ -39,6 +39,18 @@ export const GUIDANCE: Record<LetterType, Guidance> = {
       url: 'https://www.seg-social.pt/protecao-juridica',
     },
   },
+  citacao_execucao: {
+    passos: [
+      'Não ignore a carta: o prazo para pagar ou se opor começa a contar com a citação.',
+      'Confirme se a dívida é sua e se o valor está certo. Pode pedir ao agente de execução o valor atualizado.',
+      'Se quiser opor-se (embargos de executado), procure um advogado ou solicitador quanto antes. Acima de 5 000 € é obrigatório advogado.',
+      'Se não tiver meios para pagar a um advogado, peça apoio judiciário na Segurança Social logo, e junte ao processo o comprovativo do pedido.',
+    ],
+    ajuda: {
+      texto: 'Pedir proteção jurídica (apoio judiciário) na Segurança Social',
+      url: 'https://www.seg-social.pt/protecao-juridica',
+    },
+  },
   cobranca: {
     passos: [
       'Confirme se a dívida é sua e se o valor está certo (faturas, contrato, pagamentos já feitos).',

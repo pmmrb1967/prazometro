@@ -26,8 +26,8 @@ describe('datas escritas na carta', () => {
 describe('conjunto de teste (fornecedor sem IA)', () => {
   const results = TEST_LETTERS.map((l) => ({ l, r: extractWithKeywords(l.texto) }));
 
-  it('tem 30 cartas', () => {
-    expect(TEST_LETTERS).toHaveLength(30);
+  it('tem 31 cartas', () => {
+    expect(TEST_LETTERS).toHaveLength(31);
   });
 
   it('acerta o emissor em pelo menos 90% das cartas', () => {
@@ -56,9 +56,39 @@ describe('conjunto de teste (fornecedor sem IA)', () => {
     ]);
   });
 
+  it('não confunde "a partir de" com uma data limite nem "referente a" com o assunto', () => {
+    // Ata de acordo (fictícia): pagamentos até ao dia 8 de cada mês, a partir de uma data.
+    const r = extractWithKeywords(`Conservatória do Registo Civil Fictícia
+Acta de tentativa de conciliação
+A quantia será paga até ao dia oito de cada mês, a partir de 1 de setembro de 2026.
+Data: 26 de agosto de 2026
+referente a Registando, Rosa Fictícia`);
+    expect(r.assunto).toBe('');
+    expect(r.datas[0]).toEqual({
+      data: '2026-09-01',
+      descricao: 'Data a partir da qual se aplica',
+    });
+  });
+
+  it('distingue a citação numa execução (20 dias) da citação para contestar', () => {
+    const r = results.find(({ l }) => l.id === 'tribunal-execucao-1')!.r;
+    expect(r.tipo).toBe('citacao_execucao');
+    // A notificação de penhora fala de execução, mas não é uma citação.
+    expect(results.find(({ l }) => l.id === 'tribunal-penhora-1')!.r.tipo).not.toBe(
+      'citacao_execucao',
+    );
+  });
+
   it('reconhece os tipos de carta ligados a regras do motor', () => {
     for (const { l, r } of results) {
-      if (['contraordenacao_transito', 'audicao_previa_at', 'citacao_tribunal'].includes(l.tipo)) {
+      if (
+        [
+          'contraordenacao_transito',
+          'audicao_previa_at',
+          'citacao_tribunal',
+          'citacao_execucao',
+        ].includes(l.tipo)
+      ) {
         expect(r.tipo, l.id).toBe(l.tipo);
       }
     }
@@ -118,7 +148,7 @@ O senhor Joaquim Antunes deve pagar 60,00 € até 21/10/2026 (art. 175.º do C�
     expect(texto).toContain('Inês');
   });
 
-  it('nas 30 cartas, não deixa passar NIF, NISS, IBAN nem nomes depois de "Exmo." ou "Nome:"', () => {
+  it('nas 31 cartas, não deixa passar NIF, NISS, IBAN nem nomes depois de "Exmo." ou "Nome:"', () => {
     for (const l of TEST_LETTERS) {
       const { texto } = anonymize(l.texto);
       expect(texto, l.id).not.toMatch(/\b\d{9}\b/);

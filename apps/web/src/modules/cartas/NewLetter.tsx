@@ -12,7 +12,10 @@ type Step = 'fonte' | 'imagem' | 'texto' | 'confirmar';
 
 /** Data da carta: a que a leitura diz ser a da carta, da emissão ou da notificação. */
 function letterDate(r: ExtractResult['resultado']): string | undefined {
-  return r.datas.find((d) => /notifica|carta|emiss|documento|expedi/i.test(d.descricao))?.data;
+  // "Data referida na carta" e "Data limite indicada na carta" também dizem "carta": só conta
+  // "Data da carta" (ou de emissão, notificação, documento, expedição).
+  return r.datas.find((d) => /\bdata da carta\b|notifica|emiss|documento|expedi/i.test(d.descricao))
+    ?.data;
 }
 
 export default function NewLetter() {

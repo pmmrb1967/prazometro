@@ -47,6 +47,7 @@ export const LETTER_TYPES = [
   'contraordenacao_transito',
   'audicao_previa_at',
   'citacao_tribunal',
+  'citacao_execucao',
   'cobranca',
   'liquidacao_imposto',
   'informacao',
@@ -58,6 +59,8 @@ export const LETTER_TYPE_LABELS: Record<LetterType, string> = {
   contraordenacao_transito: 'Multa de trânsito (auto de contraordenação)',
   audicao_previa_at: 'Finanças: projeto de decisão, para se pronunciar (audição prévia)',
   citacao_tribunal: 'Citação de um tribunal para contestar uma ação',
+  citacao_execucao:
+    'Citação para uma execução (pagar ou opor-se, por exemplo de um agente de execução)',
   cobranca: 'Pedido de pagamento de uma dívida',
   liquidacao_imposto: 'Nota de cobrança ou liquidação de imposto',
   informacao: 'Informação, sem nada a fazer',

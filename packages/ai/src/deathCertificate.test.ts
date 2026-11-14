@@ -30,7 +30,34 @@ Data do óbito
 Data do assento
 04.11.2026`;
 
+// Formato de uma certidão real de uma conservatória, lida por OCR, com os dados trocados.
+const CONSERVATORIA = `Conservatória do Registo Civil/Predial/Comercial Fictícia
+Assento de Óbito n.º 999 do ano de 2024
+Falecido
+Nome: Rosa Fictícia da Silva Exemplo *** :
+Sexo: Feminino ***
+Idade: 90 anos ***
+Estado: Viúvo(a) Manuel Fictício Exemplo***
+Naturalidade: freguesia de Exemplo ***
+Pai: Joaquim Fictício ***
+Mãe: Ana Fictícia ***
+Hora e data do - 07 horas e 00 minutos , do dia 24 de julho de 2024 ***
+falecimento:
+Lugar: freguesia de Exemplo ***
+Declarante(s): Rui Fictício, com residência habitual em Rua Fictícia
+Data do assento: 25 de julho de 2024 ***
+O/A Oficial de registos, Teresa Fictícia , Por competência própria
+Cota : Assento de Nascimento 43/2020 - 2024-07-25`;
+
 describe('certidão de óbito (no dispositivo, sem IA)', () => {
+  it('lê a certidão de uma conservatória, com o rótulo do falecimento partido pelo OCR', () => {
+    expect(readDeathCertificate(CONSERVATORIA)).toEqual({
+      nome: 'Rosa Fictícia da Silva Exemplo',
+      data_obito: '2024-07-24',
+      data_registo_obito: '2024-07-25',
+    });
+  });
+
   it('lê o nome da pessoa, a data do óbito e a do registo, sem confundir pais e nascimento', () => {
     expect(readDeathCertificate(ELETRONICA)).toEqual({
       nome: 'Maria da Conceição Fictícia Santos',

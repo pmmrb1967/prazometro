@@ -67,6 +67,9 @@ export function readDeathCertificate(text: string): DeathCertificateReading {
   const all = lines(text);
   const data_obito =
     dateAfterLabel(all, /data\s+(?:do|de)\s+(?:[óo]bito|falecimento)/i) ||
+    // Certidões das conservatórias: "Hora e data do falecimento:", com o valor no meio do
+    // rótulo partido pelo OCR ("Hora e data do - 07 horas …, do dia 24 de julho de 2024").
+    dateAfterLabel(all, /hora\s+e\s+data\s+do\b/i) ||
     dateAfterLabel(all, /fal(?:eceu|ecimento)\s+(?:em|no\s+dia)/i);
   const data_registo_obito = dateAfterLabel(
     all,

@@ -1,0 +1,36 @@
+{
+  "$schema": "../schema/regra.schema.json",
+  "id": "cartas.citacao-execucao",
+  "modulo": "cartas",
+  "titulo": "Citação para uma execução: pagar ou opor-se",
+  "descricao": "Quem é citado numa execução (por exemplo, de um agente de execução) tem 20 dias para pagar ou para se opor por embargos de executado. Se não o fizer, a execução continua e podem ser penhorados bens. Nos embargos, acima de 5 000 € é preciso advogado.",
+  "inicio": "data_inicio",
+  "condicoes": {
+    "tipo_carta": "citacao_execucao"
+  },
+  "prazo": {
+    "quantidade": 20,
+    "unidade": "dias",
+    "contagem": "corridos",
+    "transita_dia_util": true,
+    "transicao": "sabado_domingo_feriado",
+    "alertas_dias_antes": [7, 3, 0]
+  },
+  "fontes": [
+    {
+      "titulo": "Código de Processo Civil (versão consolidada)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/2013-34580575",
+      "artigo": "728.º, n.º 1 (oposição por embargos no prazo de 20 dias a contar da citação)"
+    },
+    {
+      "titulo": "Código de Processo Civil (versão consolidada)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/2013-34580575",
+      "artigo": "138.º (prazo contínuo, férias judiciais e tribunais encerrados)"
+    }
+  ],
+  "modelos_carta": [],
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA), a partir do Diário da República; falta revisão por jurista",
+  "estado": "a_rever",
+  "notas": "A app mostra a data mais cedo possível: não acrescenta a dilação (art. 245.º), que pode somar 5 ou mais dias, nem suspende o prazo nas férias judiciais (22 de dezembro a 3 de janeiro, Domingo de Ramos a Segunda-feira de Páscoa e 16 de julho a 31 de agosto), que o prolongam nos processos não urgentes. No processo sumário (art. 856.º) o prazo para se opor à execução e à penhora também é de 20 dias. A execução fiscal das Finanças ou da Segurança Social segue outras regras (CPPT) e não está incluída. Confirme sempre com um advogado ou solicitador."
+}

@@ -22,7 +22,11 @@ export async function readPdf(file: Blob): Promise<PdfContent> {
   const { default: workerUrl } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
   pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
-  const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+  const task = pdfjs.getDocument({
+    data: new Uint8Array(await file.arrayBuffer()),
+    // Descodificadores de imagens JBIG2 e JPEG 2000 (PDFs digitalizados), servidos pelo site.
+    wasmUrl: '/ocr/pdfjs/',
+  });
   let doc;
   try {
     doc = await task.promise;
