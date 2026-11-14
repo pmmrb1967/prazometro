@@ -15,14 +15,29 @@
   },
   "fontes": [
     {
+      "titulo": "Decreto-Lei n.º 322/90 (versão consolidada, Diário da República)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1990-34537475",
+      "artigo": "48.º e 54.º (prazo de 90 dias a contar do registo do óbito; limite e relação com o subsídio por morte)"
+    },
+    {
+      "titulo": "Segurança Social: Guia Prático do Reembolso de Despesas de Funeral (17-01-2025)",
+      "url": "https://www.seg-social.pt/documents/10152/15019/7007_reembolso_despesas_funeral/c239152b-d820-4fb7-b992-ace0c5ba0d49",
+      "artigo": "«Deve ser requerido no prazo máximo de 90 dias seguidos, a contar da data do registo do óbito»"
+    },
+    {
       "titulo": "Segurança Social: requerimento de reembolso de despesas de funeral (RP 5076)",
       "url": "https://seg-social.pt/documents/10152/21738/RP_5076/df2a273d-d88e-41eb-a47b-cf6dd8cf0a9c",
       "artigo": "Prazo de 90 dias a contar do registo do óbito"
+    },
+    {
+      "titulo": "gov.pt: Pedir o reembolso das despesas de funeral",
+      "url": "https://www.gov.pt/servicos/requerer-o-reembolso-das-despesas-de-funeral-a-seguranca-social",
+      "artigo": "Não acumulável com o subsídio por morte"
     }
   ],
   "modelos_carta": [],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir do formulário da Segurança Social; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "Um folheto da Segurança Social de 2013 contava os 90 dias a partir da morte; o formulário atual conta a partir do registo do óbito. Se a data do registo não for indicada, a app conta a partir da data do óbito (a data mais cedo). Confirmar com um jurista quando se aplica o reembolso e quando se aplica o subsídio por morte."
+  "notas": "Confirmado: 90 dias seguidos a contar do registo do óbito (Decreto-Lei n.º 322/90 na versão em vigor e Guia Prático da Segurança Social de 2025). A página do gov.pt ainda conta a partir da morte, como a redação de 2012 (Decreto-Lei n.º 133/2012); se a data do registo não for indicada, a app conta a partir da data do óbito, que é a data mais cedo. Reembolso ou subsídio por morte: o reembolso é pago a quem provar que pagou o funeral e não se acumula com o subsídio por morte. Se quem tem direito ao subsídio por morte não provar que pagou o funeral, essa parte do subsídio só lhe é paga depois de acabarem os 90 dias sem pedido de reembolso (art. 54.º)."
 }

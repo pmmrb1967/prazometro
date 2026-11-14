@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { api } from '../cloud/api';
 
 /** Fonte legal e data de verificação de cada regra usada (princípio 4). */
-export function RuleSources({ rules }: { rules: Rule[] }) {
+export function RuleSources({ rules, showNotes = false }: { rules: Rule[]; showNotes?: boolean }) {
   const today = todayInLisbon();
   return (
     <details className="sources">
@@ -23,12 +23,14 @@ export function RuleSources({ rules }: { rules: Rule[] }) {
                     <a href={f.url} target="_blank" rel="noreferrer">
                       {f.titulo}
                     </a>
-                    , artigo {f.artigo}
+                    , {/^\d/.test(f.artigo) ? `artigo ${f.artigo}` : f.artigo}
                   </li>
                 ))}
               </ul>
+              {showNotes && r.notas && <p>{r.notas}</p>}
               <p className="muted">
-                Verificada em {formatDateShort(r.verificado_em)}.{' '}
+                Verificada em {formatDateShort(r.verificado_em)}
+                {showNotes ? ` por ${r.verificado_por}` : ''}.{' '}
                 {status === 'a_verificar' && (
                   <strong>A verificar: passaram mais de 6 meses desde a última verificação.</strong>
                 )}

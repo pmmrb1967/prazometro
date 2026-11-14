@@ -15,14 +15,19 @@
   },
   "fontes": [
     {
-      "titulo": "Código Civil",
+      "titulo": "Código Civil (Diário da República)",
       "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1966-34509075",
       "artigo": "2059.º, n.º 1 (caducidade do direito de aceitar)"
+    },
+    {
+      "titulo": "Tribunal Constitucional: Acórdão n.º 541/2004",
+      "url": "https://www.tribunalconstitucional.pt/tc/acordaos/20040541.html",
+      "artigo": "Prazo de 10 anos contado desde o conhecimento de ter sido chamado à herança"
     }
   ],
   "modelos_carta": [],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir de jurisprudência sobre o Código Civil; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "O prazo conta-se a partir do conhecimento de ter sido chamado à herança, que pode ser posterior ao óbito. A app conta a partir do óbito, que é a data mais cedo. Não foi possível abrir o texto consolidado do artigo; confirmado por acórdãos da Relação."
+  "notas": "Confirmado: «O direito de aceitar a herança caduca ao fim de dez anos, contados desde que o sucessível tem conhecimento de haver sido a ela chamado» (Código Civil, art. 2059.º, n.º 1; citado no Acórdão do Tribunal Constitucional n.º 541/2004). O prazo pode começar depois do óbito, se o herdeiro só souber mais tarde. A app conta a partir do óbito, que é a data mais cedo."
 }

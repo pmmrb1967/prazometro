@@ -24,11 +24,21 @@
       "titulo": "Portal das Finanças: Óbito",
       "url": "https://info.portaldasfinancas.gov.pt/pt/apoio_ao_contribuinte/Cidadaos/Dados_pessoais_familia/Familia/Obito",
       "artigo": "Participação (modelo 1 ISTG) e herdeiros isentos"
+    },
+    {
+      "titulo": "Código Civil (Diário da República)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1966-34509075",
+      "artigo": "279.º, alínea e) (o prazo que termine em domingo ou feriado passa para o primeiro dia útil)"
+    },
+    {
+      "titulo": "Portal das Finanças: Principais prazos",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/apoio_ao_contribuinte/Cidadaos/Rendimentos/Declaracao/prazos/Paginas/default.aspx",
+      "artigo": "Exemplo de 2026: prazo que acaba num sábado passa para o primeiro dia útil seguinte"
     }
   ],
   "modelos_carta": ["pos-obito.comunicacao-banco"],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir do Portal das Finanças; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "O chefe de finanças pode prorrogar o prazo até 60 dias, a pedido justificado (art. 26.º, n.º 5); a app não conta essa prorrogação."
+  "notas": "Confirmado: participação até ao final do 3.º mês seguinte ao do óbito (art. 26.º do Código do Imposto do Selo); o chefe de finanças pode prorrogar até 60 dias, a pedido justificado (art. 26.º, n.º 5), o que a app não conta. Sábado: o Código Civil (art. 279.º, e)), aplicável aos prazos tributários, só fala em domingo e feriado; mas as Finanças, na prática, passam para o dia útil seguinte os prazos que acabam ao sábado (exemplo no Portal das Finanças) e o Supremo Tribunal Administrativo tem decidido no mesmo sentido. A app não passa o sábado para segunda-feira, para dar sempre a data mais cedo; a participação também pode ser feita no Portal das Finanças ao sábado."
 }

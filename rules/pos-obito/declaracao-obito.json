@@ -14,14 +14,24 @@
   },
   "fontes": [
     {
+      "titulo": "Código do Registo Civil (Diário da República)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1995-34525275",
+      "artigo": "192.º, n.º 1 (declaração verbal no prazo de 48 horas, em qualquer conservatória)"
+    },
+    {
       "titulo": "gov.pt: Declarar um óbito",
       "url": "https://www.gov.pt/servicos/declarar-um-obito",
-      "artigo": "Código do Registo Civil (prazo de 48 horas)"
+      "artigo": "Até 48 horas depois da morte, da autópsia, do achamento do corpo ou da dispensa de autópsia"
+    },
+    {
+      "titulo": "Justiça.gov.pt: Declarar um óbito",
+      "url": "https://justica.gov.pt/Servicos/Declarar-um-obito",
+      "artigo": "Prazo de dois dias e quem pode declarar"
     }
   ],
   "modelos_carta": [],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "O prazo legal é de 48 horas a contar da morte (ou da autópsia, do achamento do corpo ou da dispensa de autópsia). A app conta 2 dias a partir da data do óbito. Falta confirmar o artigo do Código do Registo Civil."
+  "notas": "Confirmado: o Código do Registo Civil (art. 192.º, n.º 1) manda declarar o óbito verbalmente, dentro de 48 horas, em qualquer conservatória. As 48 horas contam-se da morte ou, conforme o caso, do achamento do corpo, da autópsia, da dispensa de autópsia ou da receção da guia da autoridade policial. A app conta 2 dias a partir da data do óbito. Normalmente é a agência funerária que trata desta declaração."
 }

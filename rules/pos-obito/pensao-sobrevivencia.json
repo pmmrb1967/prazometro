@@ -15,14 +15,24 @@
   },
   "fontes": [
     {
+      "titulo": "Decreto-Lei n.º 322/90 (versão consolidada, Diário da República)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1990-34537475",
+      "artigo": "36.º, n.º 1 (paga desde o mês seguinte ao falecimento se pedida nos seis meses imediatos) e 48.º, n.º 1 (pode pedir-se a todo o tempo)"
+    },
+    {
       "titulo": "gov.pt: Pedir a pensão de sobrevivência",
       "url": "https://www.gov.pt/servicos/requerer-a-pensao-de-sobrevivencia",
-      "artigo": "Pedido nos 6 meses após a morte: paga desde o mês seguinte ao falecimento"
+      "artigo": "No prazo de 6 meses após a morte, direito desde o mês seguinte ao falecimento"
+    },
+    {
+      "titulo": "Caixa Geral de Aposentações: Pensão de sobrevivência",
+      "url": "https://www.cga.pt/pensao-de-sobrevivencia",
+      "artigo": "Regime da CGA: 180 dias ou 1 ano a contar da morte"
     }
   ],
   "modelos_carta": [],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "Uma fonte secundária conta os 6 meses a partir do registo do óbito; o gov.pt conta a partir da morte, que é a data mais cedo. Aplica-se ao regime geral da Segurança Social."
+  "notas": "Confirmado: os 6 meses contam-se a partir da morte («seis meses imediatos ao evento», art. 36.º, n.º 1, do Decreto-Lei n.º 322/90; gov.pt). Não é um prazo para perder o direito: a pensão pode pedir-se a todo o tempo (art. 48.º, n.º 1), mas, depois dos 6 meses, só é paga a partir do mês seguinte ao pedido. Caixa Geral de Aposentações: 180 dias a contar da morte para quem se aposentou pelo regime em vigor desde 2006 (1 ano no regime anterior); 180 dias pode acabar uns dias antes dos 6 meses, por isso quem descontava para a CGA deve pedir até aos 180 dias."
 }

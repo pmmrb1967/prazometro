@@ -15,14 +15,24 @@
   },
   "fontes": [
     {
+      "titulo": "Decreto-Lei n.º 322/90 (versão consolidada, Diário da República)",
+      "url": "https://diariodarepublica.pt/dr/legislacao-consolidada/decreto-lei/1990-34537475",
+      "artigo": "48.º, n.º 2 (180 dias a contar do registo do óbito)"
+    },
+    {
       "titulo": "gov.pt: Requerer o subsídio por morte",
       "url": "https://www.gov.pt/servicos/requerer-o-subsidio-por-morte",
       "artigo": "Prazo de 180 dias a contar do registo do óbito"
+    },
+    {
+      "titulo": "Caixa Geral de Aposentações: Outras prestações por morte",
+      "url": "https://www.cga.pt/outras-prestacoes-por-morte",
+      "artigo": "Subsídio por morte da CGA: 180 dias a contar do registo do óbito (óbitos depois de 30-09-2019)"
     }
   ],
   "modelos_carta": [],
-  "verificado_em": "2026-10-21",
-  "verificado_por": "Claude (assistente de IA), a partir do gov.pt; falta revisão por jurista",
+  "verificado_em": "2026-11-14",
+  "verificado_por": "Claude (assistente de IA da Anthropic), por pesquisa em leis e sites oficiais; sem revisão por jurista",
   "estado": "a_rever",
-  "notas": "Se a data do registo não for indicada, a app conta a partir da data do óbito (a data mais cedo). Aplica-se a quem descontava para a Segurança Social; a Caixa Geral de Aposentações tem regras próprias."
+  "notas": "Confirmado: 180 dias a contar do registo do óbito (Decreto-Lei n.º 322/90, art. 48.º, n.º 2, e gov.pt). A redação de 2012 contava da data do falecimento. Caixa Geral de Aposentações (função pública): o prazo também é de 180 dias a contar do registo do óbito, para óbitos depois de 30-09-2019 (antes era 1 ano desde o óbito); a página do gov.pt sobre a CGA conta a partir da morte. Por isso, se a data do registo não for indicada, a app conta a partir da data do óbito, que é a data mais cedo."
 }

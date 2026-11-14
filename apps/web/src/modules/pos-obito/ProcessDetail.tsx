@@ -115,7 +115,7 @@ function Detail({ p }: { p: DeathProcess }) {
 
       <Inventory p={p} />
 
-      <RuleSources rules={POS_OBITO_RULES} />
+      <RuleSources rules={POS_OBITO_RULES} showNotes />
 
       <section aria-labelledby="apagar">
         <h2 id="apagar">Apagar</h2>
