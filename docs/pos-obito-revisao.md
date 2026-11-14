@@ -31,13 +31,15 @@ Pontos que ainda pedem um jurista:
 Quando a data do registo não é indicada, a app conta os prazos a partir da data do óbito, que dá
 sempre a data mais cedo.
 
-## Textos sem fonte oficial direta
+## Textos dos passos: pesquisa de 14/11/2026
 
-- Pedido ao Banco de Portugal da lista de contas do falecido: só confirmado por fontes secundárias.
-- Lista de seguros de vida pedida à ASF: confirmado pelo Decreto-Lei n.º 384/2007 e por fontes secundárias.
-- Responsabilidade pelas dívidas até ao valor da herança (Código Civil, art. 2071.º).
-- Custo da habilitação de herdeiros no Balcão das Heranças: 425 euros de base, segundo o gov.pt.
-- Não incluído: o IRS do ano do óbito, o testamento e os veículos (por falta de fonte oficial verificada).
+Confirmados por pesquisa do Claude nas fontes oficiais (ligações em `apps/web/src/modules/pos-obito/steps.ts`):
+
+- **Lista de contas no Banco de Portugal** (Base de Dados de Contas): o herdeiro pede, sem custos, num posto de atendimento ou por correio, com a habilitação de herdeiros ou, se for descendente direto, a certidão de óbito e a prova da filiação. Mostra os bancos, não os saldos. Fonte: páginas do Banco de Portugal (bportugal.pt), lidas através dos excertos da pesquisa, porque o site bloqueia a leitura automática.
+- **Seguros de vida na ASF** (Decreto-Lei n.º 384/2007, registo central): qualquer interessado, depois do óbito, recebe um certificado em 10 dias úteis no máximo, com os seguros de vida, de acidentes pessoais e as operações de capitalização com beneficiários em caso de morte. Ficam de fora os seguros ligados a créditos e alguns seguros de grupo. Fonte: portal do consumidor da ASF e DECO (o site da ASF pede verificação por imagem).
+- **Dívidas até ao valor da herança**: Código Civil, art. 2071.º, n.os 1 e 2, texto lido e transcrito nos passos.
+- **Custos do Balcão das Heranças**: 150 € (habilitação), 375 € (habilitação com registos), 425 € (habilitação, partilha e registos), mais 125 € por registo de imóvel a mais, 30 € por imóvel ou quota a mais, 20 € por móvel registado a mais, as consultas às bases de dados e os impostos. Fonte: perguntas frequentes do IRN, lidas diretamente.
+- Continua de fora: o IRS do ano do óbito, o testamento e os veículos.
 
 ## Cartas
 

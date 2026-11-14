@@ -11,10 +11,12 @@ export function DevelopmentBanner() {
         decidir.
       </p>
       <p>
-        Os prazos foram confirmados a 14/11/2026 por pesquisa do Claude, assistente de inteligência
-        artificial da Anthropic, nas leis (Diário da República) e nos sites oficiais (gov.pt,
-        Segurança Social, Caixa Geral de Aposentações, Portal das Finanças). As fontes de cada
-        prazo, com ligação, estão em «De onde vêm estas datas», na página de cada processo.
+        Os prazos, os custos e as indicações dos passos foram confirmados a 14/11/2026 por pesquisa
+        do Claude, assistente de inteligência artificial da Anthropic, nas leis (Diário da
+        República) e nos sites oficiais (gov.pt, Segurança Social, Caixa Geral de Aposentações,
+        Portal das Finanças, Banco de Portugal, ASF e IRN). As fontes de cada prazo estão em «De
+        onde vêm estas datas» e as de cada passo nas ligações do próprio passo, na página de cada
+        processo.
       </p>
     </div>
   );
