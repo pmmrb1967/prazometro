@@ -1092,6 +1092,12 @@ pre.anonymized {
     order: 1;
     margin-left: auto;
   }
+  /* "Conta" e "Contraste" ficam um por cima do outro: mesma largura, em coluna. */
+  .account-link,
+  .a11y-contrast {
+    min-width: 7.5em;
+    justify-content: center;
+  }
   .a11y {
     order: 2;
     flex-basis: 100%;
@@ -1134,7 +1140,18 @@ pre.anonymized {
   .brand-name {
     font-size: 1.2em;
   }
+}
+
+/* Só nos telemóveis mais estreitos (320 px) os ícones saem, para tudo caber. */
+@media (max-width: 21rem) {
   .top .icon {
     display: none;
+  }
+  .top {
+    column-gap: var(--space-2);
+  }
+  .account-link,
+  .a11y-contrast {
+    min-width: 5.6em;
   }
 }
