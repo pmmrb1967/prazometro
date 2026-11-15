@@ -191,7 +191,7 @@ export const STEPS: Step[] = [
     fase: 'ano-seguinte',
     titulo: 'Entregar o IRS do ano do óbito',
     texto: [
-      'Os rendimentos da pessoa que faleceu, de 1 de janeiro até ao dia do óbito, são declarados no IRS desse ano, que se entrega no ano seguinte, entre 1 de abril e 30 de junho, como as outras declarações.',
+      'Os rendimentos da pessoa que faleceu, de 1 de janeiro até ao dia do óbito, são declarados no IRS desse ano, que se entrega no ano seguinte, entre 1 de abril e 30 de junho, como as outras declarações. O dia 30 de junho conta mesmo que seja sábado, domingo ou feriado.',
       'Se era casada ou vivia em união de facto, é o cônjuge ou o unido de facto que entrega a declaração, e pode escolher a tributação conjunta. Se não era, é o cabeça de casal que a entrega, em nome da pessoa que faleceu.',
       'Os rendimentos depois do óbito (por exemplo, rendas de uma casa) são da herança: cada herdeiro declara a sua parte no seu próprio IRS. O Portal das Finanças explica como fazer.',
     ],
@@ -199,6 +199,10 @@ export const STEPS: Step[] = [
       {
         titulo: 'Código do IRS, artigo 57.º, n.º 2 (falecimento)',
         url: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs57.aspx',
+      },
+      {
+        titulo: 'Código do IRS, artigo 60.º, n.º 1 (prazo de entrega)',
+        url: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs60.aspx',
       },
       {
         titulo: 'Código do IRS, artigo 63.º (falecimento de um dos cônjuges)',
