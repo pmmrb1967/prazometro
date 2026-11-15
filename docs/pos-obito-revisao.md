@@ -39,7 +39,19 @@ Confirmados por pesquisa do Claude nas fontes oficiais (ligações em `apps/web/
 - **Seguros de vida na ASF** (Decreto-Lei n.º 384/2007, registo central): qualquer interessado, depois do óbito, recebe um certificado em 10 dias úteis no máximo, com os seguros de vida, de acidentes pessoais e as operações de capitalização com beneficiários em caso de morte. Ficam de fora os seguros ligados a créditos e alguns seguros de grupo. Fonte: portal do consumidor da ASF e DECO (o site da ASF pede verificação por imagem).
 - **Dívidas até ao valor da herança**: Código Civil, art. 2071.º, n.os 1 e 2, texto lido e transcrito nos passos.
 - **Custos do Balcão das Heranças**: 150 € (habilitação), 375 € (habilitação com registos), 425 € (habilitação, partilha e registos), mais 125 € por registo de imóvel a mais, 30 € por imóvel ou quota a mais, 20 € por móvel registado a mais, as consultas às bases de dados e os impostos. Fonte: perguntas frequentes do IRN, lidas diretamente.
-- Continua de fora: o IRS do ano do óbito, o testamento e os veículos.
+
+## Passos novos: pesquisa de 15/11/2026
+
+Acrescentados três passos, sem regra de prazo própria (o texto indica as datas):
+
+- **Testamento**: depois do óbito, qualquer pessoa pede ao IRN (online ou na Conservatória dos Registos Centrais) a certidão sobre a existência de testamento, que diz o cartório e a data, mas não o conteúdo. Custa 25 €, pagos em 48 horas no pedido online; chega em papel pelo correio. Fontes: gov.pt («Saber se uma pessoa que morreu deixou testamento», lida diretamente: quem pode pedir) e DECO (dados do pedido, custo e envio, porque o formulário do IRN não se lê sem o abrir).
+- **IRS do ano do óbito**: a declaração da pessoa falecida cobre de 1 de janeiro até ao óbito e é apresentada pelo administrador da herança (Código do IRS, art. 57.º, n.º 2) ou, se era casada ou unida de facto, pelo cônjuge sobrevivo, que pode optar pela tributação conjunta (art. 63.º). Entrega no prazo normal, de 1 de abril a 30 de junho do ano seguinte (art. 60.º). Depois do óbito, cada herdeiro declara a sua quota-parte dos rendimentos da herança (Portal das Finanças, página Óbito). Fontes: Portal das Finanças (arts. 57.º e 63.º, lidos diretamente) e Caixa Geral de Depósitos (Saldo Positivo), para o resumo prático.
+- **Veículos**: a herança indivisa, representada pelo cabeça de casal, é sujeito passivo do IUC (Código do IUC, art. 3.º, n.º 3, lido diretamente). Registo de propriedade: 65 € (subsequente), menos 15% online (55,25 €), valor igual ao emolumento se fora de prazo (Regulamento Emolumentar, arts. 25.º, n.os 1.2 e 1.8, e 28.º, n.º 25, na página de custos do IRN); 20 € por móvel registado a mais no Balcão das Heranças. Prazo de 60 dias para o novo dono registar (gov.pt, Registar um automóvel).
+
+Pontos para o jurista:
+
+- Veículos: a partir de quando contam os 60 dias numa herança (habilitação, partilha ou relação de bens às Finanças) e se o registo a favor dos herdeiros é obrigatório quando os próprios herdeiros vendem o carro. Não encontrei fonte oficial; o texto da app manda confirmar na conservatória.
+- Testamento: confirmar o custo e o procedimento no formulário do IRN (só confirmado através do gov.pt e da DECO).
 
 ## Cartas
 

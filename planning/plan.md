@@ -388,7 +388,7 @@ Fase 7 (pós-óbito, aberto com o aviso "Em desenvolvimento")
 
 - [ ] Percorrer o fluxo: criar processo, marcar passos, inventário e as 3 cartas
 - [ ] Rever as 6 regras e as divergências de `docs/pos-obito-revisao.md` com um jurista
-- [ ] Confirmar os textos sem fonte oficial direta (Banco de Portugal, ASF, art. 2071.º) e decidir sobre o IRS do ano do óbito, o testamento e os veículos
+- [x] Confirmar os textos sem fonte oficial direta (Banco de Portugal, ASF, art. 2071.º) e decidir sobre o IRS do ano do óbito, o testamento e os veículos (passos novos a 15/11/2026; pontos abertos em `docs/pos-obito-revisao.md`)
 - [ ] Testar o tom e a linguagem com 3 famílias que passaram pelo processo
 - [ ] Depois da revisão: passar as regras e as cartas a `"publicada"`, tirar `inDevelopment` em `apps/web/src/modules.ts` e o `DevelopmentBanner` das páginas do módulo
 

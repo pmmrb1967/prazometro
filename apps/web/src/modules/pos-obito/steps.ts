@@ -5,13 +5,19 @@ import { CODIGO_CIVIL_URL, OBITO_AT_URL } from './rules';
 // Todo este conteúdo está à espera de revisão por um jurista.
 
 export type Phase =
-  'primeiros-dias' | 'primeiras-semanas' | 'ate-3-meses' | 'ate-6-meses' | 'depois';
+  | 'primeiros-dias'
+  | 'primeiras-semanas'
+  | 'ate-3-meses'
+  | 'ate-6-meses'
+  | 'ano-seguinte'
+  | 'depois';
 
 export const PHASES: [Phase, string][] = [
   ['primeiros-dias', 'Nos primeiros dias'],
   ['primeiras-semanas', 'Nas primeiras semanas'],
   ['ate-3-meses', 'Até ao fim do 3.º mês'],
   ['ate-6-meses', 'Nos primeiros 6 meses'],
+  ['ano-seguinte', 'No ano seguinte'],
   ['depois', 'Sem prazo fixo'],
 ];
 
@@ -51,6 +57,23 @@ export const STEPS: Step[] = [
       'O cabeça de casal administra a herança até à partilha e é quem trata das Finanças. Em regra, é o cônjuge que sobreviveu; se não houver, segue-se a ordem prevista na lei (Código Civil, artigo 2080.º).',
     ],
     ligacoes: [{ titulo: 'Código Civil, artigo 2080.º', url: CODIGO_CIVIL_URL }],
+  },
+  {
+    id: 'testamento',
+    fase: 'primeiras-semanas',
+    titulo: 'Saber se havia testamento',
+    texto: [
+      'Depois do óbito, qualquer pessoa pode pedir uma certidão que diz se a pessoa que faleceu fez testamento e em que cartório e data o fez. A certidão não mostra o que o testamento diz: para isso, peça uma certidão do testamento ao cartório indicado.',
+      'O pedido faz-se online, no site do Instituto dos Registos e do Notariado (IRN), ou na Conservatória dos Registos Centrais, em Lisboa. Indique o nome, a data de nascimento, os pais e a naturalidade da pessoa, a data e o local do óbito e a conservatória onde o óbito foi registado. Se a morte foi no estrangeiro, junte a certidão de óbito, traduzida se não estiver em português. A certidão chega em papel, pelo correio.',
+      'Saber se há testamento é importante antes da habilitação de herdeiros, porque o testamento pode mudar quem herda.',
+    ],
+    custo: 'A certidão custa 25 euros. No pedido online, o pagamento tem de ser feito em 48 horas.',
+    ligacoes: [
+      {
+        titulo: 'gov.pt: Saber se uma pessoa que morreu deixou testamento',
+        url: 'https://www.gov.pt/servicos/saber-se-uma-pessoa-que-morreu-deixou-testamento',
+      },
+    ],
   },
   {
     id: 'subsidio-morte',
@@ -160,6 +183,52 @@ export const STEPS: Step[] = [
       {
         titulo: 'gov.pt: Pedir a pensão de sobrevivência',
         url: 'https://www.gov.pt/servicos/requerer-a-pensao-de-sobrevivencia',
+      },
+    ],
+  },
+  {
+    id: 'irs-ano-obito',
+    fase: 'ano-seguinte',
+    titulo: 'Entregar o IRS do ano do óbito',
+    texto: [
+      'Os rendimentos da pessoa que faleceu, de 1 de janeiro até ao dia do óbito, são declarados no IRS desse ano, que se entrega no ano seguinte, entre 1 de abril e 30 de junho, como as outras declarações.',
+      'Se era casada ou vivia em união de facto, é o cônjuge ou o unido de facto que entrega a declaração, e pode escolher a tributação conjunta. Se não era, é o cabeça de casal que a entrega, em nome da pessoa que faleceu.',
+      'Os rendimentos depois do óbito (por exemplo, rendas de uma casa) são da herança: cada herdeiro declara a sua parte no seu próprio IRS. O Portal das Finanças explica como fazer.',
+    ],
+    ligacoes: [
+      {
+        titulo: 'Código do IRS, artigo 57.º, n.º 2 (falecimento)',
+        url: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs57.aspx',
+      },
+      {
+        titulo: 'Código do IRS, artigo 63.º (falecimento de um dos cônjuges)',
+        url: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs63.aspx',
+      },
+      { titulo: 'Portal das Finanças: Óbito', url: OBITO_AT_URL },
+    ],
+  },
+  {
+    id: 'veiculos',
+    fase: 'depois',
+    titulo: 'Carros e motas',
+    texto: [
+      'Até à partilha, o Imposto Único de Circulação (IUC) dos carros e motas em nome da pessoa que faleceu continua a ser cobrado à herança, e é o cabeça de casal que o paga (Código do IUC, artigo 3.º, n.º 3).',
+      'Para passar o carro para o nome de um herdeiro, ou para o vender, é preciso a habilitação de herdeiros. O registo pode ser feito no Balcão das Heranças, junto com a habilitação, ou depois, numa conservatória ou no Automóvel Online. A lei dá 60 dias ao novo dono para registar o carro. Confirme na conservatória que documentos são precisos no seu caso.',
+    ],
+    custo:
+      'Registo do carro numa conservatória: 65 euros; no Automóvel Online, 55,25 euros. Fora do prazo, o valor duplica. No Balcão das Heranças, cada carro ou outro bem registado a mais custa 20 euros.',
+    ligacoes: [
+      {
+        titulo: 'Código do IUC, artigo 3.º (quem paga o imposto)',
+        url: 'https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/iuc/Pages/iuc3.aspx',
+      },
+      {
+        titulo: 'gov.pt: Registar um automóvel (Automóvel Online)',
+        url: 'https://www.gov.pt/servicos/registar-veiculo-automovel-servico-automovel-online',
+      },
+      {
+        titulo: 'IRN: custos dos serviços (registo automóvel, artigo 25.º)',
+        url: 'https://irn.justica.gov.pt/Custos-dos-servicos',
       },
     ],
   },
